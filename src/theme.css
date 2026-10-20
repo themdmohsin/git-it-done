@@ -1,0 +1,37 @@
+/* ALL colours live here. Tweak freely. */
+:root {
+  /* light side */
+  --page: #dfe3c0;            /* poster colour: main background everywhere outside the dark panel */
+  --ink: #1d2314;
+  --muted: #55603f;
+  --card: #e8ecce;
+  --card-border: rgba(29, 35, 20, 0.12);
+  --card-shadow: 0 1.2vmin 3vmin rgba(29, 35, 20, 0.12);
+  --accent: #e8553d;          /* coral: highlights, buttons, kickers */
+  --accent-ink: #fff7ec;      /* text on coral */
+  --green: #3f5a1f;           /* deep green: secondary */
+  --rail-future: rgba(29, 35, 20, 0.22);
+
+  /* dark panel */
+  --panel: #141810;
+  --panel-2: #1c2216;         /* terminal title bar / strip boxes */
+  --panel-line: rgba(232, 236, 208, 0.12);
+  --term-text: #e8ecd0;
+  --term-dim: #8f9a74;
+
+  /* graph lanes (on dark) */
+  --lane-main: #c9e265;
+  --lane-feature: #ff7a59;
+  --lane-remote: #7fd6e0;
+  --head: #ffffff;
+
+  /* fonts */
+  --font-head: 'Space Grotesk', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* scale unit: 1u = 1vw on a 16:9 screen, but never taller than the viewport allows */
+  --u: min(1vw, 1.7778vh);
+}
+@media (max-width: 899px) {
+  :root { --u: 2vw; }
+}
