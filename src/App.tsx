@@ -8,6 +8,8 @@ import { RAIL_DELAY, Stage, type Kind, type Trans } from './components/Transitio
 import { planFrames, movesFor, sceneOf } from './engine/stack'
 import type { OS } from './engine/types'
 import { OSContext, detectOS, loadOS, saveOS } from './os'
+import { DetailsOverlay } from './components/DetailsModal'
+import { setDetailsOpener, useUserDetails } from './userDetails'
 
 interface S {
   card: number
@@ -57,6 +59,14 @@ export default function App() {
   const [picker, setPicker] = useState(false)
   const pickerRef = useRef(picker)
   pickerRef.current = picker
+  const [details, setDetails] = useState(false)
+  const detailsRef = useRef(details)
+  detailsRef.current = details
+  const afterSave = useRef<(() => void) | undefined>(undefined)
+  const { filled } = useUserDetails()
+  const openDetails = useCallback((after?: () => void) => { afterSave.current = after; setDetails(true) }, [])
+  const closeDetails = useCallback(() => { afterSave.current = undefined; setDetails(false) }, [])
+  useEffect(() => { setDetailsOpener(openDetails); return () => setDetailsOpener(null) }, [openDetails])
 
   const pickerSeen = useRef(false)
   useEffect(() => {
@@ -128,6 +138,12 @@ export default function App() {
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return
       const k = e.key.toLowerCase()
+      const t = e.target as HTMLElement
+      if (detailsRef.current) {
+        if (k === 'escape') { e.preventDefault(); closeDetails() }
+        return
+      }
+      if (t.closest('input, textarea, select, [contenteditable]')) return
       if (pickerRef.current) {
         if (k === 'escape' || k === 'o') { e.preventDefault(); setPicker(false) }
         return
@@ -136,12 +152,13 @@ export default function App() {
       else if (e.key === 'ArrowLeft') { e.preventDefault(); back() }
       else if (k === 'd') setDrawer((v) => !v)
       else if (k === 'o') setPicker(true)
+      else if (k === 'u') openDetails()
       else if (k === 'r') replay()
       else if (k === 'escape') setDrawer(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [advance, back, replay])
+  }, [advance, back, replay, openDetails, closeDetails])
 
   // blur buttons after click so Space keeps meaning "advance"
   useEffect(() => {
@@ -203,11 +220,13 @@ export default function App() {
               <button className="key" onClick={advance} disabled={atEnd} aria-label="Next step">{'\u2192'}</button>
               <button className="key" onClick={() => setDrawer((v) => !v)}><b>D</b> Details</button>
               <button className="key" onClick={() => setPicker(true)}><b>O</b> Your system</button>
+              <button className="key" onClick={() => openDetails()}><b>U</b> Your details<span className={'dot' + (filled ? ' on' : '')} aria-label={filled ? 'filled in' : 'empty'} /></button>
               <button className="key" onClick={replay}><b>R</b> Replay</button>
             </div>
           </div>
         </footer>
         <PickerOverlay open={picker} onClose={() => setPicker(false)} />
+        <DetailsOverlay open={details} onClose={() => setDetails(false)} onSaved={() => { const f = afterSave.current; afterSave.current = undefined; f?.() }} />
       </div>
     </OSContext.Provider>
   )
