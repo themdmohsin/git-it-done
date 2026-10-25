@@ -12,8 +12,6 @@ const peel = (front: string, extra: Partial<StackScene> = {}): StackScene => ({
   ...extra,
 })
 
-const part2 = 'PART 2 (VIJAY)'
-
 export const cards: Card[] = [
   /* ---------- A. Hook ---------- */
   {
@@ -178,7 +176,7 @@ export const cards: Card[] = [
       talking: [
         'A commit is a labelled snapshot, like a save point in a game.',
         'Distributed means you can work without internet.',
-        'Branches let people work in parallel (Vijay covers them in Part 2).',
+        'Many people can work in parallel because everyone has a full copy.',
       ],
     },
   },
@@ -538,113 +536,6 @@ export const cards: Card[] = [
         { title: 'Using a different email than GitHub', fix: 'Use the same email as your GitHub account so your commits are linked to you.' },
       ],
       happening: 'Attendees must have their free GitHub account ready BEFORE they run git push, so create it during this stage or earlier. Git is a program, so it has to be installed. The terminal is a text window for talking to it. The name and email are written into every commit, which is how the history shows who did what.',
-    },
-  },
-
-  /* ---------- Part 2 (Vijay) ---------- */
-  {
-    id: 'branch',
-    rail: 'Branch',
-    section: 'part2',
-    kicker: part2 + ' \u00b7 BRANCH',
-    title: 'Work in parallel',
-    sentence: 'A branch is a separate line of work. Try ideas without breaking main.',
-    bullets: ['main stays safe and working.', 'feature is your sandbox.', 'Switch between them any time.'],
-    tryIt: 'git switch -c feature',
-    view: 'terminal',
-    lane: 'branch',
-    into: 'split',
-    steps: [
-      { cmd: 'git branch', output: ['* main'], op: none },
-      { cmd: 'git switch -c feature', output: ["Switched to a new branch 'feature'"], op: [{ type: 'createBranch', name: 'feature' }, { type: 'switchBranch', name: 'feature' }] },
-      { cmd: 'git commit -am "add login page"', output: ['[feature 7b2d410] add login page'], op: { type: 'commit', branch: 'feature', id: '7b2d410', msg: 'add login page' } },
-      { cmd: 'git switch main', output: ["Switched to branch 'main'"], op: { type: 'switchBranch', name: 'main' } },
-      { cmd: 'git commit -am "fix typo"', output: ['[main 3e9a0b2] fix typo'], op: { type: 'commit', branch: 'main', id: '3e9a0b2', msg: 'fix typo' } },
-    ],
-    drawer: {
-      commands: ['git branch', 'git switch -c feature', 'git switch main', 'git branch --all'],
-      mistakes: [
-        { title: 'Committing on the wrong branch', fix: 'Run git branch before you commit. The one with the star is where your commit will land.' },
-        { title: 'Switch fails with uncommitted changes', fix: 'Commit your work first (or stash it), then switch.' },
-      ],
-      happening: 'A branch is just a movable label pointing at a commit. Creating one costs almost nothing. When you commit while on feature, only the feature label moves forward, and main stays exactly where it was. That is why you can experiment freely.',
-    },
-  },
-  {
-    id: 'merge',
-    rail: 'Merge',
-    section: 'part2',
-    kicker: part2 + ' \u00b7 MERGE',
-    title: 'Bring it back together',
-    sentence: 'Merging combines the work from two branches into one.',
-    bullets: ['Stand on the branch that receives the work.', 'Git makes a merge commit with two parents.', 'Delete the branch when you are done.'],
-    tryIt: 'git merge feature',
-    view: 'terminal',
-    lane: 'main',
-    into: 'converge',
-    steps: [
-      { cmd: 'git merge feature', output: ["Merge made by the 'ort' strategy."], op: { type: 'merge', from: 'feature', into: 'main', id: '9c4f1de' } },
-      {
-        cmd: 'git log --oneline',
-        output: ['9c4f1de merge feature', '3e9a0b2 fix typo', '7b2d410 add login page', '5d6e7f8 add second line', '1a2b3c4 add notes'],
-        op: none,
-      },
-      { cmd: 'git branch -d feature', output: ['Deleted branch feature (was 7b2d410).'], op: { type: 'deleteBranch', name: 'feature' } },
-    ],
-    drawer: {
-      commands: ['git switch main', 'git merge feature', 'git log --oneline', 'git branch -d feature'],
-      mistakes: [
-        { title: 'Merging in the wrong direction', fix: 'Switch to the branch that should receive the work first. git merge feature brings feature into the branch you are on.' },
-        { title: 'Merge conflict', fix: 'Both branches changed the same lines. Open the file, keep the lines you want, delete the <<<<<<< markers, then git add and git commit.' },
-      ],
-      happening: 'A merge commit is a snapshot with two parents: the tip of main and the tip of feature. That is the two lines converging in the graph. Deleting a branch only removes the label. The commits stay in the history.',
-    },
-  },
-  {
-    id: 'pull-request',
-    rail: 'Pull request',
-    section: 'part2',
-    kicker: part2 + ' \u00b7 PULL REQUEST',
-    title: 'Pull request',
-    sentence: 'Ask the owners of a project to take your changes.',
-    view: 'stub',
-    lane: 'main',
-    steps: [],
-    drawer: {
-      happening: 'Content coming. Vijay will cover pull requests: how you propose a change and how the owners review it.',
-    },
-  },
-  {
-    id: 'fork',
-    rail: 'Fork',
-    section: 'part2',
-    kicker: part2 + ' \u00b7 FORK',
-    title: 'Fork',
-    sentence: 'Make your own copy of someone else\u2019s project.',
-    view: 'stub',
-    lane: 'main',
-    steps: [],
-    drawer: {
-      happening: 'Content coming. Vijay will cover forks: your own online copy of a project you do not own.',
-    },
-  },
-  {
-    id: 'challenge',
-    rail: 'Your turn',
-    section: 'part2',
-    kicker: 'BOSS LEVEL',
-    title: 'Your turn',
-    sentence: 'Now apply it. No memorising, just use what you learned.',
-    view: 'challenge',
-    lane: 'main',
-    steps: [],
-    drawer: {
-      commands: ['git status', 'git log --oneline --graph --all', 'git switch -c my-idea', 'git merge my-idea'],
-      mistakes: [
-        { title: 'Not sure where you are', fix: 'git status and git branch tell you the current branch and what has changed.' },
-        { title: 'Panic after a typo', fix: 'Read the message. Git usually tells you exactly what to do next.' },
-      ],
-      happening: 'You now know the core loop: edit, add, commit, branch, merge, push. Everything else in Git is a variation on those moves.',
     },
   },
 ]
