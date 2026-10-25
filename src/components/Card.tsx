@@ -14,18 +14,17 @@ export interface CardProps {
   applied: number   // steps whose graph op has landed
   playing: boolean
   instant: boolean
-  burst: number
   onStepDone: () => void
 }
 
-export function Card({ cardIdx, done, applied, playing, instant, burst, onStepDone }: CardProps) {
+export function Card({ cardIdx, done, applied, playing, instant, onStepDone }: CardProps) {
   const card = cards[cardIdx]
   const { os } = useOS()
   const repo = useMemo(() => replay(cards, cardIdx, applied), [cardIdx, applied])
 
   let panel
   if (card.view === 'title') panel = <div className="panel center"><AmbientGraph /></div>
-  else if (card.view === 'timeline') panel = <div className="panel center"><Timeline steps={card.steps} shown={applied} instant={instant} burst={burst} /></div>
+  else if (card.view === 'timeline') panel = <div className="panel center"><Timeline steps={card.steps} shown={applied} instant={instant} /></div>
   else if (card.view === 'challenge') {
     panel = (
       <div className="panel challenge">
@@ -40,7 +39,7 @@ export function Card({ cardIdx, done, applied, playing, instant, burst, onStepDo
         <Terminal steps={card.steps.slice(0, done)} playing={playing} onDone={onStepDone} />
         <div className="graph-area">
           {card.strip && <FileStrip stage={fileStage(card, applied)} instant={instant} />}
-          <Graph repo={repo} instant={instant} burst={burst} />
+          <Graph repo={repo} instant={instant} />
         </div>
       </div>
     )

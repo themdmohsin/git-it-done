@@ -14,7 +14,6 @@ interface S {
   applied: number
   playing: boolean
   instant: boolean
-  burst: number
   trans: Trans
 }
 
@@ -38,11 +37,9 @@ export default function App() {
 
   const [s, setS] = useState<S>(() => {
     const card = fromHash()
-    return { card, done: 0, applied: 0, playing: false, instant: true, burst: 0, trans: { id: 0, kind: 'none', dir: 1, from: null } }
+    return { card, done: 0, applied: 0, playing: false, instant: true, trans: { id: 0, kind: 'none', dir: 1, from: null } }
   })
   const ref = useRef(s)
-  const [xp, setXp] = useState(0)
-  const awarded = useRef(new Set<string>())
   const timer = useRef<number>()
   const [drawer, setDrawer] = useState(false)
   const [picker, setPicker] = useState(false)
@@ -51,19 +48,13 @@ export default function App() {
 
   const put = (n: S) => { ref.current = n; setS(n) }
 
-  const award = (base: S): S => {
-    const id = cards[base.card].id
-    if (!awarded.current.has(id)) { awarded.current.add(id); setXp((x) => x + 50) }
-    return { ...base, burst: base.burst + 1 }
-  }
-
   const navTo = useCallback((idx: number, done: number) => {
     const c = ref.current
     clearTimeout(timer.current)
     if (idx === c.card && done === c.done) return
     const { kind, dir } = pickKind(c.card, idx)
     put({
-      card: idx, done, applied: done, playing: false, instant: true, burst: 0,
+      card: idx, done, applied: done, playing: false, instant: true,
       trans: { id: c.trans.id + 1, kind, dir, from: { cardIdx: c.card, done: c.applied } },
     })
   }, [])
@@ -71,7 +62,7 @@ export default function App() {
   const replay = useCallback(() => {
     const c = ref.current
     clearTimeout(timer.current)
-    put({ ...c, done: 0, applied: 0, playing: false, instant: true, burst: 0, trans: { id: c.trans.id + 1, kind: 'none', dir: 1, from: null } })
+    put({ ...c, done: 0, applied: 0, playing: false, instant: true, trans: { id: c.trans.id + 1, kind: 'none', dir: 1, from: null } })
   }, [])
 
   const advance = useCallback(() => {
@@ -79,23 +70,15 @@ export default function App() {
     const card = cards[c.card]
     if (c.playing) {
       // First press while a step is animating just completes it.
-      let n: S = { ...c, playing: false, applied: c.done }
-      if (c.done === card.steps.length) n = award(n)
-      put(n)
+      put({ ...c, playing: false, applied: c.done })
       return
     }
     if (c.done < card.steps.length) {
       const done = c.done + 1
       if (card.view === 'terminal') {
-        put({ ...c, done, applied: c.done, playing: true, instant: false, burst: 0 })
+        put({ ...c, done, applied: c.done, playing: true, instant: false })
       } else {
         put({ ...c, done, applied: done, playing: false, instant: false })
-        if (done === card.steps.length) {
-          clearTimeout(timer.current)
-          timer.current = window.setTimeout(() => {
-            if (ref.current.card === c.card && ref.current.done === done) put(award(ref.current))
-          }, 1400)
-        }
       }
     } else if (c.card < last) navTo(c.card + 1, 0)
   }, [navTo])
@@ -104,16 +87,14 @@ export default function App() {
     const c = ref.current
     if (c.done > 0) {
       clearTimeout(timer.current)
-      put({ ...c, done: c.done - 1, applied: c.done - 1, playing: false, instant: true, burst: 0 })
+      put({ ...c, done: c.done - 1, applied: c.done - 1, playing: false, instant: true })
     } else if (c.card > 0) navTo(c.card - 1, cards[c.card - 1].steps.length)
   }, [navTo])
 
   const stepDone = useCallback(() => {
     const c = ref.current
     if (!c.playing) return
-    let n: S = { ...c, playing: false, applied: c.done }
-    if (c.done === cards[c.card].steps.length) n = award(n)
-    put(n)
+    put({ ...c, playing: false, applied: c.done })
   }, [])
 
   // keyboard
@@ -170,14 +151,13 @@ export default function App() {
   return (
     <OSContext.Provider value={ctx}>
       <div className="app">
-        <div className="xp-chip" aria-label="Experience points">XP <strong>{xp}</strong></div>
         <Stage
           trans={s.trans}
           renderPrev={(f) => (
-            <Card cardIdx={f.cardIdx} done={f.done} applied={f.done} playing={false} instant burst={0} onStepDone={() => {}} />
+            <Card cardIdx={f.cardIdx} done={f.done} applied={f.done} playing={false} instant onStepDone={() => {}} />
           )}
         >
-          <Card cardIdx={s.card} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} burst={s.burst} onStepDone={stepDone} />
+          <Card cardIdx={s.card} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} />
         </Stage>
         <Drawer card={card} open={drawer} onClose={() => setDrawer(false)} />
         <footer className="bottom">

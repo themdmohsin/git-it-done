@@ -5,7 +5,7 @@ import type { FileStage, GraphOp, Step } from '../engine/types'
 import { Graph } from './Graph'
 
 /* ---- Origin timeline ---- */
-export function Timeline({ steps, shown, instant, burst }: { steps: Step[]; shown: number; instant: boolean; burst: number }) {
+export function Timeline({ steps, shown, instant }: { steps: Step[]; shown: number; instant: boolean }) {
   const reduce = useReducedMotion()
   return (
     <div className="timeline">
@@ -42,16 +42,6 @@ export function Timeline({ steps, shown, instant, burst }: { steps: Step[]; show
           )
         })}
       </div>
-      {burst > 0 && (
-        <motion.div
-          key={burst} className="xp-pop"
-          initial={{ opacity: 0, scale: 0, y: 0 }}
-          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.2, 1, 1], y: [0, -10, -30, -50] }}
-          transition={{ duration: 2.2, times: [0, 0.15, 0.7, 1] }}
-        >
-          +50 XP
-        </motion.div>
-      )}
     </div>
   )
 }
