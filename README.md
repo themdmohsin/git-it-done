@@ -31,10 +31,16 @@ Nothing ever advances by itself. Click a rail node to jump. Every card has its o
 A. Hook: `messy`, `git-answer`
 B. Zoom out: `open-source` (the stack pulls back and cards come in front, one after another)
 C. Peel back: `linux`, `linus`, `vc-problem`, `vc-idea`, `git-born`, `recap` (each press moves the front card away)
-D. Dive into Git: `git-vs-github`, `three-areas`, `setup`, `init`, `status`, `add`, `commit`, `log`, `push`
-Part 2 (Vijay): `branch`, `merge`, `pull-request`, `fork` (stubs), `challenge`
+D. Dive into Git: `git-vs-github`, `three-areas`, `init`, `status`, `add`, `commit`, `log`, `github` (going remote: why we need GitHub), `push`
+E. Workshop opener: `setup` (open a terminal, install Git, set your name and email; the operating system picker opens by itself the first time)
 
-The repository state is one continuing repository from `init` onwards. Sections A to C never touch it.
+### Four-stage event structure
+
+The whole event has four stages: (1) Mohsin's theory, (2) Mohsin's workshop, (3) Vijay's theory, (4) Vijay's workshop. This site covers stage 1 (everything up to and including `push`) and the start of stage 2 (`setup`, the last card). Vijay's cards will be added after `push`. The engine already supports them (branch, merge, split and converge transitions, second rail lane), so `setup` can stay where it is or move once his cards exist.
+
+Check everything with `npm run build` then `npm run check` (headless Chrome: Space-only forward pass, left-arrow-only back pass, direct hash loads, layout at four screen sizes).
+
+The repository state is one continuing repository from `init` onwards. Sections A to C and the `github` and `setup` cards never change it.
 
 ## Add a card (data only)
 
@@ -44,13 +50,13 @@ Add an object to the array in `src/cards.ts`. The id becomes the URL.
 {
   id: 'stash',
   rail: 'Stash',                // short name on the rail and on stack tabs
-  section: 'git',               // hook | stepback | story | git | part2
+  section: 'git',               // hook | stepback | story | git | part2 (kept for later)
   kicker: 'COMMAND \u00b7 STASH',
   title: 'Park your work',
   sentence: 'Stash saves unfinished changes for later.',
   bullets: ['...', '...'],
   tryIt: 'git stash',
-  view: 'terminal',             // messy | hero | story | compare | areas | setup | terminal | stub | challenge
+  view: 'terminal',             // messy | hero | story | compare | areas | remote | setup | terminal | stub | challenge
   lane: 'main',                 // main | detour | branch (rail lane)
   into: 'drop',                 // optional: slide | drop | split | converge | launch | zoom | zoomout
   steps: [{ cmd: 'git stash', output: ['Saved working directory'], op: { type: 'none' } }],
@@ -78,5 +84,6 @@ src/theme.css         all colours + fonts + scale unit
 src/styles.css        layout
 src/os.ts             operating system detection, prompts, install text
 src/engine/           types, pure reducer, stack planner
+scripts/check.mjs     end-to-end check (npm run check)
 src/components/       Card, Art, Terminal, Graph, Rail, Drawer, OSPicker, Transitions, Panels
 ```
