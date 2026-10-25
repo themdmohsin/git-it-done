@@ -1,64 +1,27 @@
-import { useEffect, useState } from 'react'
-import { LayoutGroup, motion, useReducedMotion } from 'framer-motion'
+import { LayoutGroup, motion } from 'framer-motion'
 import { applyOps, emptyRepo } from '../engine/reducer'
-import type { FileStage, GraphOp, Step } from '../engine/types'
-import { Graph } from './Graph'
+import type { FileStage, GraphOp } from '../engine/types'
 
-/* ---- Origin timeline ---- */
-export function Timeline({ steps, shown, instant }: { steps: Step[]; shown: number; instant: boolean }) {
-  const reduce = useReducedMotion()
-  return (
-    <div className="timeline">
-      <div className="tl-track">
-        {steps.map((s, i) => {
-          const on = i < shown
-          const accent = i >= 2
-          return (
-            <div className="tl-item" key={i}>
-              {i > 0 && (
-                <motion.div
-                  className="tl-seg"
-                  initial={false}
-                  animate={{ scaleX: on ? 1 : 0 }}
-                  transition={{ duration: instant || reduce ? 0 : 0.5, ease: 'easeOut' }}
-                />
-              )}
-              <motion.div
-                className="tl-node"
-                style={{ background: accent ? 'var(--lane-feature)' : 'var(--lane-main)' }}
-                initial={false}
-                animate={{ scale: on ? 1 : 0, opacity: on ? 1 : 0 }}
-                transition={instant || reduce ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 15, delay: 0.3 }}
-              />
-              <motion.div
-                className="tl-label"
-                initial={false}
-                animate={{ opacity: on ? 1 : 0, y: on ? 0 : 12 }}
-                transition={{ duration: instant || reduce ? 0 : 0.4, delay: instant ? 0 : 0.4 }}
-              >
-                {s.label}
-              </motion.div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-/* ---- Commit card: Working folder -> Staging -> Repository ---- */
+/* ---- Working folder -> Staging -> Repository ---- */
 const BOXES: { id: FileStage; label: string }[] = [
   { id: 'working', label: 'Working folder' },
-  { id: 'staging', label: 'Staging' },
+  { id: 'staging', label: 'Staging area' },
   { id: 'repo', label: 'Repository' },
 ]
-export function FileStrip({ stage, instant }: { stage: FileStage; instant: boolean }) {
+const ARROW_LABELS = ['git add', 'git commit']
+
+export function FileStrip({ stage, instant, big = false }: { stage: FileStage; instant: boolean; big?: boolean }) {
   return (
     <LayoutGroup>
-      <div className="strip">
+      <div className={'strip' + (big ? ' big' : '')}>
         {BOXES.map((b, i) => (
           <div className="strip-wrap" key={b.id}>
-            {i > 0 && <span className="strip-arrow" aria-hidden>→</span>}
+            {i > 0 && (
+              <span className="strip-arrow" aria-hidden>
+                {big && <small>{ARROW_LABELS[i - 1]}</small>}
+                {'\u2192'}
+              </span>
+            )}
             <div className={'strip-box' + (stage === b.id ? ' on' : '')}>
               <span className="strip-label">{b.label}</span>
               {stage === b.id && (
@@ -79,7 +42,7 @@ export function FileStrip({ stage, instant }: { stage: FileStage; instant: boole
   )
 }
 
-/* ---- Title card: calm looping graph ---- */
+/* ---- A small finished repository, used as an illustration ---- */
 const AMBIENT: GraphOp[] = [
   { type: 'init' },
   { type: 'commit', branch: 'main', id: '1a2b3c4', msg: 'add notes' },
@@ -91,14 +54,4 @@ const AMBIENT: GraphOp[] = [
   { type: 'commit', branch: 'main', id: '3e9a0b2', msg: 'fix typo' },
   { type: 'merge', from: 'feature', into: 'main', id: '9c4f1de' },
 ]
-export function AmbientGraph() {
-  const reduce = useReducedMotion()
-  const [n, setN] = useState(reduce ? AMBIENT.length : 0)
-  useEffect(() => {
-    if (reduce) return
-    const t = window.setTimeout(() => setN((k) => (k >= AMBIENT.length ? 0 : k + 1)), n >= AMBIENT.length ? 3200 : n === 0 ? 900 : 1300)
-    return () => clearTimeout(t)
-  }, [n, reduce])
-  const repo = AMBIENT.slice(0, n).reduce(applyOps, emptyRepo)
-  return <Graph repo={repo} instant={false} />
-}
+export const AMBIENT_REPO = AMBIENT.reduce(applyOps, emptyRepo)

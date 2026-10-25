@@ -5,6 +5,7 @@ import { Drawer } from './components/Drawer'
 import { PickerOverlay } from './components/OSPicker'
 import { Rail } from './components/Rail'
 import { RAIL_DELAY, Stage, type Kind, type Trans } from './components/Transitions'
+import { planFrames, movesFor, sceneOf } from './engine/stack'
 import type { OS } from './engine/types'
 import { OSContext, detectOS, loadOS, saveOS } from './os'
 
@@ -24,12 +25,21 @@ const fromHash = () => {
   return i < 0 ? 0 : i
 }
 
-function pickKind(from: number, to: number): { kind: Kind; dir: 1 | -1 } {
-  if (to === from + 1) return { kind: cards[to].into ?? 'slide', dir: 1 }
-  if (to === from - 1) return { kind: cards[from].into ?? 'slide', dir: -1 }
-  return { kind: 'slide', dir: to > from ? 1 : -1 }
+/** Everything the Stage needs to move from one card to another (single-card or stack motion). */
+function buildTrans(id: number, from: number, to: number, fromDone: number): Trans {
+  const dir: 1 | -1 = to > from ? 1 : -1
+  const sf = sceneOf(cards[from])
+  const st = sceneOf(cards[to])
+  const stacked = sf.zoomed || st.zoomed
+  const base = { id, dir, from: { cardIdx: from, done: fromDone } }
+  if (Math.abs(to - from) !== 1) return { ...base, kind: stacked ? 'none' : 'slide' }
+  const lead = dir === 1 ? cards[to] : cards[from]
+  if (stacked) {
+    const kind: Kind = lead.into === 'zoomout' ? 'zoomout' : 'peel'
+    return { ...base, kind, frames: planFrames(sf, st, dir), moves: movesFor(sf, st, dir) }
+  }
+  return { ...base, kind: lead.into ?? 'slide' }
 }
-
 export default function App() {
   const detected = useMemo(detectOS, [])
   const [os, setOSState] = useState<OS>(() => loadOS() ?? detected)
@@ -40,7 +50,9 @@ export default function App() {
     return { card, done: 0, applied: 0, playing: false, instant: true, trans: { id: 0, kind: 'none', dir: 1, from: null } }
   })
   const ref = useRef(s)
-  const timer = useRef<number>()
+  const busy = useRef(false)
+  const [finishTick, setFinishTick] = useState(0)
+  const onBusy = useCallback((b: boolean) => { busy.current = b }, [])
   const [drawer, setDrawer] = useState(false)
   const [picker, setPicker] = useState(false)
   const pickerRef = useRef(picker)
@@ -50,24 +62,31 @@ export default function App() {
 
   const navTo = useCallback((idx: number, done: number) => {
     const c = ref.current
-    clearTimeout(timer.current)
     if (idx === c.card && done === c.done) return
-    const { kind, dir } = pickKind(c.card, idx)
     put({
       card: idx, done, applied: done, playing: false, instant: true,
-      trans: { id: c.trans.id + 1, kind, dir, from: { cardIdx: c.card, done: c.applied } },
+      trans: buildTrans(c.trans.id + 1, c.card, idx, c.applied),
     })
   }, [])
 
   const replay = useCallback(() => {
     const c = ref.current
-    clearTimeout(timer.current)
-    put({ ...c, done: 0, applied: 0, playing: false, instant: true, trans: { id: c.trans.id + 1, kind: 'none', dir: 1, from: null } })
+    const prev = c.card - 1
+    const stackCard = prev >= 0 && (sceneOf(cards[c.card]).zoomed || sceneOf(cards[prev]).zoomed)
+    const trans: Trans = stackCard
+      ? buildTrans(c.trans.id + 1, prev, c.card, cards[prev].steps.length)
+      : { id: c.trans.id + 1, kind: 'none', dir: 1, from: null }
+    put({ ...c, done: 0, applied: 0, playing: false, instant: true, trans })
   }, [])
 
   const advance = useCallback(() => {
     const c = ref.current
     const card = cards[c.card]
+    if (busy.current) {
+      // A press during a card transition only finishes that transition.
+      setFinishTick((n) => n + 1)
+      return
+    }
     if (c.playing) {
       // First press while a step is animating just completes it.
       put({ ...c, playing: false, applied: c.done })
@@ -86,8 +105,7 @@ export default function App() {
   const back = useCallback(() => {
     const c = ref.current
     if (c.done > 0) {
-      clearTimeout(timer.current)
-      put({ ...c, done: c.done - 1, applied: c.done - 1, playing: false, instant: true })
+        put({ ...c, done: c.done - 1, applied: c.done - 1, playing: false, instant: true })
     } else if (c.card > 0) navTo(c.card - 1, cards[c.card - 1].steps.length)
   }, [navTo])
 
@@ -140,7 +158,6 @@ export default function App() {
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [navTo])
-  useEffect(() => () => clearTimeout(timer.current), [])
 
   const card = cards[s.card]
   const ctx = useMemo(() => ({ os, detected, setOS, openPicker: () => setPicker(true) }), [os, detected, setOS])
@@ -153,6 +170,12 @@ export default function App() {
       <div className="app">
         <Stage
           trans={s.trans}
+          cur={s.card}
+          finishTick={finishTick}
+          onBusy={onBusy}
+          renderStack={(idx, zoomed) => idx === s.card
+            ? <Card cardIdx={idx} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} framed={zoomed} />
+            : <Card cardIdx={idx} done={0} applied={0} playing={false} instant onStepDone={() => {}} framed={zoomed} />}
           renderPrev={(f) => (
             <Card cardIdx={f.cardIdx} done={f.done} applied={f.done} playing={false} instant onStepDone={() => {}} />
           )}
@@ -171,7 +194,7 @@ export default function App() {
               <button className="key" onClick={back} aria-label="Previous step">{'\u2190'}</button>
               <button className="key" onClick={advance} aria-label="Next step">{'\u2192'}</button>
               <button className="key" onClick={() => setDrawer((v) => !v)}><b>D</b> Details</button>
-              <button className="key" onClick={() => setPicker(true)}><b>O</b> OS</button>
+              <button className="key" onClick={() => setPicker(true)}><b>O</b> Your system</button>
               <button className="key" onClick={replay}><b>R</b> Replay</button>
             </div>
           </div>

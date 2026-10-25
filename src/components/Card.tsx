@@ -2,10 +2,10 @@ import { useMemo } from 'react'
 import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
 import { TERMINAL_NAME, useOS } from '../os'
+import { Compare, Hero, MessyShot, SetupPanel, StoryArt, StubPanel } from './Art'
 import { CommandChip } from './Copy'
 import { Graph } from './Graph'
-import { OSPicker } from './OSPicker'
-import { AmbientGraph, FileStrip, Timeline } from './Panels'
+import { FileStrip } from './Panels'
 import { Terminal } from './Terminal'
 
 export interface CardProps {
@@ -15,54 +15,83 @@ export interface CardProps {
   playing: boolean
   instant: boolean
   onStepDone: () => void
+  /** Drawn as a card with a frame, while it is part of a zoomed-out stack. */
+  framed?: boolean
 }
 
-export function Card({ cardIdx, done, applied, playing, instant, onStepDone }: CardProps) {
+export function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const card = cards[cardIdx]
   const { os } = useOS()
   const repo = useMemo(() => replay(cards, cardIdx, applied), [cardIdx, applied])
 
   let panel
-  if (card.view === 'title') panel = <div className="panel center"><AmbientGraph /></div>
-  else if (card.view === 'timeline') panel = <div className="panel center"><Timeline steps={card.steps} shown={applied} instant={instant} /></div>
-  else if (card.view === 'challenge') {
-    panel = (
-      <div className="panel challenge">
-        <div className="ghost"><Graph repo={repo} instant /></div>
-        <span className="challenge-label">Start challenge</span>
-        <button className="btn" disabled>Coming soon</button>
-      </div>
-    )
-  } else {
-    panel = (
-      <div className="panel split">
-        <Terminal steps={card.steps.slice(0, done)} playing={playing} onDone={onStepDone} />
-        <div className="graph-area">
-          {card.strip && <FileStrip stage={fileStage(card, applied)} instant={instant} />}
-          <Graph repo={repo} instant={instant} />
+  switch (card.view) {
+    case 'messy':
+      panel = <div className="panel shotpanel"><MessyShot /></div>
+      break
+    case 'hero':
+      panel = <div className="panel center"><Hero word={card.hero ?? ''} /></div>
+      break
+    case 'story':
+      panel = <div className="panel center">{card.art && <StoryArt art={card.art} />}</div>
+      break
+    case 'compare':
+      panel = <div className="panel center"><Compare /></div>
+      break
+    case 'areas':
+      panel = (
+        <div className="panel areas">
+          <FileStrip stage={fileStage(card, applied)} instant={instant} big />
+          <div className="areas-caption" key={applied}>{applied > 0 ? card.steps[applied - 1].label : 'Press Space to follow one file'}</div>
         </div>
-      </div>
-    )
+      )
+      break
+    case 'setup':
+      panel = <div className="panel"><SetupPanel steps={card.steps} shown={applied} /></div>
+      break
+    case 'stub':
+      panel = <div className="panel center"><StubPanel /></div>
+      break
+    case 'challenge':
+      panel = (
+        <div className="panel challenge">
+          <div className="ghost"><Graph repo={repo} instant /></div>
+          <span className="challenge-label">Start challenge</span>
+          <button className="btn" disabled>Coming soon</button>
+        </div>
+      )
+      break
+    default:
+      panel = (
+        <div className={'panel split' + (card.strip ? ' has-strip' : '')}>
+          <Terminal steps={card.steps.slice(0, done)} playing={playing} onDone={onStepDone} />
+          <div className="graph-area">
+            {card.strip && <FileStrip stage={fileStage(card, applied)} instant={instant} />}
+            <div className="graph-wrap">
+              <Graph repo={repo} instant={instant} compact={!!card.strip} />
+              {repo.commits.length === 0 && <div className="graph-empty">No commits yet</div>}
+            </div>
+          </div>
+        </div>
+      )
   }
 
   return (
-    <div className="card">
+    <div className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '')}>
       <div className="card-left">
         <div className="kicker">{card.kicker}</div>
         <h1>{card.title}</h1>
         <p className="sentence">{card.sentence}</p>
-        {card.byline && <p className="byline">{card.byline}</p>}
         {card.bullets && (
           <ul className="bullets">
             {card.bullets.map((b) => <li key={b}>{b}</li>)}
           </ul>
         )}
         {card.note && <div className="note-chip">{card.note}</div>}
-        {card.view === 'title' && <OSPicker />}
-        {card.tryIt && <CommandChip label={'Try it · ' + TERMINAL_NAME[os]} cmd={card.tryIt} />}
+        {card.final && <div className="final-chip">{card.final}</div>}
+        {card.tryIt && <CommandChip label={'Try it \u00b7 ' + TERMINAL_NAME[os]} cmd={card.tryIt} />}
       </div>
       <div className="card-right">{panel}</div>
     </div>
   )
 }
-
