@@ -152,7 +152,7 @@ export default function App() {
       else if (e.key === 'ArrowLeft') { e.preventDefault(); back() }
       else if (k === 'd') setDrawer((v) => !v)
       else if (k === 'o') setPicker(true)
-      else if (k === 'u') openDetails()
+      else if (k === 'u') { e.preventDefault(); openDetails() }
       else if (k === 'r') replay()
       else if (k === 'escape') setDrawer(false)
     }

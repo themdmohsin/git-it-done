@@ -294,7 +294,7 @@ export const cards: Card[] = [
       { cmd: 'ls -a', output: ['.  ..  .git'], op: none },
     ],
     drawer: {
-      commands: ['mkdir your-first-repo && cd your-first-repo', 'git init', 'ls -a'],
+      commands: ['mkdir {{repo}} && cd {{repo}}', 'git init', 'ls -a'],
       mistakes: [
         { title: 'Running git init in the wrong folder', fix: 'Run pwd first to see where you are. Move with cd.' },
         { title: 'Running it inside another repository', fix: 'Do not nest repositories. If git status already works, the folder is already a repository.' },
@@ -477,7 +477,7 @@ export const cards: Card[] = [
     ],
     drawer: {
       commands: [
-        'git remote add origin https://github.com/you/your-first-repo.git',
+        'git remote add origin https://github.com/{{ghuser}}/{{repo}}.git',
         'git remote -v',
         'git push -u origin main',
       ],
@@ -518,15 +518,15 @@ export const cards: Card[] = [
       },
       {
         cmd: '', output: [], op: none, label: 'Tell Git who you are',
-        detail: 'Set your name and email once. Every snapshot you save carries them.',
+        detail: 'Set your name and email once. Every snapshot you save carries them. Press U (or click Your details) and the commands fill in for you.',
       },
     ],
     drawer: {
       install: true,
       commands: [
         'git --version',
-        'git config --global user.name "Your Name"',
-        'git config --global user.email "you@example.com"',
+        'git config --global user.name "{{name}}"',
+        'git config --global user.email "{{email}}"',
         'git config --global init.defaultBranch main',
       ],
       mistakes: [

@@ -106,6 +106,8 @@ async function closePicker(page) {
   if ((await readState(page)).picker) { await page.keyboard.press('o'); await sleep(500) }
 }
 
+await import('./details.test.mjs')
+
 async function fullPass(browser) {
   console.log('Full pass: Space-only forward, ArrowLeft-only back')
   const page = await browser.newPage()
@@ -242,6 +244,66 @@ async function layout(browser) {
   }
 }
 
+async function detailsModal(browser) {
+  console.log('Your details: typing does not move the cards; screenshots and text size')
+  const page = await browser.newPage()
+  for (const [w, h] of [[1920, 1080], [1280, 720]]) {
+    await page.setViewport({ width: w, height: h })
+    await page.goto(URL + '#/push', { waitUntil: 'networkidle0' })
+    await page.evaluate(() => localStorage.clear())
+    await page.reload({ waitUntil: 'networkidle0' })
+    await settle(page, 900)
+    await page.keyboard.press('u'); await sleep(600)
+    if (!(await page.$('.details-box'))) { fail('U did not open Your details'); continue }
+    const before = await readState(page)
+    await page.keyboard.type('Ann Lee  x y')
+    for (const k of ['Space', 'ArrowRight', 'ArrowLeft', 'ArrowRight']) await page.keyboard.press(k)
+    await page.keyboard.press('Tab'); await page.keyboard.type('ann@example.com')
+    await page.keyboard.press('Tab'); await page.keyboard.type('ann-lee')
+    await sleep(300)
+    const after = await readState(page)
+    if (after.id !== before.id || after.lines !== before.lines) fail(`typing in the modal moved the cards (${before.id}/${before.lines} -> ${after.id}/${after.lines})`)
+    const v = await page.$eval('.details-input', (e) => e.value)
+    if (v !== 'Ann Lee  x y ') fail(`typed text lost or changed: "${v}"`)
+    await page.screenshot({ path: `scripts/shots/details-modal-${w}x${h}.png` })
+    const bad = await page.evaluate(() => {
+      const u = Math.min(innerWidth / 100, (innerHeight * 1.7778) / 100)
+      const box = document.querySelector('.details-box').getBoundingClientRect()
+      const out = []
+      document.querySelectorAll('.details-box *').forEach((el) => {
+        const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())
+        if (own && parseFloat(getComputedStyle(el).fontSize) < 1.5 * u - 0.6) out.push('small text: ' + el.textContent.slice(0, 20))
+      })
+      document.querySelectorAll('.details-box input, .details-box button').forEach((el) => {
+        const r = el.getBoundingClientRect()
+        if (parseFloat(getComputedStyle(el).fontSize) < 1.5 * u - 0.6) out.push('small control')
+        if (r.left < box.left || r.right > box.right || r.bottom > box.bottom) out.push('clipped control')
+      })
+      if (box.top < 0 || box.bottom > innerHeight) out.push('modal taller than screen')
+      return out
+    })
+    bad.forEach((m) => fail(`modal ${w}x${h}: ${m}`))
+    await page.keyboard.press('Escape'); await sleep(900)
+    if (await page.$('.details-box')) fail('Esc did not close Your details')
+    // save through the form, then screenshot the setup card drawer with filled values
+    await page.keyboard.press('u'); await sleep(500)
+    await page.keyboard.type('Ann Lee'); await page.keyboard.press('Tab')
+    await page.keyboard.type('ann@example.com'); await page.keyboard.press('Tab')
+    await page.keyboard.type('ann-lee'); await page.keyboard.press('Enter'); await sleep(600)
+    if (await page.$('.details-box')) fail('Save did not close Your details')
+    await page.goto(URL + '#/setup', { waitUntil: 'networkidle0' })
+    await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 900)
+    await closePicker(page)
+    await page.keyboard.press('d'); await sleep(1000)
+    const cmds = await page.$$eval('.drawer .cmd-row code', (e) => e.map((x) => x.textContent))
+    if (!cmds.some((c) => c === 'git config --global user.name "Ann Lee"')) fail('drawer did not show the filled name command: ' + cmds.join(' | '))
+    if (!cmds.some((c) => c === 'git config --global user.email "ann@example.com"')) fail('drawer did not show the filled email command')
+    await page.screenshot({ path: `scripts/shots/setup-drawer-${w}x${h}.png` })
+    console.log(`  ${w}x${h}: done`)
+  }
+  await page.close()
+}
+
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { shell: true, stdio: 'ignore' })
 let browser
 try {
@@ -250,6 +312,7 @@ try {
   await fullPass(browser)
   await directLoads(browser)
   await layout(browser)
+  await detailsModal(browser)
 } finally {
   if (browser) await browser.close()
   if (process.platform === 'win32') spawn('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' })
