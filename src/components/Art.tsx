@@ -124,7 +124,7 @@ function KernelArt() {
       {[['Web servers', 40], ['Phones', 292], ['Supercomputers', 456]].map(([t, x]) => (
         <g key={t as string}>
           <rect x={x as number} y="580" width={t === 'Supercomputers' ? 304 : t === 'Phones' ? 144 : 232} height="48" rx="24" fill="var(--panel-2)" stroke="var(--panel-line)" strokeWidth="3" />
-          <text x={(x as number) + (t === 'Supercomputers' ? 152 : t === 'Phones' ? 72 : 116)} y="613" textAnchor="middle" className="art-text" fontSize="28" fill="var(--term-text)">{t}</text>
+          <text x={(x as number) + (t === 'Supercomputers' ? 152 : t === 'Phones' ? 72 : 116)} y="613" textAnchor="middle" className="art-text" fontSize="31" fill="var(--term-text)">{t}</text>
         </g>
       ))}
     </svg>
@@ -167,10 +167,10 @@ function LinusArt() {
 }
 
 const DOCS: [number, number, number, string, boolean][] = [
-  [-190, -40, -14, 'report_old', false],
-  [170, -50, 12, 'copy of final', false],
+  [-190, -40, -14, 'old_v1', false],
+  [170, -50, 12, 'copy_of', false],
   [-110, 40, -6, 'final_2', false],
-  [100, 50, 8, 'final_REAL', false],
+  [100, 50, 8, 'REAL', false],
   [0, -10, 0, 'FINAL!!', true],
 ]
 function ChaosArt() {
@@ -180,7 +180,7 @@ function ChaosArt() {
         {DOCS.map(([x, y, rot, label, top]) => (
           <g key={label} transform={`translate(${x} ${y}) rotate(${rot})`}>
             <rect x="-96" y="-124" width="192" height="248" rx="14" fill="var(--card)" stroke={top ? 'var(--accent)' : 'var(--card-border)'} strokeWidth="5" />
-            <text x="0" y="-78" textAnchor="middle" className="art-mono" fontSize="26" fill="var(--ink)">{label}</text>
+            <text x="0" y="-78" textAnchor="middle" className="art-mono" fontSize="31" fill="var(--ink)">{label}</text>
             {[-36, 0, 36, 72].map((ly) => <rect key={ly} x="-66" y={ly} width="132" height="12" rx="6" fill="var(--rail-future)" />)}
           </g>
         ))}

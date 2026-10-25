@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
-import { TERMINAL_NAME, useOS } from '../os'
 import { Compare, Hero, MessyShot, SetupPanel, StoryArt, StubPanel } from './Art'
 import { CommandChip } from './Copy'
 import { Graph } from './Graph'
@@ -21,7 +20,6 @@ export interface CardProps {
 
 export function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const card = cards[cardIdx]
-  const { os } = useOS()
   const repo = useMemo(() => replay(cards, cardIdx, applied), [cardIdx, applied])
 
   let panel
@@ -89,7 +87,7 @@ export function Card({ cardIdx, done, applied, playing, instant, onStepDone, fra
         )}
         {card.note && <div className="note-chip">{card.note}</div>}
         {card.final && <div className="final-chip">{card.final}</div>}
-        {card.tryIt && <CommandChip label={'Try it \u00b7 ' + TERMINAL_NAME[os]} cmd={card.tryIt} />}
+        {card.tryIt && <CommandChip label="Try it" cmd={card.tryIt} />}
       </div>
       <div className="card-right">{panel}</div>
     </div>
