@@ -58,6 +58,14 @@ export default function App() {
   const pickerRef = useRef(picker)
   pickerRef.current = picker
 
+  const pickerSeen = useRef(false)
+  useEffect(() => {
+    if (cards[s.card].id === 'setup' && !pickerSeen.current) {
+      pickerSeen.current = true
+      setPicker(true)
+    }
+  }, [s.card])
+
   const put = (n: S) => { ref.current = n; setS(n) }
 
   const navTo = useCallback((idx: number, done: number) => {
