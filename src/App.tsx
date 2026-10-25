@@ -168,8 +168,8 @@ export default function App() {
               <button className="btn" onClick={advance} disabled={atEnd}>Next</button>
             </div>
             <div className="hints">
-              <button className="key" onClick={back} aria-label="Previous step">←</button>
-              <button className="key" onClick={advance} aria-label="Next step">→</button>
+              <button className="key" onClick={back} aria-label="Previous step">{'\u2190'}</button>
+              <button className="key" onClick={advance} aria-label="Next step">{'\u2192'}</button>
               <button className="key" onClick={() => setDrawer((v) => !v)}><b>D</b> Details</button>
               <button className="key" onClick={() => setPicker(true)}><b>O</b> OS</button>
               <button className="key" onClick={replay}><b>R</b> Replay</button>
