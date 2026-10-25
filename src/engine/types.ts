@@ -54,7 +54,7 @@ export type Lane = 'main' | 'branch' | 'detour'
 export type ArtId = 'ring' | 'kernel' | 'linus' | 'chaos' | 'snapshots' | 'born'
 
 export type View =
-  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'setup' | 'terminal' | 'stub' | 'challenge'
+  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge'
 
 export interface Card {
   id: string

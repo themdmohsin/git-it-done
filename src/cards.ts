@@ -423,6 +423,36 @@ export const cards: Card[] = [
     },
   },
   {
+    id: 'github',
+    rail: 'GitHub',
+    section: 'git',
+    kicker: 'Going remote',
+    title: 'Now we need GitHub.',
+    sentence: 'So far everything lives on your laptop. GitHub is where a copy can live online.',
+    bullets: [
+      'A website that stores Git projects online.',
+      'Gives you a backup and a link to share.',
+      'Git works without it. GitHub is the online home.',
+      'You need a free account (we create it in the workshop).',
+    ],
+    view: 'remote',
+    lane: 'main',
+    steps: [],
+    drawer: {
+      mistakes: [
+        { title: 'Confusing Git with GitHub', fix: 'Git is the tool on your computer. GitHub is one website that hosts Git projects. Other websites do the same job.' },
+        { title: 'Thinking Git stops working without internet or without GitHub', fix: 'Init, add, commit and log all work offline. You only need internet when you push or pull.' },
+        { title: 'Creating the online repository with a README and getting a rejected first push', fix: 'Create it empty: no README, no licence, no gitignore. See the push card for the full fix.' },
+      ],
+      happening: 'A remote is another copy of your repository that lives somewhere else, usually on a website. Your laptop keeps its own full history. The remote is a second copy that you can share. Git connects the two when you give the remote a nickname (usually origin) and then push or pull.',
+      talking: [
+        'Local first: nothing so far needed a website or an account.',
+        'The grey arrow is the point: the next card is the moment it lights up.',
+        'This goes one level deeper than the Git versus GitHub card: what a remote is, not just what GitHub is.',
+      ],
+    },
+  },
+  {
     id: 'push',
     rail: 'git push',
     section: 'git',

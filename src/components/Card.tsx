@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
-import { Compare, Hero, MessyShot, SetupPanel, StoryArt, StubPanel } from './Art'
+import { Compare, Hero, MessyShot, RemoteArt, SetupPanel, StoryArt, StubPanel } from './Art'
 import { CommandChip } from './Copy'
 import { Graph } from './Graph'
 import { FileStrip } from './Panels'
@@ -43,6 +43,9 @@ export function Card({ cardIdx, done, applied, playing, instant, onStepDone, fra
           <div className="areas-caption" key={applied}>{applied > 0 ? card.steps[applied - 1].label : 'Press Space to follow one file'}</div>
         </div>
       )
+      break
+    case 'remote':
+      panel = <div className="panel center"><RemoteArt /></div>
       break
     case 'setup':
       panel = <div className="panel"><SetupPanel steps={card.steps} shown={applied} /></div>

@@ -251,6 +251,32 @@ export function StoryArt({ art }: { art: ArtId }) {
   }
 }
 
+/* ---------- Going remote: a laptop, a cloud, and an arrow that is not used yet ---------- */
+export function RemoteArt() {
+  return (
+    <svg className="art" viewBox="0 0 960 640" role="img" aria-label="A laptop holding commits and a cloud, joined by a grey dashed arrow that is not connected yet">
+      <rect x="50" y="130" width="220" height="190" rx="16" fill="var(--panel-2)" stroke="var(--lane-main)" strokeWidth="7" />
+      <path d="M20 340 H300 L282 368 H38 Z" fill="var(--lane-main)" />
+      <line x1="95" y1="225" x2="225" y2="225" stroke="var(--lane-main)" strokeWidth="6" />
+      {[95, 160, 225].map((x) => <circle key={x} cx={x} cy="225" r="20" fill="var(--lane-main)" stroke="var(--panel)" strokeWidth="5" />)}
+      <text x="160" y="440" textAnchor="middle" className="art-text" fontSize="40" fill="var(--lane-main)">Your laptop</text>
+      <text x="160" y="490" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">Git lives here</text>
+
+      <path
+        transform="translate(800 265) scale(2.6)"
+        d="M-52 24 H44 A26 26 0 0 0 46 -26 A34 34 0 0 0 -18 -34 A30 30 0 0 0 -52 24 Z"
+        fill="rgba(127,214,224,0.12)" stroke="var(--lane-remote)" strokeWidth="3" strokeLinejoin="round"
+      />
+      <text x="800" y="440" textAnchor="middle" className="art-text" fontSize="40" fill="var(--lane-remote)">GitHub</text>
+      <text x="800" y="490" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">A copy online</text>
+
+      <line x1="335" y1="240" x2="600" y2="240" stroke="var(--term-dim)" strokeWidth="9" strokeDasharray="22 16" strokeLinecap="round" />
+      <path d="M598 212 L650 240 L598 268 Z" fill="var(--term-dim)" />
+      <text x="490" y="330" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-dim)">not connected yet</text>
+    </svg>
+  )
+}
+
 /* ---------- Git versus GitHub ---------- */
 export function Compare() {
   return (
