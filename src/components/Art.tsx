@@ -263,16 +263,16 @@ export function RemoteArt() {
       <text x="160" y="490" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">Git lives here</text>
 
       <path
-        transform="translate(800 265) scale(2.6)"
+        transform="translate(765 265) scale(2.3)"
         d="M-52 24 H44 A26 26 0 0 0 46 -26 A34 34 0 0 0 -18 -34 A30 30 0 0 0 -52 24 Z"
         fill="rgba(127,214,224,0.12)" stroke="var(--lane-remote)" strokeWidth="3" strokeLinejoin="round"
       />
-      <text x="800" y="440" textAnchor="middle" className="art-text" fontSize="40" fill="var(--lane-remote)">GitHub</text>
-      <text x="800" y="490" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">A copy online</text>
+      <text x="765" y="440" textAnchor="middle" className="art-text" fontSize="40" fill="var(--lane-remote)">GitHub</text>
+      <text x="765" y="490" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">A copy online</text>
 
-      <line x1="335" y1="240" x2="600" y2="240" stroke="var(--term-dim)" strokeWidth="9" strokeDasharray="22 16" strokeLinecap="round" />
-      <path d="M598 212 L650 240 L598 268 Z" fill="var(--term-dim)" />
-      <text x="490" y="330" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-dim)">not connected yet</text>
+      <line x1="335" y1="240" x2="545" y2="240" stroke="var(--term-dim)" strokeWidth="9" strokeDasharray="22 16" strokeLinecap="round" />
+      <path d="M540 212 L594 240 L540 268 Z" fill="var(--term-dim)" />
+      <text x="450" y="330" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-dim)">not connected yet</text>
     </svg>
   )
 }
