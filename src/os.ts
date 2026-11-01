@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react'
 import type { OS } from './engine/types'
 
-export const OS_LIST: { id: OS; label: string; badge: string }[] = [
-  { id: 'windows', label: 'Windows', badge: 'WIN' },
-  { id: 'macos', label: 'macOS', badge: 'MAC' },
-  { id: 'linux', label: 'Linux', badge: 'LNX' },
+export const OS_LIST: { id: OS; label: string }[] = [
+  { id: 'windows', label: 'Windows' },
+  { id: 'macos', label: 'macOS' },
+  { id: 'linux', label: 'Linux' },
 ]
 
 export function detectOS(): OS {

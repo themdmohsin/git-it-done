@@ -14,7 +14,6 @@ export function OSPicker({ onPick }: { onPick?: () => void }) {
             className={'os-btn' + (os === o.id ? ' on' : '')}
             onClick={() => { setOS(o.id); onPick?.() }}
           >
-            <span className="os-badge">{o.badge}</span>
             <span className="os-name">{o.label}</span>
             {detected === o.id && <span className="os-detected">detected</span>}
           </button>
@@ -47,7 +46,7 @@ export function PickerOverlay({ open, onClose }: { open: boolean; onClose: () =>
             onClick={(e) => e.stopPropagation()}
           >
             <div className="kicker">YOUR SYSTEM</div>
-            <h2>Pick your OS</h2>
+            <h2>Pick your operating system</h2>
             <OSPicker onPick={onClose} />
             <p className="muted small">Esc or O to close</p>
           </motion.div>

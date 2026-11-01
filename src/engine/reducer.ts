@@ -79,6 +79,6 @@ export function fileStage(card: Card, steps: number) {
     const f = card.steps[i].file
     if (f) return f
   }
-  return 'none' as const
+  return card.file0 ?? ('none' as const)
 }
 

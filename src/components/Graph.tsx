@@ -8,11 +8,11 @@ const LANE_FEATURE = 95
 const CLOUD = { x: 690, y: 62 }
 const laneY = (b: string) => (b === 'main' ? LANE_MAIN : LANE_FEATURE)
 const laneColor = (b: string) => (b === 'main' ? 'var(--lane-main)' : 'var(--lane-feature)')
-const pillW = (t: string) => t.length * 14 + 28
+const pillW = (t: string) => t.length * 15 + 30
 
-interface Props { repo: RepoState; instant: boolean; burst?: number }
+interface Props { repo: RepoState; instant: boolean; /** Crop to the main lane so labels stay big when the graph only has one lane. */ compact?: boolean }
 
-export function Graph({ repo, instant, burst = 0 }: Props) {
+export function Graph({ repo, instant, compact = false }: Props) {
   const reduce = useReducedMotion()
   const snap = instant
   const pos = (id: string) => {
@@ -66,7 +66,7 @@ export function Graph({ repo, instant, burst = 0 }: Props) {
   const hold = snap ? 0 : 0.3
 
   return (
-    <svg className="graph" viewBox="0 0 800 262" role="img" aria-label="Commit graph">
+    <svg className="graph" viewBox={compact ? '0 105 800 160' : '0 0 800 262'} role="img" aria-label="Commit graph">
       {/* remote cloud */}
       {repo.remote && (
         <motion.g initial={snap ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
@@ -163,22 +163,6 @@ export function Graph({ repo, instant, burst = 0 }: Props) {
         </motion.g>
       )}
 
-      {/* XP burst */}
-      {burst > 0 && (
-        <motion.g
-          key={burst}
-          style={{ x: (head?.x ?? 400) + 40, y: (head?.y ?? 120) - 30 }}
-        >
-          <motion.g
-            initial={{ opacity: 0, scale: 0, y: 0 }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.25, 1, 1], y: [0, -12, -40, -70] }}
-            transition={{ duration: 2.2, times: [0, 0.15, 0.7, 1] }}
-          >
-            <rect x="-62" y="-22" width="124" height="44" rx="22" fill="var(--accent)" />
-            <text textAnchor="middle" y="9" className="g-pill" fill="var(--accent-ink)">+50 XP</text>
-          </motion.g>
-        </motion.g>
-      )}
     </svg>
   )
 }
