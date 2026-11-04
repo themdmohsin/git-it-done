@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo } from 'react'
 import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
-import { Compare, Hero, OSTiles, LinusPanel, MessyShot, MuktiPanel, RemoteArt, SetupPanel, ShotFigure, StoryArt, StubPanel } from './Art'
+import { Compare, Hero, ResourceList, ResourceTiles, OSTiles, LinusPanel, MessyShot, MuktiPanel, RemoteArt, SetupPanel, ShotFigure, StoryArt, StubPanel } from './Art'
 import { CommandChip } from './Copy'
 import { Graph } from './Graph'
 import { FileStrip } from './Panels'
@@ -72,7 +72,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
       panel = (
         <div className="panel areas">
           <FileStrip stage={fileStage(card, applied)} instant={instant} big />
-          <div className="areas-caption" key={applied}>{applied > 0 ? card.steps[applied - 1].label : 'Press Space to follow one file'}</div>
+          <div className="areas-caption" key={applied}>{applied > 0 ? card.steps[applied - 1].label : 'Follow one file through the three areas'}</div>
         </div>
       )
       break
@@ -87,6 +87,9 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
       break
     case 'stub':
       panel = <div className="panel center"><StubPanel /></div>
+      break
+    case 'resources':
+      panel = <div className="panel"><ResourceList items={card.resources ?? []} /></div>
       break
     case 'vijay':
       panel = <div className="panel vj-panel"><VijayVisual visual={card.visual ?? 'why'} applied={applied} instant={instant} /></div>
@@ -136,11 +139,11 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
   }
 
   const weight = card.sentence.length + (card.bullets ?? []).join('').length + (card.note ?? '').length
-  const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual
+  const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual || !!card.resources
   const vjWide = card.view === 'vijay' || !!card.visual
 
   return (
-    <div className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips ? ' wider-left' : '')}>
+    <div className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips || card.resources ? ' wider-left' : '')}>
       <div className="card-left">
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
@@ -150,6 +153,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
             {card.bullets.map((b) => <li key={b}>{withLinks(b, card.linkify)}</li>)}
           </ul>
         )}
+        {card.resources && <ResourceTiles items={card.resources} />}
         {card.note && <div className="note-chip">{nb(card.note)}</div>}
         {card.final && <div className="final-chip">{card.final}</div>}
         {card.tryIt && <CommandChip label="Try it" cmd={card.tryIt} />}
@@ -170,4 +174,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     </div>
   )
 })
+
+
+
 

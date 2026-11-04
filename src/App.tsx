@@ -9,6 +9,7 @@ import { planFrames, movesFor, sceneOf } from './engine/stack'
 import type { OS } from './engine/types'
 import { OSContext, detectOS, loadOS, saveOS } from './os'
 import { DetailsOverlay } from './components/DetailsModal'
+import { SpaceHint, type HintMode } from './components/SpaceHint'
 import { setDetailsOpener, useUserDetails } from './userDetails'
 
 interface S {
@@ -185,6 +186,7 @@ export default function App() {
   const railDelay = s.trans.dir === 1 ? RAIL_DELAY[s.trans.kind] : 0
   const atEnd = s.card === last && s.done >= card.steps.length
   const atStart = s.card === 0 && s.done === 0
+  const hintMode: HintMode = s.done < card.steps.length ? 'steps' : atEnd ? 'end' : 'next'
 
   /* Memoised elements: opening the drawer or a modal re-renders App, but React skips these identical elements,
      so the card, terminal, graph and rail are not touched (no re-render, no replayed animation). */
@@ -208,6 +210,7 @@ export default function App() {
   return (
     <OSContext.Provider value={ctx}>
       <div className="app">
+        <SpaceHint mode={hintMode} hidden={drawer || picker || details} />
         {stage}
         <Drawer card={card} open={drawer} onClose={() => setDrawer(false)} />
         <footer className="bottom">
@@ -233,4 +236,5 @@ export default function App() {
     </OSContext.Provider>
   )
 }
+
 

@@ -686,3 +686,33 @@ export function StubPanel() {
 
 
 
+
+/* ---------- Keep going: the same links as tiles (left) and as a list with visible addresses (right) ---------- */
+type Resource = NonNullable<Card['resources']>[number]
+export function ResourceTiles({ items }: { items: Resource[] }) {
+  return (
+    <ul className="res-tiles">
+      {items.map((r) => (
+        <li key={r.url}>
+          <a className="res-tile" href={r.url} target="_blank" rel="noopener noreferrer">
+            <b>{r.title}</b>
+            <span>{r.line}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+export function ResourceList({ items }: { items: Resource[] }) {
+  return (
+    <ol className="res-list">
+      {items.map((r) => (
+        <li key={r.url}>
+          <a className="text-link" href={r.url} target="_blank" rel="noopener noreferrer">{r.title}</a>
+          <code>{r.address.split('/').map((p, i, all) => i < all.length - 1 ? <span key={i}>{p}/<wbr /></span> : p)}</code>
+        </li>
+      ))}
+    </ol>
+  )
+}
+

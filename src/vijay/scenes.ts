@@ -61,7 +61,7 @@ const mainPill: GPill = { name: 'main', at: 'c3d4e5f', tone: 'main' }
 
 /* ---------- Card 1: Why branch? Same graph, with Mohsin and Vijay as contextual owners. ---------- */
 export const WHY_SCENES: GScene[] = [
-  { commits: [], pills: [], caption: 'Press Space to begin' },
+  { commits: [], pills: [], caption: 'No commits yet' },
   { commits: MAIN, pills: [mainPill], caption: 'main: the stable, trusted version' },
   {
     commits: [...MAIN, L1],
@@ -90,7 +90,7 @@ export const WHY_SCENES: GScene[] = [
 
 /* ---------- Card 2: What is branching? Same history, no owners \u2014 a technical, reusable definition. ---------- */
 export const BRANCH_SCENES: GScene[] = [
-  { commits: [], pills: [], caption: 'Press Space to build the graph' },
+  { commits: [], pills: [], caption: 'No commits yet' },
   { commits: MAIN, pills: [mainPill], caption: 'main: the stable line of commits' },
   {
     commits: [...MAIN, L1], pills: [mainPill, { name: 'feature-login', at: L1.id, tone: 'login' }],
@@ -164,3 +164,4 @@ export const MERGE_SCENES: GScene[] = [
   { commits: [A, B], pills: [feature, { name: 'main', at: A.id, tone: 'main' }], head: 'main', caption: 'git checkout main \u2014 it does not have the feature yet.' },
   { commits: [A, B], pills: [feature, { name: 'main', at: B.id, tone: 'main' }], head: 'main', pulse: B.id, caption: 'git merge feature-login \u2014 fast-forward. main moved forward.' },
 ]
+

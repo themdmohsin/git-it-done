@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { Card } from '../engine/types'
 
@@ -7,10 +7,41 @@ interface Seg { key: string; d: string; kind: SegKind; to: number }
 
 const labelOf = (c: Card) => (c.section === 'part2' && c.id !== 'challenge' ? `Part 2: ${c.rail}` : c.rail)
 
+const PREVIEW_DELAY = 150
+
+/** Small card above a rail node: kicker, heading and one sentence, all taken from the card data. */
+function Preview({ card, cx, top }: { card: Card; cx: number; top: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const m = 8, w = el.offsetWidth
+    const left = Math.min(Math.max(cx - w / 2, m), window.innerWidth - w - m)
+    el.style.left = left + 'px'
+    el.style.setProperty('--arrow', Math.min(Math.max(cx - left, 16), w - 16) + 'px')
+  }, [cx, card.id])
+  return (
+    <div ref={ref} className="rail-preview" role="tooltip" style={{ bottom: window.innerHeight - top + 14 }}>
+      <div className="rp-kicker">{card.kicker}</div>
+      <div className="rp-title">{card.title}</div>
+      <div className="rp-text">{card.preview ?? card.sentence}</div>
+    </div>
+  )
+}
+
 export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number; onJump: (i: number) => void; delay: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const reduce = useReducedMotion()
   const [size, setSize] = useState({ w: 1000, h: 120, fs: 14 })
+  const [tip, setTip] = useState<{ i: number; cx: number; top: number } | null>(null)
+  const timer = useRef<number>(0)
+  const showTip = (i: number, el: Element) => {
+    window.clearTimeout(timer.current)
+    const b = el.getBoundingClientRect()
+    timer.current = window.setTimeout(() => setTip({ i, cx: b.left + b.width / 2, top: b.top }), PREVIEW_DELAY)
+  }
+  const hideTip = () => { window.clearTimeout(timer.current); setTip(null) }
+  useEffect(() => () => window.clearTimeout(timer.current), [])
 
   useEffect(() => {
     const el = ref.current
@@ -102,7 +133,11 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
             <g
               key={c.id} transform={`translate(${x} ${y})`} role="button" tabIndex={0}
               aria-label={`Go to ${c.title}`} aria-current={i === cur ? 'step' : undefined}
-              onClick={() => onJump(i)}
+              onClick={() => { hideTip(); onJump(i) }}
+              onPointerEnter={(e) => { if (e.pointerType === 'mouse') showTip(i, e.currentTarget) }}
+              onPointerLeave={hideTip}
+              onFocus={(e) => showTip(i, e.currentTarget)}
+              onBlur={hideTip}
               onKeyDown={(e) => { if (e.key === 'Enter') onJump(i) }}
               style={{ cursor: 'pointer', outline: 'none' }}
             >
@@ -127,7 +162,9 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
           <text x={lx} y={ly + fs} textAnchor="middle" fontSize={fs} className="rail-label">{label}</text>
         </motion.g>
       </svg>
+      {tip && <Preview card={cards[tip.i]} cx={tip.cx} top={tip.top} />}
     </div>
   )
 }
+
 

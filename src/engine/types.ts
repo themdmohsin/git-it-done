@@ -51,7 +51,7 @@ export interface StackScene {
   leave?: StackMove
 }
 
-export type Section = 'hook' | 'stepback' | 'story' | 'git' | 'workshop' | 'part2'
+export type Section = 'hook' | 'stepback' | 'story' | 'git' | 'workshop' | 'part2' | 'next'
 export type Lane = 'main' | 'branch' | 'detour'
 export type VijayVisualId = 'why' | 'branches' | 'create' | 'commit' | 'merge'
 export type ArtId =
@@ -60,7 +60,7 @@ export type ArtId =
   | 'githubSignup' | 'codespaces' | 'ready'
 
 export type View =
-  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice'
+  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice' | 'resources'
 
 /** A real picture with alt text. credit is shown under it when set. */
 export interface Picture { src: string; alt: string; credit?: string; caption?: string }
@@ -83,6 +83,8 @@ export interface Card {
   kicker: string
   title: string
   sentence: string
+  /** Optional text for the rail hover preview. Without it the preview shows sentence. */
+  preview?: string
   bullets?: string[]
   note?: string
   /** Closing line shown as a highlighted chip (recap card). */
@@ -96,6 +98,8 @@ export interface Card {
   tagline?: { text: string; translation: string }
   /** Mukti card: contact links. A missing url is shown as a TODO. */
   links?: { label: string; url?: string }[]
+  /** Keep-going card: practice resources, shown as tiles and again as a list with the address visible. */
+  resources?: { title: string; line: string; url: string; address: string }[]
   /** Words inside the bullets that become hyperlinks (opened in a new tab). */
   linkify?: Record<string, string>
   /** Linus card: photo shown beside the art. fullshot view: the screenshot. */
@@ -166,3 +170,5 @@ export interface Frame {
   zoomed: boolean
   wait: number
 }
+
+

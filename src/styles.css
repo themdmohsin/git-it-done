@@ -355,3 +355,54 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 
 
 
+
+/* ---------- persistent Space hint (fixed, so it never moves anything) ---------- */
+.space-hint {
+  position: fixed; z-index: 50; left: 50%; top: calc(env(safe-area-inset-top, 0px) + var(--u) * 0.45); transform: translateX(-50%);
+  max-width: 90vw; text-align: center; white-space: nowrap; pointer-events: none;
+  font-size: calc(var(--u) * 1.1); line-height: 1.2; font-weight: 500; color: var(--ink); opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.space-hint.hide { opacity: 0; }
+.sh-text { display: inline-block; animation: fadein 0.45s ease-out both; }
+.sh-narrow { display: none; }
+.hint-key { font: inherit; font-weight: 700; border: 1px solid var(--card-border); background: var(--card); border-radius: calc(var(--u) * 0.35); padding: 0 calc(var(--u) * 0.5); }
+@media (max-width: 899px) {
+  .sh-wide { display: none; }
+  .sh-narrow { display: inline; }
+  .space-hint { font-size: calc(var(--u) * 1.4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .space-hint { transition: none; }
+  .sh-text { animation: none; }
+}
+
+/* ---------- rail hover preview (fixed, never changes layout, never takes focus) ---------- */
+.rail-preview {
+  position: fixed; z-index: 70; width: max-content; max-width: min(90vw, calc(var(--u) * 28)); pointer-events: none;
+  background: var(--panel); color: var(--term-text); border-radius: calc(var(--u) * 1.2); padding: calc(var(--u) * 0.8) calc(var(--u) * 1.1);
+  box-shadow: var(--card-shadow); display: grid; gap: calc(var(--u) * 0.25); animation: fadein 0.15s ease-out both;
+}
+.rail-preview::after {
+  content: ''; position: absolute; top: 100%; left: var(--arrow, 50%); width: calc(var(--u) * 1.1); height: calc(var(--u) * 1.1);
+  background: var(--panel); transform: translate(-50%, -50%) rotate(45deg); border-radius: 0 0 calc(var(--u) * 0.2) 0;
+}
+.rp-kicker { color: var(--lane-main); font-size: calc(var(--u) * 1.1); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.rp-title { font-size: calc(var(--u) * 1.5); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+.rp-text { font-size: calc(var(--u) * 1.1); line-height: 1.3; color: var(--term-dim); }
+@media (prefers-reduced-motion: reduce) { .rail-preview { animation: none; } }
+
+/* ---------- Keep going card ---------- */
+.res-tiles { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 0.6); width: 100%; }
+.res-tile { display: grid; gap: calc(var(--u) * 0.1); height: 100%; background: var(--card); border: 1px solid var(--card-border); border-left: calc(var(--u) * 0.4) solid var(--accent); border-radius: calc(var(--u) * 1); padding: calc(var(--u) * 0.45) calc(var(--u) * 0.9); color: var(--ink); text-decoration: none; font-size: calc(var(--u) * 1.5); line-height: 1.15; }
+.res-tile b { font-weight: 700; }
+.res-tile span { color: var(--muted); font-weight: 500; }
+.res-tile:hover { border-color: var(--accent); }
+.res-list { margin: 0; padding: 0; list-style: none; display: grid; gap: calc(var(--u) * 1.2); align-content: center; height: 100%; padding: calc(var(--u) * 1.2); counter-reset: res; }
+.res-list li { display: grid; gap: calc(var(--u) * 0.15); counter-increment: res; position: relative; padding-left: calc(var(--u) * 3); }
+.res-list li::before { content: counter(res); position: absolute; left: 0; top: 0; width: calc(var(--u) * 2.2); height: calc(var(--u) * 2.2); border-radius: 50%; background: var(--lane-main); color: var(--panel); font-weight: 700; font-size: calc(var(--u) * 1.5); display: grid; place-items: center; }
+.res-list a { font-size: calc(var(--u) * 1.8); font-weight: 700; color: var(--lane-main); }
+.res-list a:hover { color: var(--term-text); }
+.res-list a:focus-visible { outline-color: var(--lane-remote); }
+.res-list code { font-size: calc(var(--u) * 1.5); color: var(--term-text); }
+

@@ -1,7 +1,7 @@
 import type { Card, StackScene } from './engine/types'
 import { vijayCards } from './vijay/cards'
 import { workshopCards } from './workshop'
-import { MUKTI } from './links'
+import { MUKTI, RESOURCES } from './links'
 
 const none = { type: 'none' } as const
 
@@ -726,6 +726,40 @@ export const cards: Card[] = [
 
   /* ---------- Part 2: branching and merging ---------- */
   ...vijayCards,
+
+  /* ---------- F. Keep going: where to practise next ---------- */
+  {
+    id: 'keep-going',
+    rail: 'Keep going',
+    section: 'next',
+    kicker: 'What next',
+    title: 'Keep your Git journey going.',
+    sentence: "You've made your first commits. Here is where to practise next.",
+    resources: RESOURCES,
+    view: 'resources',
+    lane: 'main',
+    steps: [],
+    drawer: {
+      clicks: [
+        'Pick one tile on the card that matches how you like to learn, and open it now.',
+        'Reading: the Pro Git book. Games and visuals: Learn Git Branching. A real pull request: first-contributions. Watching: the freeCodeCamp video.',
+      ],
+      tryNext: [
+        'Make a repository for a project of your own.',
+        'Practise with first-contributions.',
+        'Join a Mukti event.',
+      ],
+      mistakes: [
+        { title: 'You are not sure where to start', fix: 'Start small: make a repository for something of your own and commit to it a few times. Then try first-contributions for a real pull request.' },
+        { title: 'A command or screen looks different from what you remember', fix: 'Come back to the command cards on this site, or look it up in the Pro Git book. Everyone searches for Git commands sometimes.' },
+      ],
+      happening: 'You have installed Git, made commits, pushed to GitHub and seen branching and pull requests. Git becomes natural through practice, so this card collects free places to keep going. Every link opens in a new tab.',
+      links: [
+        { label: 'GitHub Docs', url: 'https://docs.github.com/en' },
+        { label: 'Oh My Git! (a game that teaches Git)', url: 'https://ohmygit.org/' },
+      ],
+    },
+  },
 ]
 
 /* Catch data mistakes early: every stack layer must be a real card and the front must be last. */
@@ -735,6 +769,7 @@ cards.forEach((c) => {
   if (s.layers[s.layers.length - 1] !== s.front || s.front !== c.id) throw new Error(`Bad scene on card ${c.id}`)
   s.layers.forEach((id) => { if (!cards.some((k) => k.id === id)) throw new Error(`Unknown layer ${id} on card ${c.id}`) })
 })
+
 
 
 

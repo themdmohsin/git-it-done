@@ -64,8 +64,9 @@ const CARDS = [
   ['oss-create-pr', 'Propose your change to the original repository', 0],
   ['oss-workflow', 'The whole process, in eight steps', 0],
   ['oss-challenge', 'MUKTI Challenge: make it yours', 0],
+  ['keep-going', 'Keep your Git journey going.', 0],
 ]
-const LAST = 'oss-challenge'
+const LAST = 'keep-going'
 /* Terminal entries expected after each press on the branching terminal cards (press 3 on branch-create is a reset). */
 const TLINES = {
   'branch-create': [0, 1, 2, 0, 1],
@@ -303,7 +304,7 @@ async function layout(browser) {
   for (const [w, h] of SIZES) {
     const page = await browser.newPage()
     await page.setViewport({ width: w, height: h })
-    for (const id of ['open-source', 'mukti', 'personal-software', 'linux', 'linus', 'vc-idea', 'git-born', 'git-vs-github', 'linux-repo', 'github', 'push', 'why-branch', 'branch-idea', 'branch-create', 'branch-commit', 'branch-merge', 'oss-intro', 'oss-issues', 'oss-pull-requests', 'oss-first-contrib', 'oss-fork', 'oss-clone', 'oss-commit-push', 'oss-create-pr', 'oss-workflow', 'oss-challenge']) {
+    for (const id of ['open-source', 'mukti', 'personal-software', 'linux', 'linus', 'vc-idea', 'git-born', 'git-vs-github', 'linux-repo', 'github', 'push', 'why-branch', 'branch-idea', 'branch-create', 'branch-commit', 'branch-merge', 'oss-intro', 'oss-issues', 'oss-pull-requests', 'oss-first-contrib', 'oss-fork', 'oss-clone', 'oss-commit-push', 'oss-create-pr', 'oss-workflow', 'oss-challenge', 'keep-going']) {
       await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' })
       await page.reload({ waitUntil: 'networkidle0' })
       await settle(page, 900)
@@ -512,6 +513,104 @@ async function detailsModal(browser) {
   await page.close()
 }
 
+/* The persistent Space hint and the hover preview on the rail. */
+async function hintAndPreview(browser) {
+  console.log('Space hint on every card (wording by state, hides over modals) and rail hover preview')
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
+  const hint = () => page.evaluate(() => {
+    const h = document.querySelector('.space-hint')
+    if (!h) return null
+    const cs = getComputedStyle(h), r = h.getBoundingClientRect(), u = Math.min(innerWidth / 100, (innerHeight * 1.7778) / 100)
+    const front = [...document.querySelectorAll('.stage .card')].pop()
+    const h1 = front?.querySelector('h1')?.getBoundingClientRect()
+    const bottom = document.querySelector('.bottom').getBoundingClientRect()
+    return {
+      text: h.innerText.replace(/\s+/g, ' ').trim(), opacity: parseFloat(cs.opacity), fixed: cs.position === 'fixed', fs: parseFloat(cs.fontSize) / u,
+      top: r.top, left: r.left, right: r.right, bottom: r.bottom, cx: (r.left + r.right) / 2, w: innerWidth,
+      overHeading: !!h1 && r.bottom > h1.top && r.top < h1.bottom && r.right > h1.left && r.left < h1.right, overBar: r.bottom > bottom.top,
+      card: JSON.stringify(front?.getBoundingClientRect()), rail: JSON.stringify(document.querySelector('.rail').getBoundingClientRect()),
+    }
+  })
+  const SPACE = 'Press Space to see the next step', NEXT = 'Press Space or the right arrow for the next card'
+  await page.goto(URL + '#/init', { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 900)
+  await closePicker(page)
+  let h = await hint()
+  if (!h) { fail('no Space hint on a card with steps'); await page.close(); return }
+  if (h.text !== SPACE) fail(`hint on a card with steps says "${h.text}"`)
+  if (Math.abs(h.opacity - 0.55) > 0.06) fail(`hint opacity ${h.opacity}, want about 0.55`)
+  if (h.fs < 1 || h.fs > 1.3) fail(`hint text is ${h.fs.toFixed(2)} x --u, want about 1.1`)
+  if (!h.fixed || Math.abs(h.cx - h.w / 2) > 2 || h.top < 0) fail('hint is not fixed at the top centre')
+  if (h.overHeading || h.overBar) fail('hint overlaps the card heading or the controls bar')
+  const before = h
+  for (let i = 0; i < 2; i++) { await page.keyboard.press('Space'); await settle(page, 2400) }
+  h = await hint()
+  if (h.text !== NEXT) fail(`hint after the last step says "${h.text}"`)
+  if (h.card !== before.card || h.rail !== before.rail) fail('card or rail moved when the hint changed')
+  await page.keyboard.press('d'); await sleep(600)
+  if ((await hint()).opacity > 0.05) fail('hint is visible while the Details drawer is open')
+  await page.keyboard.press('d'); await sleep(600)
+  await page.keyboard.press('o'); await sleep(600)
+  if ((await hint()).opacity > 0.05) fail('hint is visible while a modal is open')
+  await page.keyboard.press('Escape'); await sleep(600)
+  for (const id of ['messy', 'open-source', 'branch-merge', 'oss-challenge']) {
+    await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 900)
+    const x = await hint()
+    if (!x || !x.text) fail(`no hint on ${id}`)
+    else if (x.overHeading || x.overBar) fail(`hint overlaps the heading or controls on ${id}`)
+  }
+  await page.goto(URL + '#/keep-going', { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 900)
+  h = await hint()
+  if (h.opacity > 0.05 && !/^That.s the end/.test(h.text)) fail(`hint on the last card says "${h.text}"`)
+  await page.setViewport({ width: 390, height: 800 })
+  await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 700)
+  if (!/^Tap Next|^That.s the end/.test((await hint()).text)) fail('phone hint should say Tap Next')
+  await page.setViewport({ width: 1920, height: 1080 })
+
+  // rail hover preview
+  const CASES = [
+    ['messy', 'The problem', "You've all been here.", 'Which file is the real one? Who changed what? Nobody knows.'],
+    ['open-source', 'Take a step back', 'Open source', 'Open source software is software whose source'],
+    ['init', 'COMMAND \u00b7 INIT', 'Start a repository', 'git init turns a folder into a Git repository.'],
+    ['branch-merge', 'COMMAND \u00b7 MERGE', 'Feature complete? Bring it back into main.', 'Switch to the branch that should receive the work, then merge.'],
+    ['keep-going', 'What next', 'Keep your Git journey going.', "You've made your first commits."],
+  ]
+  await page.goto(URL + '#/init', { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 900)
+  for (const [id, kicker, title, text] of CASES) {
+    const snap = () => page.evaluate(() => JSON.stringify([document.querySelector('.stage .card')?.getBoundingClientRect(), document.querySelector('.rail')?.getBoundingClientRect(), document.querySelector('.bottom')?.getBoundingClientRect(), document.activeElement?.tagName]))
+    const base = await snap()
+    const box = await page.evaluate((i) => { const r = document.querySelectorAll('.rail [role=button]')[i].getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } }, idx(id))
+    await page.mouse.move(box.x, box.y)
+    await sleep(60)
+    if (await page.$('.rail-preview')) fail(`preview for ${id} appeared before the 150 ms delay`)
+    await sleep(500)
+    const p = await page.evaluate(() => {
+      const e = document.querySelector('.rail-preview'); if (!e) return null
+      const r = e.getBoundingClientRect(), u = Math.min(innerWidth / 100, (innerHeight * 1.7778) / 100)
+      return { kicker: e.querySelector('.rp-kicker').textContent, title: e.querySelector('.rp-title').textContent, text: e.querySelector('.rp-text').textContent, l: r.left, r: r.right, t: r.top, b: r.bottom, w: r.width / u, fs: parseFloat(getComputedStyle(e.querySelector('.rp-text')).fontSize) / u }
+    })
+    if (!p) { fail(`no preview when hovering the ${id} node`); continue }
+    if (p.kicker !== kicker || p.title !== title || !p.text.startsWith(text)) fail(`preview for ${id} shows "${p.kicker}" / "${p.title}" / "${p.text.slice(0, 40)}"`)
+    if (p.l < 0 || p.r > 1920 || p.t < 0) fail(`preview for ${id} goes off screen`)
+    if (p.w > 28.2) fail(`preview for ${id} is ${p.w.toFixed(1)} x --u wide (max 28)`)
+    if (p.fs < 1.05) fail(`preview text is ${p.fs.toFixed(2)} x --u`)
+    if (p.b > box.y) fail(`preview for ${id} is not above its node`)
+    if ((await snap()) !== base) fail(`hovering the ${id} node moved the card, rail or controls, or changed focus`)
+    if (id === 'init') {
+      await page.keyboard.press('Space'); await settle(page, 2400)
+      if ((await readState(page)).lines !== 1) fail('Space stopped working while a rail preview was showing')
+      await page.screenshot({ path: 'scripts/shots/rail-preview-1920x1080.png' })
+    }
+    await page.mouse.move(960, 400); await sleep(300)
+    if (await page.$('.rail-preview')) fail(`preview for ${id} stayed after the mouse left`)
+    if (id === 'init') { await page.keyboard.press('ArrowLeft'); await sleep(500) }
+  }
+  await page.goto(URL + '#/init', { waitUntil: 'networkidle0' }); await settle(page, 600)
+  const to = await page.evaluate((i) => { const r = document.querySelectorAll('.rail [role=button]')[i].getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } }, idx('git-vs-github'))
+  await page.mouse.click(to.x, to.y); await settle(page, 1900)
+  expect('click on a rail node still jumps', await readState(page), 'git-vs-github', 0)
+  await page.close()
+}
 /* Screencasts the page while `action` runs and returns the brightness of a blank patch of page for every frame. */
 async function recordBrightness(page, decoder, action, ms) {
   const cdp = await page.createCDPSession()
@@ -630,6 +729,7 @@ try {
   const only = process.env.ONLY // e.g. ONLY=fit runs just the workshop checks
   if (!only) { await fullPass(browser); await directLoads(browser); await layout(browser) }
   if (!only || only === 'fit') { await workshopFit(browser); await osPersistence(browser) }
+  if (!only || only === 'hint') await hintAndPreview(browser)
   if (!only || only === 'drawer') await drawerAll(browser)
   if (!only || only === 'modal') await modalStability(browser)
   if (!only || only === 'fit' || only === 'modal') await detailsModal(browser)
@@ -640,6 +740,8 @@ try {
 }
 console.log(failures.length ? `\n${failures.length} FAILURE(S)` : '\nAll checks passed')
 process.exit(failures.length ? 1 : 0)
+
+
 
 
 
