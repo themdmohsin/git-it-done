@@ -20,6 +20,7 @@ interface S {
   trans: Trans
 }
 
+const noop = () => {}
 const last = cards.length - 1
 const fromHash = () => {
   const raw = window.location.hash.replace(/^#\/?/, '')
@@ -185,26 +186,32 @@ export default function App() {
   const atEnd = s.card === last && s.done >= card.steps.length
   const atStart = s.card === 0 && s.done === 0
 
+  /* Memoised elements: opening the drawer or a modal re-renders App, but React skips these identical elements,
+     so the card, terminal, graph and rail are not touched (no re-render, no replayed animation). */
+  const stage = useMemo(() => (
+    <Stage
+      trans={s.trans}
+      cur={s.card}
+      finishTick={finishTick}
+      onBusy={onBusy}
+      renderStack={(idx, zoomed) => idx === s.card
+        ? <Card cardIdx={idx} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} framed={zoomed} />
+        : <Card cardIdx={idx} done={0} applied={0} playing={false} instant onStepDone={noop} framed={zoomed} />}
+      renderPrev={(f) => (
+        <Card cardIdx={f.cardIdx} done={f.done} applied={f.done} playing={false} instant onStepDone={noop} />
+      )}
+    >
+      <Card cardIdx={s.card} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} />
+    </Stage>
+  ), [s, finishTick, onBusy, stepDone])
+  const rail = useMemo(() => <Rail cards={cards} cur={s.card} delay={railDelay} onJump={(i) => navTo(i, 0)} />, [s.card, railDelay, navTo])
   return (
     <OSContext.Provider value={ctx}>
       <div className="app">
-        <Stage
-          trans={s.trans}
-          cur={s.card}
-          finishTick={finishTick}
-          onBusy={onBusy}
-          renderStack={(idx, zoomed) => idx === s.card
-            ? <Card cardIdx={idx} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} framed={zoomed} />
-            : <Card cardIdx={idx} done={0} applied={0} playing={false} instant onStepDone={() => {}} framed={zoomed} />}
-          renderPrev={(f) => (
-            <Card cardIdx={f.cardIdx} done={f.done} applied={f.done} playing={false} instant onStepDone={() => {}} />
-          )}
-        >
-          <Card cardIdx={s.card} done={s.done} applied={s.applied} playing={s.playing} instant={s.instant} onStepDone={stepDone} />
-        </Stage>
+        {stage}
         <Drawer card={card} open={drawer} onClose={() => setDrawer(false)} />
         <footer className="bottom">
-          <Rail cards={cards} cur={s.card} delay={railDelay} onJump={(i) => navTo(i, 0)} />
+          {rail}
           <div className="footer-row">
             <div className="nav-btns">
               <button className="btn ghost" onClick={back} disabled={atStart}>Prev</button>
@@ -226,3 +233,4 @@ export default function App() {
     </OSContext.Provider>
   )
 }
+

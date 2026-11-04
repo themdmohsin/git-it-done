@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { memo, useEffect, useMemo } from 'react'
 import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
 import { Compare, Hero, OSTiles, LinusPanel, MessyShot, MuktiPanel, RemoteArt, SetupPanel, ShotFigure, StoryArt, StubPanel } from './Art'
@@ -25,7 +25,8 @@ export interface CardProps {
 /** Keeps a command option such as --version in one piece when a line wraps. */
 const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
-export function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
+/** Memoised: opening a modal re-renders App, but the card on screen must not be touched at all. */
+export const Card = memo(function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const { os } = useOS()
   const { filled } = useUserDetails()
   const card = useMemo(() => resolveCard(cards[cardIdx], os), [cardIdx, os])
@@ -158,4 +159,4 @@ export function Card({ cardIdx, done, applied, playing, instant, onStepDone, fra
       <div className="card-right">{panel}</div>
     </div>
   )
-}
+})

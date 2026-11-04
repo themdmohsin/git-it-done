@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'framer-motion'
 import { OPEN_TERMINAL, OS_LIST, useOS } from '../os'
+import { usePresence } from './usePresence'
 
 export function OSPicker({ onPick }: { onPick?: () => void }) {
   const { os, setOS, detected } = useOS()
@@ -27,31 +27,16 @@ export function OSPicker({ onPick }: { onPick?: () => void }) {
 }
 
 export function PickerOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { mounted, closing } = usePresence(open)
+  if (!mounted) return null
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="overlay-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="overlay-box"
-            initial={{ scale: 0.94, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.97, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="kicker">YOUR SYSTEM</div>
-            <h2>Pick your operating system</h2>
-            <OSPicker onPick={onClose} />
-            <p className="muted small">Esc or O to close</p>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className={'overlay-backdrop' + (closing ? ' closing' : '')} onClick={onClose}>
+      <div className="overlay-box" onClick={(e) => e.stopPropagation()}>
+        <div className="kicker">YOUR SYSTEM</div>
+        <h2>Pick your operating system</h2>
+        <OSPicker onPick={onClose} />
+        <p className="muted small">Esc or O to close</p>
+      </div>
+    </div>
   )
 }

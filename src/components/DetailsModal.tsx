@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { type Errors, type Field, TOKEN_LABEL, useUserDetails } from '../userDetails'
+import { usePresence } from './usePresence'
 
 const ROWS: { f: Field; label: string; hint: string; type?: string }[] = [
   { f: 'name', label: 'Your name', hint: 'Shown on your commits, e.g. Mohsin Ahmed' },
@@ -52,33 +52,16 @@ function Form({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }
 }
 
 export function DetailsOverlay({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
+  const { mounted, closing } = usePresence(open)
+  if (!mounted) return null
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="overlay-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="overlay-box details-box"
-            role="dialog"
-            aria-label="Your details"
-            initial={{ scale: 0.94, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.97, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="kicker">YOUR DETAILS</div>
-            <h2>Fill in your commands</h2>
-            <Form onClose={onClose} onSaved={onSaved} />
-            <p className="muted small">Esc to close</p>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className={'overlay-backdrop' + (closing ? ' closing' : '')} onClick={onClose}>
+      <div className="overlay-box details-box" role="dialog" aria-label="Your details" onClick={(e) => e.stopPropagation()}>
+        <div className="kicker">YOUR DETAILS</div>
+        <h2>Fill in your commands</h2>
+        <Form onClose={onClose} onSaved={onSaved} />
+        <p className="muted small">Esc to close</p>
+      </div>
+    </div>
   )
 }

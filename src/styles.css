@@ -69,6 +69,15 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .overlay-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(29, 35, 20, 0.55); display: grid; place-items: center; }
 .overlay-box { width: min(92vw, calc(var(--u) * 52)); background: var(--page); border-radius: calc(var(--u) * 2.4); padding: calc(var(--u) * 2.6); display: grid; gap: calc(var(--u) * 1.2); box-shadow: var(--card-shadow); }
 .overlay-box h2 { margin: 0; font-size: calc(var(--u) * 3.2); letter-spacing: -0.04em; }
+/* Plain CSS animations: the resting style equals the end of the animation, so no frame can show the wrong state. */
+.overlay-backdrop { animation: ov-in 0.2s ease-out both; }
+.overlay-box { animation: box-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.1) both; }
+.overlay-backdrop.closing { animation: ov-out 0.2s ease-in both; pointer-events: none; }
+.overlay-backdrop.closing .overlay-box { animation: box-out 0.2s ease-in both; }
+@keyframes ov-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ov-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes box-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+@keyframes box-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.97); } }
 
 /* ---------- dark panel ---------- */
 .panel {
@@ -161,6 +170,8 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 @media (prefers-reduced-motion: reduce) {
   .head-ring, .pulse, .t-cursor, .art-spin { animation: none; }
   .t-out.fade { animation: none; }
+  .overlay-backdrop, .overlay-box, .overlay-backdrop.closing .overlay-box { animation: none; }
+  .overlay-backdrop.closing { animation: none; opacity: 0; }
 }
 
 

@@ -504,6 +504,96 @@ async function detailsModal(browser) {
   await page.close()
 }
 
+/* Screencasts the page while `action` runs and returns the brightness of a blank patch of page for every frame. */
+async function recordBrightness(page, decoder, action, ms) {
+  const cdp = await page.createCDPSession()
+  const frames = []
+  cdp.on('Page.screencastFrame', (f) => { frames.push(f.data); cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}) })
+  await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 70, everyNthFrame: 1 })
+  await sleep(250); await action(); await sleep(ms)
+  await cdp.send('Page.stopScreencast'); await cdp.detach()
+  return decoder.evaluate(async (fs) => {
+    const out = []
+    for (const d of fs) {
+      const img = new Image(); img.src = 'data:image/jpeg;base64,' + d; await img.decode()
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height
+      const x = c.getContext('2d'); x.drawImage(img, 0, 0)
+      const px = x.getImageData(20, 300, 60, 200).data
+      let s = 0; for (let i = 0; i < px.length; i += 4) s += px[i] + px[i + 1] + px[i + 2]
+      out.push(Math.round(s / (px.length / 4) / 3))
+    }
+    return out
+  }, frames)
+}
+
+/* Opening and closing either modal must not touch the card, terminal, graph or rail, and must not flash. */
+async function modalStability(browser) {
+  console.log('Modals: open and close "Your system" and "Your details" (no remount, no layout shift, no flash, typing stays in the form)')
+  const decoder = await browser.newPage()
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
+  const kinds = [
+    { name: 'Your system', chip: 'Your system', key: 'o', box: '.overlay-box' },
+    { name: 'Your details', chip: 'Your details', key: 'u', box: '.details-box' },
+  ]
+  for (const id of ['push', 'open-source', 'three-areas']) {
+    for (const k of kinds) {
+      for (const via of ['chip', 'key']) {
+        const tag = `${id} / ${k.name} / ${via}`
+        await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' })
+        await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 1200)
+        await page.evaluate(() => {
+          const front = () => [...document.querySelectorAll('.stage .card')].pop()
+          window.__front = front
+          window.__marked = [front(), front().querySelector('.t-body'), front().querySelector('.graph'), document.querySelector('.rail svg')]
+          window.__mut = 0
+          new MutationObserver((ms) => { window.__mut += ms.length }).observe(document.querySelector('.stage'), { subtree: true, childList: true, attributes: true, characterData: true })
+          new MutationObserver((ms) => { window.__mut += ms.length }).observe(document.querySelector('.rail'), { subtree: true, childList: true, attributes: true, characterData: true })
+          window.__states = new Set()
+          const box = (e) => { const b = e?.getBoundingClientRect(); return b ? [b.x, b.y, b.width, b.height].map((n) => Math.round(n * 10) / 10).join(',') : '-' }
+          const tick = () => {
+            window.__states.add([box(window.__front()), box(document.querySelector('.rail')), box(window.__front().querySelector('.graph')), innerWidth - document.documentElement.clientWidth].join(' | '))
+            requestAnimationFrame(tick)
+          }
+          tick()
+        })
+        const hashBefore = await page.evaluate(() => location.hash)
+        const open = () => via === 'chip'
+          ? page.evaluate((c) => [...document.querySelectorAll('.key')].find((b) => b.textContent.includes(c)).click(), k.chip)
+          : page.keyboard.press(k.key)
+        const close = () => page.keyboard.press('Escape')
+        const opening = via === 'chip' ? await recordBrightness(page, decoder, open, 900) : (await open(), await sleep(900), null)
+        if (!(await page.$(k.box))) { fail(`${tag}: the modal did not open`); continue }
+        if (k.key === 'u') {
+          await page.keyboard.type('Ann Lee ')
+          for (const key of ['Space', 'ArrowRight', 'ArrowLeft']) await page.keyboard.press(key)
+          const v = await page.$eval('.details-input', (e) => e.value)
+          if (v !== 'Ann Lee  ') fail(`${tag}: typed text is "${v}"`)
+          if ((await page.evaluate(() => location.hash)) !== hashBefore) fail(`${tag}: typing in Your details moved the cards`)
+        }
+        const closing = via === 'chip' ? await recordBrightness(page, decoder, close, 900) : (await close(), await sleep(900), null)
+        if (await page.$(k.box)) fail(`${tag}: the modal did not close`)
+        const r = await page.evaluate(() => ({
+          same: window.__marked.every((e) => !e || document.contains(e)) && window.__front() === window.__marked[0],
+          mut: window.__mut,
+          states: [...window.__states],
+          hash: location.hash,
+        }))
+        if (!r.same) fail(`${tag}: the card, terminal, graph or rail was re-created`)
+        if (r.mut > 0) fail(`${tag}: ${r.mut} DOM changes inside the card or rail while the modal opened and closed`)
+        if (r.states.length !== 1) fail(`${tag}: layout moved (card, rail, graph or scrollbar): ${r.states.slice(0, 3).join(' // ')}`)
+        if (r.hash !== hashBefore) fail(`${tag}: the address changed to ${r.hash}`)
+        if (opening && closing) {
+          const flash = (s, dir) => s.some((v, i) => i > 0 && (dir === 'down' ? v > s[i - 1] + 12 : v < s[i - 1] - 12))
+          if (flash(opening, 'down')) fail(`${tag}: the page flashed while the modal opened (${opening.join(',')})`)
+          if (flash(closing, 'up')) fail(`${tag}: the page flashed while the modal closed (${closing.join(',')})`)
+        }
+      }
+    }
+  }
+  await decoder.close(); await page.close()
+}
+
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { shell: true, stdio: 'ignore' })
 let browser
 try {
@@ -512,7 +602,8 @@ try {
   const only = process.env.ONLY // e.g. ONLY=fit runs just the workshop checks
   if (!only) { await fullPass(browser); await directLoads(browser); await layout(browser) }
   if (!only || only === 'fit') { await workshopFit(browser); await osPersistence(browser) }
-  await detailsModal(browser)
+  if (!only || only === 'modal') await modalStability(browser)
+  if (!only || only === 'fit' || only === 'modal') await detailsModal(browser)
 } finally {
   if (browser) await browser.close()
   if (process.platform === 'win32') spawn('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' })
@@ -520,3 +611,4 @@ try {
 }
 console.log(failures.length ? `\n${failures.length} FAILURE(S)` : '\nAll checks passed')
 process.exit(failures.length ? 1 : 0)
+
