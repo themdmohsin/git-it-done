@@ -66,49 +66,56 @@ export function Hero({ word }: { word: string }) {
 }
 
 /* ---------- story illustrations (inline scalable vector graphics, no external images) ---------- */
-const RING = Array.from({ length: 24 }, (_, i) => i)
-const RING_LABELS: Record<number, [string, string]> = {
-  0: ['read', 'var(--lane-main)'],
-  6: ['use', 'var(--lane-feature)'],
-  12: ['change', 'var(--lane-remote)'],
-  18: ['share', 'var(--lane-main)'],
-}
+/* Open source: many contributors around one shared source file, and the four freedoms a licence gives. */
 const DOT_COLORS = ['var(--lane-main)', 'var(--lane-feature)', 'var(--lane-remote)']
-const polar = (cx: number, cy: number, r: number, i: number, n: number) => {
-  const a = (i / n) * Math.PI * 2 - Math.PI / 2
-  return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
-}
+const PEOPLE = [40, 75, 105, 140, 220, 255, 285, 320].map((deg, i) => {
+  const a = (deg * Math.PI) / 180
+  return { x: 400 + 205 * Math.sin(a), y: 320 - 175 * Math.cos(a), c: DOT_COLORS[i % 3], delay: (i * 0.35).toFixed(2) }
+})
+const FREEDOMS: [string, number, number, string][] = [
+  ['Use', 400, 52, 'var(--lane-main)'],
+  ['Study', 710, 320, 'var(--lane-remote)'],
+  ['Modify', 400, 588, 'var(--lane-feature)'],
+  ['Share', 90, 320, 'var(--lane-main)'],
+]
 
 function RingArt() {
   return (
-    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="A ring of people around open source code">
-      <g className="art-spin">
-        {RING.filter((i) => [2, 3, 4].includes(i % 6)).map((i) => {
-          const p = polar(400, 320, 250, i, 24)
-          return (
-            <g key={i}>
-              <line x1="400" y1="320" x2={p.x} y2={p.y} stroke="var(--panel-line)" strokeWidth="3" />
-              <circle cx={p.x} cy={p.y} r="26" fill={DOT_COLORS[i % 3]} />
-            </g>
-          )
-        })}
-      </g>
-      <circle cx="400" cy="320" r="120" fill="var(--panel-2)" stroke="var(--lane-main)" strokeWidth="5" strokeDasharray="14 12" />
-      <text x="400" y="342" textAnchor="middle" className="art-mono" fontSize="76" fill="var(--lane-main)">{'</>'}</text>
-      <text x="400" y="395" textAnchor="middle" className="art-text" fontSize="38" fill="var(--term-text)">open source</text>
-      {Object.entries(RING_LABELS).map(([k, [label, color]]) => {
-        const p = polar(400, 320, 250, Number(k), 24)
-        return (
-          <g key={k} transform={`translate(${p.x} ${p.y})`}>
-            <rect x="-88" y="-30" width="176" height="60" rx="30" fill={color} />
-            <text y="10" textAnchor="middle" className="art-text" fontSize="32" fill="var(--panel)">{label}</text>
-          </g>
-        )
-      })}
+    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="Many people around one shared source code file, connected to it. Four chips: use, study, modify, share.">
+      <defs>
+        <radialGradient id="os-glow-fill">
+          <stop offset="0" stopColor="#c9e265" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#c9e265" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {PEOPLE.map((p, i) => (
+        <g key={i}>
+          <line x1={p.x} y1={p.y} x2="400" y2="320" stroke="var(--panel-line)" strokeWidth="3" />
+          <line className="os-flow" x1={p.x} y1={p.y} x2="400" y2="320" stroke={p.c} strokeWidth="4" strokeLinecap="round" style={{ animationDelay: `-${p.delay}s` }} />
+        </g>
+      ))}
+      <circle className="os-glow" cx="400" cy="320" r="150" fill="url(#os-glow-fill)" />
+      <path d="M335 228 H435 L470 263 V402 a14 14 0 0 1 -14 14 H344 a14 14 0 0 1 -14 -14 V242 a14 14 0 0 1 5 -14 Z" fill="var(--panel-2)" stroke="var(--lane-main)" strokeWidth="6" strokeLinejoin="round" />
+      <path d="M435 228 V263 H470" fill="none" stroke="var(--lane-main)" strokeWidth="6" strokeLinejoin="round" />
+      <text x="400" y="340" textAnchor="middle" className="art-mono" fontSize="56" fill="var(--lane-main)">{'</>'}</text>
+      {[0, 1, 2].map((i) => <rect key={i} x="355" y={365 + i * 14} width={90 - i * 22} height="7" rx="3.5" fill="var(--lane-main)" opacity="0.6" />)}
+      {PEOPLE.map((p, i) => (
+        <g key={i} transform={`translate(${p.x} ${p.y})`}>
+          <circle r="34" fill="var(--panel)" />
+          <circle cy="-12" r="11" fill={p.c} />
+          <path d="M-19 20 v-4 a19 19 0 0 1 38 0 v4 z" fill={p.c} />
+        </g>
+      ))}
+      <text x="400" y="472" textAnchor="middle" className="art-text" fontSize="32" fill="var(--term-text)">source code</text>
+      {FREEDOMS.map(([label, x, y, color]) => (
+        <g key={label} transform={`translate(${x} ${y})`}>
+          <rect x="-80" y="-30" width="160" height="60" rx="30" fill={color} />
+          <text y="11" textAnchor="middle" className="art-text" fontSize="34" fill="var(--panel)">{label}</text>
+        </g>
+      ))}
     </svg>
   )
 }
-
 function KernelArt() {
   return (
     <svg className="art" viewBox="0 0 800 640" role="img" aria-label="Apps sit on the kernel, which sits on the hardware">
@@ -202,7 +209,7 @@ export function MuktiPanel({ tagline, links }: { tagline?: Card['tagline']; link
         {links?.map((l) => (
           <li key={l.label}>
             <b>{l.label}</b>
-            {l.url ? <a href={l.url} target="_blank" rel="noreferrer">{l.url}</a> : <span className="todo">TODO: add the {l.label} link</span>}
+            {l.url ? <a className="text-link" href={l.url} target="_blank" rel="noopener noreferrer">{l.url.replace(/^(https?:\/\/|mailto:)/, '')}</a> : <span className="todo">TODO: add the {l.label} link</span>}
           </li>
         ))}
       </ul>
@@ -672,7 +679,10 @@ export function StubPanel() {
   return (
     <div className="stub">
       <div className="stub-title">Content coming</div>
-      <div className="stub-sub">Part 2 (Vijay)</div>
+      <div className="stub-sub">Part 2</div>
     </div>
   )
 }
+
+
+

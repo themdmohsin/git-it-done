@@ -1,4 +1,5 @@
 import type { Card } from '../engine/types'
+import { MUKTI } from '../links'
 
 const none = { type: 'none' } as const
 
@@ -364,7 +365,7 @@ export const vijayCards: Card[] = [
       happening: 'This card introduces your first real contribution: one small change that you fork, edit, commit, push and open as a pull request. The next cards walk through each step in order, and the written guide has every command and screenshot.',
       links: [
         { label: 'first-contributions: practise your first pull request', url: 'https://github.com/firstcontributions/first-contributions' },
-        { label: 'Mukti on GitHub', url: 'https://github.com/MuktiCommunity' },
+        { label: 'Mukti on GitHub', url: MUKTI.github },
       ],
     },
   },
@@ -555,9 +556,10 @@ export const vijayCards: Card[] = [
       ],
       happening: 'This is the hands-on challenge. You work at your own pace, following the full written guide for detailed steps, commands, screenshots and troubleshooting. A submitted pull request counts as a successful contribution, even before it is merged.',
       links: [
-        { label: 'Mukti on GitHub', url: 'https://github.com/MuktiCommunity' },
+        { label: 'Mukti on GitHub', url: MUKTI.github },
         { label: 'first-contributions: practise your first pull request', url: 'https://github.com/firstcontributions/first-contributions' },
       ],
     },
   },
 ]
+

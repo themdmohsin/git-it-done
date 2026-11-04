@@ -26,6 +26,16 @@ export interface CardProps {
 const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
 /** Memoised: opening a modal re-renders App, but the card on screen must not be touched at all. */
+/** Turns the words listed in `linkify` into hyperlinks that open in a new tab. */
+function withLinks(text: string, linkify?: Record<string, string>) {
+  if (!linkify) return nb(text)
+  const keys = Object.keys(linkify)
+  const parts = text.split(new RegExp(`(${keys.join('|')})`))
+  return parts.map((p, i) => keys.includes(p)
+    ? <a key={i} className="text-link" href={linkify[p]} target="_blank" rel="noopener noreferrer">{p}</a>
+    : nb(p))
+}
+
 export const Card = memo(function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const { os } = useOS()
   const { filled } = useUserDetails()
@@ -137,7 +147,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
         <p className="sentence">{nb(card.sentence)}</p>
         {card.bullets && (
           <ul className="bullets">
-            {card.bullets.map((b) => <li key={b}>{nb(b)}</li>)}
+            {card.bullets.map((b) => <li key={b}>{withLinks(b, card.linkify)}</li>)}
           </ul>
         )}
         {card.note && <div className="note-chip">{nb(card.note)}</div>}
@@ -160,3 +170,4 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     </div>
   )
 })
+

@@ -5,7 +5,7 @@ import type { Card } from '../engine/types'
 type SegKind = 'main' | 'detour' | 'branch'
 interface Seg { key: string; d: string; kind: SegKind; to: number }
 
-const labelOf = (c: Card) => (c.section === 'part2' && c.id !== 'challenge' ? `Part 2 (Vijay): ${c.rail}` : c.rail)
+const labelOf = (c: Card) => (c.section === 'part2' && c.id !== 'challenge' ? `Part 2: ${c.rail}` : c.rail)
 
 export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number; onJump: (i: number) => void; delay: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -130,3 +130,4 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
     </div>
   )
 }
+

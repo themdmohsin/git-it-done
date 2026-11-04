@@ -1,6 +1,7 @@
 import type { Card, StackScene } from './engine/types'
 import { vijayCards } from './vijay/cards'
 import { workshopCards } from './workshop'
+import { MUKTI } from './links'
 
 const none = { type: 'none' } as const
 
@@ -122,10 +123,11 @@ export const cards: Card[] = [
     ],
     tagline: { text: 'Svatantrata Sarvada', translation: 'Freedom Always' },
     links: [
-      { label: 'GitHub org', url: '' },
-      { label: 'Telegram', url: '' },
-      { label: 'Email', url: '' },
+      { label: 'GitHub', url: MUKTI.github },
+      { label: 'Telegram', url: MUKTI.telegram },
+      { label: 'Email', url: MUKTI.email },
     ],
+    linkify: { GitHub: MUKTI.github, Telegram: MUKTI.telegram },
     view: 'story',
     art: 'mukti',
     lane: 'detour',
@@ -139,9 +141,9 @@ export const cards: Card[] = [
       ],
       happening: 'Mukti is a student-run community where students turn what they learn in class into real skills by building things together. Members contribute to free and open source software (FOSS) projects, run workshops and hackathons, and take part in national and international forums. This workshop is exactly that idea: learning by getting your hands dirty.',
       links: [
-        { label: 'Mukti community website', url: 'https://mukticommunity.github.io/' },
-        { label: 'Mukti on GitHub', url: 'https://github.com/MuktiCommunity' },
-        { label: 'Mukti on Telegram', url: 'https://t.me/+wFGdHiypdQhkZWU9' },
+        { label: 'Mukti community website', url: MUKTI.website },
+        { label: 'Mukti on GitHub', url: MUKTI.github },
+        { label: 'Mukti on Telegram', url: MUKTI.telegram },
       ],
     },
   },
@@ -722,7 +724,7 @@ export const cards: Card[] = [
   /* ---------- E. Workshop: choose a system, set up the laptop, go back to the commands ---------- */
   ...workshopCards,
 
-  /* ---------- Part 2 (Vijay): branching and merging ---------- */
+  /* ---------- Part 2: branching and merging ---------- */
   ...vijayCards,
 ]
 
@@ -733,4 +735,7 @@ cards.forEach((c) => {
   if (s.layers[s.layers.length - 1] !== s.front || s.front !== c.id) throw new Error(`Bad scene on card ${c.id}`)
   s.layers.forEach((id) => { if (!cards.some((k) => k.id === id)) throw new Error(`Unknown layer ${id} on card ${c.id}`) })
 })
+
+
+
 
