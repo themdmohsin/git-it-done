@@ -51,12 +51,12 @@ const CARDS = [
   ['ready', 'You\u2019re set. Now let\u2019s make commits.', 0],
   ['why-branch', 'Why do we need branches?', 4],
   ['branch-idea', 'Separate your work. Keep main stable.', 4],
-  ['branch-create', 'Create a branch. Switch to it. Start working.', 4],
-  ['branch-commit', 'Make a change. Save it as a commit.', 4],
+  ['branch-create', 'Create a branch. Switch to it. Start working.', 7],
+  ['branch-commit', 'Make a change. Check it. Save it as a commit.', 7],
   ['branch-merge', 'Feature complete? Bring it back into main.', 5],
-  ['oss-intro', 'Great software is built by people working together.', 0],
+  ['oss-intro', 'Great software is built by people working together.', 3],
   ['oss-issues', 'Find something to fix', 0],
-  ['oss-pull-requests', 'You can\u2019t push directly. So you propose instead.', 0],
+  ['oss-pull-requests', 'You can\u2019t push directly. So you propose instead.', 2],
   ['oss-first-contrib', 'Let\u2019s contribute to MUKTI!', 0],
   ['oss-fork', 'Make your own copy', 0],
   ['oss-clone', 'Bring it onto your computer', 3],
@@ -69,8 +69,8 @@ const CARDS = [
 const LAST = 'keep-going'
 /* Terminal entries expected after each press on the branching terminal cards (press 3 on branch-create is a reset). */
 const TLINES = {
-  'branch-create': [0, 1, 2, 0, 1],
-  'branch-commit': [0, 1, 2, 3, 4],
+  'branch-create': [0, 1, 2, 3, 4, 5, 0, 1],
+  'branch-commit': [0, 1, 2, 3, 4, 5, 6, 7],
   'branch-merge': [0, 1, 2, 3, 4, 5],
   vscode: [0, 1, 2], 'git-install': [0, 1, 2], 'gh-install': [0, 1, 2], 'gh-login': [0, 1, 2, 3], identity: [0, 1],
 }

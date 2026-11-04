@@ -60,7 +60,7 @@ function Entry({ step, animate, onDone }: { step: Step; animate: boolean; onDone
   )
 }
 
-export function Terminal({ steps, playing, onDone }: { steps: Step[]; playing: boolean; onDone: () => void }) {
+export function Terminal({ steps, playing, onDone, repo }: { steps: Step[]; playing: boolean; onDone: () => void; repo?: string }) {
   const { os } = useOS()
   const body = useRef<HTMLDivElement>(null)
   const inner = useRef<HTMLDivElement>(null)
@@ -81,7 +81,7 @@ export function Terminal({ steps, playing, onDone }: { steps: Step[]; playing: b
         <span className="dot" style={{ background: 'var(--lane-feature)' }} />
         <span className="dot" style={{ background: 'var(--lane-main)' }} />
         <span className="dot" style={{ background: 'var(--lane-remote)' }} />
-        <span className="t-title">{REPO}</span>
+        <span className="t-title">{repo ?? REPO}</span>
       </div>
       <div className="t-body" ref={body}>
         <div ref={inner}>

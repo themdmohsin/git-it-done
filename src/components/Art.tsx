@@ -331,28 +331,6 @@ function BornArt() {
   )
 }
 
-/* ---------- Open source contribution: forking one project into many hands ---------- */
-const FORKS: [number, number][] = [[-220, -60], [0, -100], [220, -60], [-150, 100], [150, 100]]
-function CollabArt() {
-  return (
-    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="One shared project, forked and worked on by several people, feeding changes back">
-      <g transform="translate(400 150)">
-        <rect x="-130" y="-54" width="260" height="108" rx="20" fill="var(--lane-main)" />
-        <text x="0" y="8" textAnchor="middle" className="art-mono" fontSize="34" fill="var(--panel)">{'</>'}</text>
-      </g>
-      {FORKS.map(([dx, dy], i) => (
-        <g key={i} transform={`translate(${400 + dx} ${300 + dy})`}>
-          <line x1="0" y1={dy > 0 ? -60 : 60} x2={-dx * 0.18} y2={dy > 0 ? -130 - dy * 0.3 : 130 - dy * 0.1} stroke="var(--panel-line)" strokeWidth="4" />
-          <circle r="34" fill="var(--panel-2)" stroke={DOT_COLORS[i % 3]} strokeWidth="5" />
-          <text y="10" textAnchor="middle" className="art-mono" fontSize="34" fill={DOT_COLORS[i % 3]}>{'</>'}</text>
-        </g>
-      ))}
-      <text x="400" y="560" textAnchor="middle" className="art-text" fontSize="36" fill="var(--term-text)">Linux &middot; Firefox &middot; VS Code</text>
-      <text x="400" y="604" textAnchor="middle" className="art-text" fontSize="28" fill="var(--term-dim)">built in the open, by anyone who shows up</text>
-    </svg>
-  )
-}
-
 /* ---------- Issues: a card with coloured labels ---------- */
 const LABELS: [string, string][] = [
   ['good first issue', 'var(--lane-main)'],
@@ -383,33 +361,6 @@ function IssueLabelsArt() {
   )
 }
 
-/* ---------- Pull requests: changes become a reviewed proposal (vertical, so longer labels have room) ---------- */
-const PR_FLOW: [string, string][] = [
-  ['Your changes', 'var(--lane-main)'],
-  ['Pull request', 'var(--lane-feature)'],
-  ['Review', 'var(--lane-remote)'],
-  ['Merge?', 'var(--lane-main)'],
-]
-function PrFlowArt() {
-  const rowY = (i: number) => 110 + i * 140
-  return (
-    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="Your changes become a pull request, go through review, and may be merged">
-      <line x1="150" y1={rowY(0)} x2="150" y2={rowY(PR_FLOW.length - 1)} stroke="var(--panel-line)" strokeWidth="8" strokeLinecap="round" />
-      {PR_FLOW.map(([label, color], i) => {
-        const y = rowY(i)
-        return (
-          <g key={label}>
-            <circle cx="150" cy={y} r="38" fill={color} stroke="var(--panel)" strokeWidth="8" />
-            <text x="150" y={y + 11} textAnchor="middle" className="art-text" fontSize="32" fill="var(--panel)">{i + 1}</text>
-            <text x="230" y={y + 12} className="art-text" fontSize="36" fill="var(--term-text)">{label}</text>
-          </g>
-        )
-      })}
-      <text x="400" y="600" textAnchor="middle" className="art-text" fontSize="28" fill="var(--term-dim)">opening a PR does not mean it is accepted</text>
-    </svg>
-  )
-}
-
 /* ---------- Fork / pull request direction: two repositories and an arrow between them ---------- */
 function RepoFlowArt({ left, right, badge, reverse }: { left: string; right: string; badge?: string; reverse?: boolean }) {
   const a = reverse ? right : left
@@ -436,7 +387,49 @@ function RepoFlowArt({ left, right, badge, reverse }: { left: string; right: str
   )
 }
 function ForkArt() { return <RepoFlowArt left="Original repository" right="Your fork" /> }
-function PrDirectionArt() { return <RepoFlowArt left="Your fork" right="Original repository" badge="Pull request" reverse /> }
+
+/* ---------- Pull request mock: a realistic GitHub PR page (title, branches, diff, review, merge button) ---------- */
+function PrMockPanel() {
+  return (
+    <div className="pr-mock" role="img" aria-label="A GitHub pull request: title, source and target branches, a file diff, and a merge button blocked on review">
+      <div className="pr-mock-crumb">octocat / open-source-project</div>
+      <div className="pr-mock-titlerow">
+        <span className="pr-state open">Open</span>
+        <h3 className="pr-mock-title">Complete assigned contribution <span className="pr-mock-num">#57</span></h3>
+      </div>
+      <div className="pr-mock-branches">
+        <span className="pr-branch head">you:main</span>
+        <span className="pr-branch-arrow">&rarr;</span>
+        <span className="pr-branch base">project:main</span>
+        <span className="pr-mock-meta">wants to merge 1 commit</span>
+      </div>
+
+      <div className="pr-mock-desc">This completes my assigned contribution.<br />Closes #42</div>
+
+      <div className="pr-mock-tabs">
+        <span>Conversation</span>
+        <span>Commits <i>1</i></span>
+        <span className="on">Files changed <i>1</i></span>
+      </div>
+
+      <div className="pr-mock-diffstat">
+        <code>src/onboarding.md</code>
+        <span className="add">+3</span>
+        <span className="rem">-1</span>
+      </div>
+      <div className="pr-mock-diff">
+        <div className="d-ctx">  ## Getting started</div>
+        <div className="d-rem">- Clone the repository and open it.</div>
+        <div className="d-add">+ Clone your fork, then open it in VS Code.</div>
+        <div className="d-add">+ Run npm install before you start.</div>
+        <div className="d-ctx">  ## Next steps</div>
+      </div>
+
+      <div className="pr-mock-review"><span className="pr-review-dot" /> Review required &mdash; a maintainer has not approved yet</div>
+      <button className="btn pr-mock-merge" disabled>Merge pull request</button>
+    </div>
+  )
+}
 
 /* ---------- Complete workflow: eight steps, two rows ---------- */
 const WF_STEPS = ['Find issue', 'Fork it', 'Clone it', 'Edit files', 'Commit', 'Push', 'Open PR', 'Merge']
@@ -493,11 +486,9 @@ export function StoryArt({ art }: { art: ArtId }) {
     case 'snapshots': return <SnapshotsArt />
     case 'born': return <BornArt />
     case 'audience': return <AudienceArt />
-    case 'collab': return <CollabArt />
     case 'issueLabels': return <IssueLabelsArt />
-    case 'prFlow': return <PrFlowArt />
     case 'forkFlow': return <ForkArt />
-    case 'prDirection': return <PrDirectionArt />
+    case 'prMock': return <PrMockPanel />
     case 'workflowSteps': return <WorkflowArt />
     case 'challengeSteps': return <ChallengeStepsArt />
     case 'githubSignup': return <SignupArt />

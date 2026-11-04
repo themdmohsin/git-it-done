@@ -33,6 +33,38 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .bullets li::before { content: ''; position: absolute; left: 0; top: 0.45em; width: calc(var(--u) * 0.7); height: calc(var(--u) * 0.7); border-radius: 50%; background: var(--accent); }
 .note-chip { background: var(--card); border: 1px solid var(--card-border); border-left: calc(var(--u) * 0.4) solid var(--accent); border-radius: calc(var(--u) * 1); padding: calc(var(--u) * 0.6) calc(var(--u) * 1.2); font-size: calc(var(--u) * 1.5); font-weight: 500; }
 
+/* ---------- labels panel (oss-issues card: "Common labels to look for") ---------- */
+.labels-panel { background: var(--card); border: 1px solid var(--card-border); border-radius: calc(var(--u) * 1.2); padding: calc(var(--u) * 1) calc(var(--u) * 1.2); display: grid; gap: calc(var(--u) * 0.8); }
+.labels-panel-heading { display: flex; align-items: center; gap: calc(var(--u) * 0.6); font-weight: 700; font-size: calc(var(--u) * 1.5); color: var(--ink); }
+.labels-panel-icon { font-size: calc(var(--u) * 1.4); }
+.labels-panel-row { display: flex; flex-wrap: wrap; gap: calc(var(--u) * 0.6); }
+.label-pill { border: 2px solid; border-radius: 999px; padding: calc(var(--u) * 0.3) calc(var(--u) * 1.1); font-size: calc(var(--u) * 1.3); font-weight: 700; background: color-mix(in srgb, currentColor 12%, var(--card)); }
+.card.dense .labels-panel { padding: calc(var(--u) * 0.7) calc(var(--u) * 1); gap: calc(var(--u) * 0.5); }
+
+/* ---------- subheading quote (pull-requests card) ---------- */
+.subheading { font-size: calc(var(--u) * 1.5); line-height: 1.25; color: var(--ink); font-weight: 600; max-width: 30em; margin: 0; }
+.card.dense .subheading { font-size: calc(var(--u) * 1.35); line-height: 1.15; }
+
+/* ---------- numbered explanation points (pull-requests card) ---------- */
+.numbered-points { display: grid; gap: calc(var(--u) * 0.7); width: 100%; }
+.numbered-point { display: flex; align-items: flex-start; gap: calc(var(--u) * 0.9); }
+.numbered-badge { flex: 0 0 auto; display: grid; place-items: center; width: calc(var(--u) * 2.2); height: calc(var(--u) * 2.2); border-radius: calc(var(--u) * 0.6); background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: calc(var(--u) * 1.2); }
+.numbered-point-title { font-weight: 700; font-size: calc(var(--u) * 1.5); color: var(--ink); line-height: 1.15; }
+.numbered-point-text { font-size: calc(var(--u) * 1.25); line-height: 1.2; color: var(--muted); font-weight: 500; }
+.card.dense .numbered-points { gap: calc(var(--u) * 0.45); }
+.card.dense .numbered-badge { width: calc(var(--u) * 1.9); height: calc(var(--u) * 1.9); font-size: calc(var(--u) * 1.1); }
+.card.dense .numbered-point-title { font-size: calc(var(--u) * 1.3); }
+.card.dense .numbered-point-text { font-size: calc(var(--u) * 1.15); line-height: 1.15; }
+
+/* ---------- "Remember" callout (pull-requests card) ---------- */
+.remember-box { background: var(--card); border: 1px solid var(--card-border); border-left: calc(var(--u) * 0.4) solid var(--accent); border-radius: calc(var(--u) * 1); padding: calc(var(--u) * 0.7) calc(var(--u) * 1.1); display: grid; gap: calc(var(--u) * 0.25); }
+.remember-heading { font-weight: 700; font-size: calc(var(--u) * 1.4); color: var(--ink); }
+.remember-line { font-size: calc(var(--u) * 1.25); line-height: 1.2; color: var(--muted); font-weight: 500; }
+.card.dense .remember-box { padding: calc(var(--u) * 0.5) calc(var(--u) * 0.9); }
+.card.dense .remember-heading { font-size: calc(var(--u) * 1.2); }
+.card.dense .remember-line { font-size: calc(var(--u) * 1.1); }
+.remember-line strong { color: var(--ink); }
+
 /* ---------- chips / buttons ---------- */
 .chip-cmd {
   display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--u) * 0.8); max-width: 100%;
@@ -193,6 +225,10 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .card.dense .bullets li { line-height: 1.2; }
 .card.dense .note-chip { padding-block: calc(var(--u) * 0.4); }
 .card.dense h1 { font-size: clamp(32px, calc(var(--u) * 3.6), 150px); }
+/* Pull-requests card specifically: title + subheading + three numbered points + callout is a lot of content for one column, so pack it tighter than the usual dense rules. Scoped with :has() so no other dense card is affected. */
+.card:has(.numbered-points).dense .card-left { gap: calc(var(--u) * 0.5); }
+.card:has(.numbered-points).dense h1 { font-size: clamp(26px, calc(var(--u) * 2.9), 150px); }
+.card:has(.numbered-points) .sentence { line-height: 1.2; }
 .card.dense .bullets { gap: calc(var(--u) * 0.4); }
 .stab {
   position: absolute; top: calc(var(--u) * 0.3); left: calc(var(--u) * 3.4); z-index: 2;
@@ -406,3 +442,32 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .res-list a:focus-visible { outline-color: var(--lane-remote); }
 .res-list code { font-size: calc(var(--u) * 1.5); color: var(--term-text); }
 
+/* ---------- Pull request mock: a realistic GitHub PR page, built from theme tokens only ---------- */
+.pr-mock { width: 100%; background: var(--panel-2); border: 1px solid var(--panel-line); border-radius: calc(var(--u) * 1.4); padding: calc(var(--u) * 1.4) calc(var(--u) * 1.6); display: grid; gap: calc(var(--u) * 0.9); font-size: calc(var(--u) * 1.4); color: var(--term-text); }
+.pr-mock-crumb { font-family: var(--font-code); color: var(--term-dim); font-size: calc(var(--u) * 1.3); }
+.pr-mock-titlerow { display: flex; align-items: baseline; gap: calc(var(--u) * 0.9); flex-wrap: wrap; }
+.pr-state { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: calc(var(--u) * 1.2); padding: calc(var(--u) * 0.25) calc(var(--u) * 0.8); border-radius: 999px; background: var(--lane-main); color: var(--panel); }
+.pr-mock-title { margin: 0; font-size: calc(var(--u) * 2.2); line-height: 1.15; letter-spacing: -0.02em; color: var(--term-text); }
+.pr-mock-num { color: var(--term-dim); font-weight: 500; }
+.pr-mock-branches { display: flex; align-items: center; flex-wrap: wrap; gap: calc(var(--u) * 0.6); font-family: var(--font-code); font-size: calc(var(--u) * 1.4); }
+.pr-branch { padding: calc(var(--u) * 0.2) calc(var(--u) * 0.7); border-radius: calc(var(--u) * 0.5); font-weight: 700; }
+.pr-branch.head { background: var(--lane-feature); color: var(--panel); }
+.pr-branch.base { background: var(--lane-main); color: var(--panel); }
+.pr-branch-arrow { color: var(--term-dim); }
+.pr-mock-meta { color: var(--term-dim); margin-left: calc(var(--u) * 0.6); }
+.pr-mock-desc { background: var(--panel); border: 1px solid var(--panel-line); border-radius: calc(var(--u) * 1); padding: calc(var(--u) * 0.8) calc(var(--u) * 1); font-size: calc(var(--u) * 1.4); line-height: 1.4; }
+.pr-mock-tabs { display: flex; gap: calc(var(--u) * 1.4); font-size: calc(var(--u) * 1.3); color: var(--term-dim); border-bottom: 1px solid var(--panel-line); padding-bottom: calc(var(--u) * 0.6); }
+.pr-mock-tabs .on { color: var(--lane-remote); font-weight: 700; border-bottom: 2px solid var(--lane-remote); padding-bottom: calc(var(--u) * 0.6); margin-bottom: calc(var(--u) * -0.66); }
+.pr-mock-tabs i { font-style: normal; color: var(--term-dim); }
+.pr-mock-diffstat { display: flex; align-items: center; gap: calc(var(--u) * 0.8); font-family: var(--font-code); font-size: calc(var(--u) * 1.3); }
+.pr-mock-diffstat code { color: var(--term-text); }
+.pr-mock-diffstat .add { color: var(--lane-main); font-weight: 700; }
+.pr-mock-diffstat .rem { color: var(--accent); font-weight: 700; }
+.pr-mock-diff { font-family: var(--font-code); font-size: calc(var(--u) * 1.3); background: var(--panel); border: 1px solid var(--panel-line); border-radius: calc(var(--u) * 1); overflow: hidden; }
+.pr-mock-diff > div { padding: calc(var(--u) * 0.2) calc(var(--u) * 1); white-space: pre-wrap; }
+.pr-mock-diff .d-ctx { color: var(--term-dim); }
+.pr-mock-diff .d-add { color: var(--lane-main); background: rgba(201, 226, 101, 0.12); }
+.pr-mock-diff .d-rem { color: var(--accent); background: rgba(232, 85, 61, 0.12); }
+.pr-mock-review { display: flex; align-items: center; gap: calc(var(--u) * 0.6); font-size: calc(var(--u) * 1.4); color: var(--term-text); }
+.pr-review-dot { width: calc(var(--u) * 0.9); height: calc(var(--u) * 0.9); border-radius: 50%; background: var(--lane-feature); flex: none; }
+.pr-mock-merge { justify-self: start; opacity: 0.55; cursor: not-allowed; }

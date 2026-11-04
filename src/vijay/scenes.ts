@@ -116,8 +116,11 @@ const loginHere: GPill = { name: 'feature-login', at: S0.id, tone: 'login' }
 
 export const CREATE_SCENES: GScene[] = [
   { commits: [S0], pills: [mainOnly], head: 'main', caption: 'You are on main.' },
+  { commits: [S0], pills: [mainOnly], head: 'main', caption: 'git branch \u2014 the * marks main, your current branch.' },
   { commits: [S0], pills: [mainOnly, loginHere], head: 'main', caption: 'git branch feature-login \u2014 created, but HEAD is still on main.' },
+  { commits: [S0], pills: [mainOnly, loginHere], head: 'main', caption: 'git branch \u2014 feature-login exists, but the * is still on main.' },
   { commits: [S0], pills: [mainOnly, loginHere], head: 'feature-login', caption: 'git checkout feature-login \u2014 HEAD moves. Same commit, nothing else changes.' },
+  { commits: [S0], pills: [mainOnly, loginHere], head: 'feature-login', caption: 'git branch \u2014 the * has moved to feature-login.' },
   { commits: [S0], pills: [mainOnly], head: 'main', caption: 'Fresh start \u2014 same goal, one command.' },
   { commits: [S0], pills: [mainOnly, loginHere], head: 'feature-login', caption: 'git checkout -b feature-login \u2014 created AND switched, in one step.' },
 ]
@@ -143,8 +146,21 @@ export const COMMIT_SCENES: GScene[] = [
     caption: 'echo ... > notes.txt \u2014 exists in the working directory, not yet tracked.',
   },
   {
+    commits: [K0], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
+    head: 'feature-login', fileTag: { lane: 1, col: 1, label: 'notes.txt' },
+    caption: 'git status \u2014 Git sees notes.txt, but it is still untracked.',
+  },
+  {
     commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
     head: 'feature-login', caption: 'git add notes.txt \u2014 staged, ready to be committed.',
+  },
+  {
+    commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
+    head: 'feature-login', caption: 'git status \u2014 "Changes to be committed" means it is staged.',
+  },
+  {
+    commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
+    head: 'feature-login', caption: 'git diff --staged \u2014 the + line is exactly what you are about to save.',
   },
   {
     commits: [K0, K1], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K1.id, tone: 'login' }],

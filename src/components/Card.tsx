@@ -60,6 +60,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     case 'story':
       if (card.art === 'linus') panel = <LinusPanel picture={card.picture} />
       else if (card.tagline || card.links) panel = <MuktiPanel tagline={card.tagline} links={card.links} />
+      else if (card.picture) panel = <div className="panel shotpanel"><ShotFigure picture={card.picture} /></div>
       else panel = <div className="panel center">{card.art && <StoryArt art={card.art} />}</div>
       break
     case 'fullshot':
@@ -106,12 +107,12 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     default:
       panel = card.hideGraph ? (
         <div className="panel terminal-only">
-          <Terminal key={from} steps={card.steps.slice(from, done)} playing={playing} onDone={onStepDone} />
+          <Terminal key={from} steps={card.steps.slice(from, done)} playing={playing} onDone={onStepDone} repo={card.termRepo} />
         </div>
       ) : (
         <div className={'panel split' + (card.strip ? ' has-strip' : '') + (card.visual ? ' vj-split' : '')}>
 
-          <Terminal key={from} steps={card.steps.slice(from, done)} playing={playing} onDone={onStepDone} />
+          <Terminal key={from} steps={card.steps.slice(from, done)} playing={playing} onDone={onStepDone} repo={card.termRepo} />
           <div className="graph-area">
             {card.strip && <FileStrip stage={fileStage(card, applied)} instant={instant} />}
             <div className="graph-wrap">
@@ -139,6 +140,9 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
   }
 
   const weight = card.sentence.length + (card.bullets ?? []).join('').length + (card.note ?? '').length
+    + (card.subheading ?? '').length
+    + (card.numberedPoints ?? []).map((p) => p.title + p.text).join('').length
+    + (card.remember ? card.remember.heading + card.remember.lines.map((l) => l.label + l.text).join('') : '').length
   const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual || !!card.resources
   const vjWide = card.view === 'vijay' || !!card.visual
 
@@ -147,6 +151,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
       <div className="card-left">
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
+        {card.subheading && <p className="subheading">{nb(card.subheading)}</p>}
         <p className="sentence">{nb(card.sentence)}</p>
         {card.bullets && (
           <ul className="bullets">
@@ -154,7 +159,47 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
           </ul>
         )}
         {card.resources && <ResourceTiles items={card.resources} />}
+        {card.numberedPoints && (
+          <div className="numbered-points">
+            {card.numberedPoints.map((p) => (
+              <div className="numbered-point" key={p.number}>
+                <span className="numbered-badge">{p.number}</span>
+                <div className="numbered-point-body">
+                  <div className="numbered-point-title">{p.title}</div>
+                  <div className="numbered-point-text">{nb(p.text)}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {card.note && <div className="note-chip">{nb(card.note)}</div>}
+        {card.remember && (
+          <div className="remember-box">
+            <div className="remember-heading">{card.remember.heading}</div>
+            {card.remember.lines.map((l) => (
+              <div className="remember-line" key={l.label}><strong>{l.label}</strong> = {l.text}</div>
+            ))}
+          </div>
+        )}
+        {card.calloutBox && (
+          <div className="remember-box">
+            <div className="remember-heading">{card.calloutBox.heading}</div>
+            <div className="remember-line">{nb(card.calloutBox.text)}</div>
+          </div>
+        )}
+        {card.labelsPanel && (
+          <div className="labels-panel">
+            <div className="labels-panel-heading">
+              <span className="labels-panel-icon" aria-hidden="true">&#128269;</span>
+              {card.labelsPanel.heading}
+            </div>
+            <div className="labels-panel-row">
+              {card.labelsPanel.labels.map((l) => (
+                <span key={l.text} className="label-pill" style={{ color: l.color, borderColor: l.color }}>{l.text}</span>
+              ))}
+            </div>
+          </div>
+        )}
         {card.final && <div className="final-chip">{card.final}</div>}
         {card.tryIt && <CommandChip label="Try it" cmd={card.tryIt} />}
         {card.chips && (
