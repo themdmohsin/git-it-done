@@ -89,7 +89,7 @@ export interface Card {
   sentence: string
   bullets?: string[]
   /** Numbered explanation points (01, 02, 03...) shown instead of plain bullets (pull-requests card). */
-  numberedPoints?: { number: string; title: string; text: string }[]
+  numberedPoints?: { number: string; title: string; text: string; code?: boolean; badgeTone?: 'accent' | 'main' }[]
   note?: string
   /** Bottom callout box with a heading and a few label/text lines (pull-requests card: "Remember"). */
   remember?: { heading: string; lines: { label: string; text: string }[] }

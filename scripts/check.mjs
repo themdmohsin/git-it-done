@@ -52,7 +52,7 @@ const CARDS = [
   ['why-branch', 'Why do we need branches?', 4],
   ['branch-idea', 'Separate your work. Keep main stable.', 4],
   ['branch-create', 'Create a branch. Switch to it. Start working.', 7],
-  ['branch-commit', 'Make a change. Check it. Save it as a commit.', 7],
+  ['branch-commit', 'Make changes on your branch.', 4],
   ['branch-merge', 'Feature complete? Bring it back into main.', 5],
   ['oss-intro', 'Great software is built by people working together.', 3],
   ['oss-issues', 'Find something to fix', 0],
@@ -69,7 +69,7 @@ const LAST = 'oss-challenge'
 /* Terminal entries expected after each press on the branching terminal cards (press 3 on branch-create is a reset). */
 const TLINES = {
   'branch-create': [0, 1, 2, 3, 4, 5, 0, 1],
-  'branch-commit': [0, 1, 2, 3, 4, 5, 6, 7],
+  'branch-commit': [0, 1, 2, 3, 4],
   'branch-merge': [0, 1, 2, 3, 4, 5],
   vscode: [0, 1, 2], 'git-install': [0, 1, 2], 'gh-install': [0, 1, 2], 'gh-login': [0, 1, 2, 3], identity: [0, 1],
 }

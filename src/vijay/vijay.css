@@ -14,6 +14,8 @@
 /* Terminal cards (create / commit / merge): terminal on the left, the Git graph on the right,
    side by side, so the graph is never squeezed into a short strip. */
 .panel.split.vj-split { display: grid; grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr); grid-template-rows: none; gap: calc(var(--u) * 1.2); align-items: stretch; }
+/* Card 4 only: the graph is the main teaching point here, so give it more room than the terminal. */
+.card[data-card-id="branch-commit"] .panel.split.vj-split { grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr); }
 .panel.split.vj-split .graph-area { border-top: none; padding-top: 0; justify-content: center; }
 .panel.split.vj-split .graph-wrap { min-height: calc(var(--u) * 20); }
 

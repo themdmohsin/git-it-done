@@ -25,6 +25,9 @@ export interface CardProps {
 /** Keeps a command option such as --version in one piece when a line wraps. */
 const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
+/** Renders `backtick` tokens inside note/final text as a small ref pill (e.g. `main`). */
+const richText = (s: string) => nb(s).split(/`([^`]+)`/g).map((p, i) => (i % 2 ? <code key={i} className="ref-pill">{p}</code> : p))
+
 export function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const { os } = useOS()
   const { filled } = useUserDetails()
@@ -133,7 +136,7 @@ export function Card({ cardIdx, done, applied, playing, instant, onStepDone, fra
   const vjWide = card.view === 'vijay' || !!card.visual
 
   return (
-    <div className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips ? ' wider-left' : '')}>
+    <div data-card-id={card.id} className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips ? ' wider-left' : '')}>
       <div className="card-left">
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
@@ -148,16 +151,16 @@ export function Card({ cardIdx, done, applied, playing, instant, onStepDone, fra
           <div className="numbered-points">
             {card.numberedPoints.map((p) => (
               <div className="numbered-point" key={p.number}>
-                <span className="numbered-badge">{p.number}</span>
+                <span className={'numbered-badge' + (p.badgeTone === 'main' ? ' tone-main' : '')}>{p.number}</span>
                 <div className="numbered-point-body">
-                  <div className="numbered-point-title">{p.title}</div>
+                  {p.code ? <code className="numbered-point-cmd">{p.title}</code> : <div className="numbered-point-title">{p.title}</div>}
                   <div className="numbered-point-text">{nb(p.text)}</div>
                 </div>
               </div>
             ))}
           </div>
         )}
-        {card.note && <div className="note-chip">{nb(card.note)}</div>}
+        {card.note && <div className="note-chip">{richText(card.note)}</div>}
         {card.remember && (
           <div className="remember-box">
             <div className="remember-heading">{card.remember.heading}</div>
