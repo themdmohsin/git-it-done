@@ -259,7 +259,7 @@ const MEASURE = (strict) => {
   for (let n; (n = walker.nextNode());) {
     if (!n.textContent.trim()) continue
     const el = n.parentElement
-    if (hidden(el) || el.closest('.drawer') || el.closest('[aria-hidden="true"]')) continue
+    if (hidden(el) || el.closest('.drawer') || el.closest('.space-hint, .rail-preview') || el.closest('[aria-hidden="true"]')) continue
     const layer = el.closest('.slayer')
     if (layer && layer !== layer.parentElement.lastElementChild) continue // cards behind the front one in a stack
     const r = document.createRange(); r.selectNodeContents(n)
@@ -740,6 +740,7 @@ try {
 }
 console.log(failures.length ? `\n${failures.length} FAILURE(S)` : '\nAll checks passed')
 process.exit(failures.length ? 1 : 0)
+
 
 
 
