@@ -47,12 +47,13 @@ export const workshopContent: Record<string, Partial<Card>> = {
     ),
     drawer: {
       mistakes: [
-        { title: 'Anything fails, or your screen looks different from ours', fix: 'Raise your hand. Volunteers are here for exactly this. Nobody is expected to fix it alone.' },
+        { title: 'Anything fails, or your screen looks different from the examples', fix: 'Raise your hand. Volunteers are here for exactly this. Nobody is expected to fix it alone.' },
         { title: 'You picked the wrong system', fix: 'Click another tile on this card, or press O at any time. Every card switches at once.' },
       ],
       sections: [
         {
           title: 'What each of the five things is for',
+          into: 'happening',
           items: [
             'Visual Studio Code (VS Code): one window with your files and a terminal. Where you type everything today.',
             'Git: the free program that keeps the history of your project on your laptop.',
@@ -68,6 +69,12 @@ export const workshopContent: Record<string, Partial<Card>> = {
 
   vscode: {
     aside: { text: 'Install not working? Plan B: GitHub Codespaces', href: '#/codespaces' },
+    drawer: {
+      links: [
+        { label: 'Visual Studio Code (VS Code) documentation', url: 'https://code.visualstudio.com/docs' },
+        { label: 'Using the terminal in VS Code', url: 'https://code.visualstudio.com/docs/terminal/basics' },
+      ],
+    } as Card['drawer'],
     os: byOS(
       {
         bullets: [
@@ -151,6 +158,12 @@ export const workshopContent: Record<string, Partial<Card>> = {
 
   'git-install': {
     sentence: 'First check: open a terminal and run git --version. If a version prints, you already have Git. Skip this card.',
+    drawer: {
+      links: [
+        { label: 'Download Git (official)', url: 'https://git-scm.com/downloads' },
+        { label: 'Set up Git (GitHub Docs)', url: 'https://docs.github.com/en/get-started/git-basics/set-up-git' },
+      ],
+    } as Card['drawer'],
     os: byOS(
       {
         bullets: [
@@ -259,11 +272,20 @@ export const workshopContent: Record<string, Partial<Card>> = {
         { title: 'Account flagged during sign-up', fix: 'Try a phone hotspot, or finish later.' },
         { title: `GitHub shows a ${TWO_FA} banner or prompt`, fix: 'Follow its on-screen steps (an authenticator app or a passkey) and save the recovery codes. An account restricted for missing 2FA cannot create tokens or authorise apps, which would block the next steps.' },
       ],
-      happening: `GitHub is the website that stores your Git projects online. Your username is part of every repository address (github.com/username/project). The code GitHub emails you only proves the email is yours. ${TWO_FA[0].toUpperCase()}${TWO_FA.slice(1)} is a second proof when you sign in, from an authenticator app or a passkey (a login stored on your device). Sign up before the event so the code arrives quickly and many sign-ups from one Wi-Fi do not get accounts flagged.`,
+      happening: `GitHub is the website that stores your Git projects online, and your username is part of every repository address (github.com/username/project). The code GitHub emails you only proves the email is yours. ${TWO_FA[0].toUpperCase()}${TWO_FA.slice(1)} is a second proof when you sign in, from an authenticator app or a passkey (a login stored on your device). Sign up before the event so the code arrives quickly and many sign-ups from one Wi-Fi do not get accounts flagged.`,
+      links: [
+        { label: 'Creating an account on GitHub (GitHub Docs)', url: 'https://docs.github.com/en/account-and-profile/how-tos/account-management/creating-an-account-on-github' },
+        { label: 'About two-factor authentication (GitHub Docs)', url: 'https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/about-two-factor-authentication' },
+      ],
     },
   },
 
   'gh-install': {
+    drawer: {
+      links: [
+        { label: 'GitHub command line interface (CLI): official site', url: 'https://cli.github.com/' },
+      ],
+    } as Card['drawer'],
     os: byOS(
       {
         bullets: [
@@ -383,6 +405,7 @@ export const workshopContent: Record<string, Partial<Card>> = {
         },
         {
           title: 'Token safety',
+          into: 'wrong',
           items: [
             'Treat a token like a password.',
             'Never post it in the group chat, never screenshot it, never commit it into a repository.',
@@ -391,7 +414,11 @@ export const workshopContent: Record<string, Partial<Card>> = {
           ],
         },
       ],
-      happening: `Git needs proof that you own your GitHub account before it can upload anything. GitHub command line interface (CLI) does this through your browser: it shows a short one-time code, GitHub checks it, and your laptop is trusted from then on. No password or token ever appears in the terminal. The code on the slide (ABCD-1234) is only an example; yours will be different. ${HTTPS_FULL} is the secure web connection Git uses to talk to GitHub.`,
+      happening: `Git needs proof that you own your GitHub account before it can upload anything. GitHub command line interface (CLI) does this through your browser: it shows a short one-time code, GitHub checks it, and your laptop is trusted from then on, with no password or token in the terminal. The code ABCD-1234 in the example is only an example; yours will be different. ${HTTPS_FULL} is the secure web connection Git uses to talk to GitHub.`,
+      links: [
+        { label: 'gh auth login (official manual)', url: 'https://cli.github.com/manual/gh_auth_login' },
+        { label: 'Managing your personal access tokens (GitHub Docs)', url: 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens' },
+      ],
     },
   },
 
@@ -439,11 +466,15 @@ export const workshopContent: Record<string, Partial<Card>> = {
       mistakes: [
         { title: '"Please tell me who you are" or "unable to auto-detect email address"', fix: 'The name and email commands were not run. Run them now.' },
         { title: 'The core.editor command errors', fix: `core.editor only works if code is on ${PATH_FULL}, which the Visual Studio Code step sets up. If it errors, skip that command.` },
-        { title: 'A command fails with a quote error', fix: 'Pasting from slides can produce curly quotes. Use straight quotes: retype the quotes by hand.' },
+        { title: 'A command fails with a quote error', fix: 'Pasting from documents or web pages can produce curly quotes. Use straight quotes: retype the quotes by hand.' },
         { title: 'A strange screen opens and will not close (that is Vim)', fix: 'Press Esc (Escape), type :wq and press Enter. Or type :q! to quit without saving. To stop it happening, run the core.editor command above.' },
         { title: 'You want to change a value later', fix: 'Run the same command again with the new value.' },
       ],
-      happening: 'Git writes your name and email into every commit, so the history shows who did what. It is only a label: it proves nothing and it is not a login (the login was the last card). Using the same email as your GitHub account lets GitHub link your commits to your profile. init.defaultBranch main names your first branch main. core.editor tells Git to open Visual Studio Code whenever it needs you to type a message.',
+      happening: 'Git writes your name and email into every commit, so the history shows who did what. It is only a label: it proves nothing and it is not a login (the login was the last card). Using the same email as your GitHub account lets GitHub link your commits to your profile. The last two commands name your first branch main and tell Git to open Visual Studio Code whenever it needs you to type a message.',
+      links: [
+        { label: 'Pro Git: First-time Git setup', url: 'https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup' },
+        { label: 'git config (official manual)', url: 'https://git-scm.com/docs/git-config' },
+      ],
     },
   },
 
@@ -469,7 +500,10 @@ export const workshopContent: Record<string, Partial<Card>> = {
         { title: 'A message says you used your free allowance', fix: 'Free accounts get a monthly allowance of hours. Ask a volunteer. Stop codespaces you are not using.' },
         { title: 'You are not sure whether your laptop needs Plan B', fix: 'If setup is taking more than about 5 minutes, ask for Plan B early. Do not wait to fall behind.' },
       ],
-      happening: 'GitHub Codespaces is a computer in the cloud that you use through a browser tab. It already has Visual Studio Code, a terminal and Git, and it is signed in to your GitHub account. That makes it a good fallback when a laptop is locked down, is a Chromebook or tablet, or an install fails. It is a fallback, not unlimited: free accounts get a monthly allowance.',
+      happening: 'GitHub Codespaces is a computer in the cloud that you use through a browser tab. It already has Visual Studio Code, a terminal and Git, and it is signed in to your GitHub account, which makes it a good fallback when a laptop is locked down, is a Chromebook or tablet, or an install fails. It is a fallback, not unlimited: free accounts get a monthly allowance.',
+      links: [
+        { label: 'What are GitHub Codespaces? (GitHub Docs)', url: 'https://docs.github.com/en/codespaces/about-codespaces/what-are-codespaces' },
+      ],
     },
   },
 
@@ -490,9 +524,12 @@ export const workshopContent: Record<string, Partial<Card>> = {
       mistakes: [
         { title: 'The first push is rejected', fix: 'The GitHub repository was not empty. Create a new, completely empty one (no README, no licence, no gitignore).' },
         { title: '"git: command not found" or "gh: command not found"', fix: 'Go back to the install cards, then close and reopen every terminal and Visual Studio Code.' },
-        { title: 'You are stuck or something looks different from the slide', fix: 'Raise your hand. Volunteers are here for exactly this.' },
+        { title: 'You are stuck or something looks different from the examples', fix: 'Raise your hand. Volunteers are here for exactly this.' },
       ],
-      happening: 'Everything is installed and you are signed in. From here the command cards teach what each command does, and you type them on your own laptop as we go. The commands use your own name, email and repository name, so check them with U (Your details) once.',
+      happening: 'Everything is installed and you are signed in. From here the command cards teach what each command does, and you type them on your own laptop as you follow along. The commands use your own name, email and repository name, so check them with U (Your details) once.',
+      links: [
+        { label: 'Pro Git book (free, official)', url: 'https://git-scm.com/book' },
+      ],
     },
   },
 }

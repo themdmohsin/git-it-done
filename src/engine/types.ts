@@ -96,6 +96,8 @@ export interface Card {
   tagline?: { text: string; translation: string }
   /** Mukti card: contact links. A missing url is shown as a TODO. */
   links?: { label: string; url?: string }[]
+  /** Words inside the bullets that become hyperlinks (opened in a new tab). */
+  linkify?: Record<string, string>
   /** Linus card: photo shown beside the art. fullshot view: the screenshot. */
   picture?: Picture
   view: View
@@ -123,16 +125,26 @@ export interface Card {
   os?: Record<OS, OSPart>
   /** Steps are the same on every system, so `steps` is also what the engine counts. */
   steps: Step[]
+  /**
+   * The Details drawer is guidance for the person following along on their own laptop, in four sections:
+   * What's happening (happening), Try it yourself (clicks, commands, tryNext), If something goes wrong (mistakes),
+   * Learn more (links).
+   */
   drawer: {
     install?: boolean
-    /** Exact click-path instructions, shown as a numbered list. */
+    /** Try it yourself: numbered steps. */
     clicks?: string[]
-    /** Extra titled lists, shown after the common mistakes (for example a backup method or safety rules). */
-    sections?: { title: string; items: string[]; ordered?: boolean }[]
+    /** Extra titled lists (for example a backup method or safety rules). `into` picks the section; the default is Try it yourself. */
+    sections?: { title: string; items: string[]; ordered?: boolean; into?: 'happening' | 'try' | 'wrong' }[]
+    /** Try it yourself: copy-paste commands. */
     commands?: CmdText[]
+    /** Try it yourself: a short "try this next" list. */
+    tryNext?: string[]
     mistakes?: { title: string; fix: string }[]
+    /** What's happening: two to four plain sentences. */
     happening: string
-    talking?: string[]
+    /** Learn more: official or well-known free sources. Every address is checked to load before it is added. */
+    links?: { label: string; url: string }[]
   }
 }
 

@@ -5,7 +5,7 @@ import { OS_LIST, useOS } from '../os'
 import { Graph } from './Graph'
 import { AMBIENT_REPO } from './Panels'
 
-/* ---------- messy folder: the speaker's screenshot, with a drawn stand-in ---------- */
+/* ---------- messy folder: the screenshot, with a drawn stand-in ---------- */
 const FILES: [string, string][] = [
   ['final_report.docx', '12 Mar, 09:14'],
   ['final_report (1).docx', '12 Mar, 09:20'],

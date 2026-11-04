@@ -5,7 +5,7 @@
 export const CONFIG = {
   /** The MUKTI challenge repository participants fork. */
   muktiRepoUrl: '',
-  /** Vijay's live demonstration issue (the one he forks and fixes on the projector). */
+  /** The demonstration issue (the one that is forked and fixed live during the workshop). */
   demoIssueUrl: '',
   /** How participants find out which issue/task is theirs. Fill in once decided (e.g. a shared sheet, a label per participant, a bot comment). */
   assignmentMechanism: '',

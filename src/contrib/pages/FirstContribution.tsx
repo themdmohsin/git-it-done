@@ -18,9 +18,9 @@ export function FirstContribution() {
         </p>
       </Section>
 
-      <Section title="Vijay's demonstration issue">
+      <Section title="The demonstration issue">
         <p>
-          Vijay will fork, clone, edit, commit, push and open a pull request live, using this issue:{' '}
+          The demonstration forks, clones, edits, commits, pushes and opens a pull request live, using this issue:{' '}
           <ConfigLink href={CONFIG.demoIssueUrl} label="Open the demonstration issue" pendingLabel="Demonstration issue URL to be announced" />.
         </p>
       </Section>

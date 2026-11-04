@@ -338,10 +338,18 @@ const DRAWER_MEASURE = () => {
     if (lastSection.bottom > innerHeight + 1) out.push('end of the drawer is not reachable')
     d.scrollTop = 0
   }
+  const NAMES = ['What\u2019s happening', 'Try it yourself', 'If something goes wrong', 'Learn more']
   const heads = [...d.querySelectorAll('h3')].map((h) => h.textContent)
-  if (!heads.some((h) => /^Step by step|^Copy-paste commands/.test(h))) out.push('drawer part 1 (commands or click path) is missing')
-  if (!heads.includes('Common mistakes')) out.push('drawer part 2 (common mistakes) is missing')
-  if (!heads.includes('In plain English')) out.push('drawer part 3 (plain English) is missing')
+  if (heads[0] !== NAMES[0]) out.push(`drawer must start with "${NAMES[0]}" (found "${heads[0]}")`)
+  heads.forEach((h) => { if (!NAMES.includes(h)) out.push(`unexpected drawer section "${h}"`) })
+  if (heads.some((h, i) => i > 0 && NAMES.indexOf(h) <= NAMES.indexOf(heads[i - 1]))) out.push(`drawer sections out of order: ${heads.join(' | ')}`)
+  const sentences = (d.querySelector('section p')?.textContent ?? '').split(/(?<=[.!?])\s+/).length
+  if (sentences < 2 || sentences > 4) out.push(`"What\u2019s happening" has ${sentences} sentences (want 2 to 4)`)
+  d.querySelectorAll('a').forEach((a) => {
+    if (a.target !== '_blank' || !/noopener/.test(a.rel) || !/noreferrer/.test(a.rel)) out.push(`drawer link without new tab / rel: ${a.href}`)
+  })
+  const banned = /talking point|tell the room|\bsay:|my half|\bTODO\b|\bslide\b|\bspeaker\b/i.exec(d.innerText)
+  if (banned) out.push(`speaker wording in the drawer: "${banned[0]}"`)
   const walker = document.createTreeWalker(d, NodeFilter.SHOW_TEXT)
   for (let n; (n = walker.nextNode());) {
     if (!n.textContent.trim()) continue
@@ -594,6 +602,26 @@ async function modalStability(browser) {
   await decoder.close(); await page.close()
 }
 
+/* Every card: the drawer has the four user-guidance sections, no speaker wording, safe links, and it fits. */
+async function drawerAll(browser) {
+  console.log('Details drawer on every card: four sections, user guidance only, links open safely, fits and scrolls')
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
+  for (const [id] of CARDS) {
+    await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' })
+    await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 700)
+    await closePicker(page)
+    await page.keyboard.press('d'); await sleep(900)
+    const problems = await page.evaluate(DRAWER_MEASURE)
+    const heads = await page.$$eval('.drawer h3', (e) => e.map((x) => x.textContent))
+    if (WORKSHOP.includes(id) && !(heads.includes('Try it yourself') && heads.includes('If something goes wrong'))) problems.push('workshop drawer lacks Try it yourself or If something goes wrong')
+    problems.forEach((p) => fail(`drawer ${id}: ${p}`))
+    await page.keyboard.press('d'); await sleep(500)
+  }
+  await page.close()
+}
+
+
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { shell: true, stdio: 'ignore' })
 let browser
 try {
@@ -602,6 +630,7 @@ try {
   const only = process.env.ONLY // e.g. ONLY=fit runs just the workshop checks
   if (!only) { await fullPass(browser); await directLoads(browser); await layout(browser) }
   if (!only || only === 'fit') { await workshopFit(browser); await osPersistence(browser) }
+  if (!only || only === 'drawer') await drawerAll(browser)
   if (!only || only === 'modal') await modalStability(browser)
   if (!only || only === 'fit' || only === 'modal') await detailsModal(browser)
 } finally {
@@ -611,4 +640,7 @@ try {
 }
 console.log(failures.length ? `\n${failures.length} FAILURE(S)` : '\nAll checks passed')
 process.exit(failures.length ? 1 : 0)
+
+
+
 

@@ -62,7 +62,7 @@ const base: Card[] = [
     view: 'oschoice',
     lane: 'main',
     steps: [],
-    drawer: { happening: 'We install five things, once per laptop.' },
+    drawer: { happening: 'You install five things, once per laptop.' },
   },
   {
     id: 'vscode',
@@ -75,7 +75,7 @@ const base: Card[] = [
     hideGraph: true,
     lane: 'main',
     ...osSteps('vscode'),
-    drawer: { happening: 'Visual Studio Code (VS Code) is the editor we use all day.' },
+    drawer: { happening: 'Visual Studio Code (VS Code) is the editor used all day in this workshop.' },
   },
   {
     id: 'git-install',

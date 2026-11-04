@@ -30,16 +30,14 @@ export const cards: Card[] = [
     lane: 'main',
     steps: [],
     drawer: {
-      happening: 'Everyone has a folder like this. Copies pile up, names get longer, and nobody can say which version is the right one or who made it.',
-      talking: [
-        'Ask the room: who has a file called "final_FINAL"?',
-        'People try to keep history with copies and file names.',
-        'There is no real history. You cannot see what changed without opening the files and checking by eye.',
-        'No ownership of changes: nobody knows who changed what.',
-        'Two people edit the same file and one overwrites the other.',
-        'No going back.',
-        'Google Drive and Dropbox help a bit (sync and some history), but they still cannot let many people work in parallel and combine the results.',
-        'Say: "So version control exists to solve this."',
+      clicks: [
+        'Open a folder where you keep your own work, such as a report or an assignment.',
+        'Count how many copies of the same file there are, and check whether you can tell which one is newest without opening them.',
+        'Keep that folder in mind. The next cards show how Git replaces all those copies with one tidy history.',
+      ],
+      happening: 'Everyone has a folder like this: copies pile up, file names get longer, and nobody can say which version is the real one or who made it. Without a real history you cannot see what changed, who changed it, or go back, and when two people edit the same file one can overwrite the other. Sync tools such as Google Drive and Dropbox help a little, but they cannot let many people work in parallel and combine the results. Version control (a tool that records every change to your files) exists to fix exactly this.',
+      links: [
+        { label: 'Pro Git: About version control', url: 'https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control' },
       ],
     },
   },
@@ -57,10 +55,14 @@ export const cards: Card[] = [
     scene: { layers: ['recap', 'git-answer'], front: 'git-answer', zoomed: false },
     steps: [],
     drawer: {
-      happening: 'Git is a free program that keeps a full history of your project: every saved version, who saved it, when, and a note on why.',
-      talking: [
-        'Say the name slowly: Git.',
-        'One sentence only. The next press zooms out to the bigger picture.',
+      clicks: [
+        'Read the first paragraph at git-scm.com. It describes Git in one sentence.',
+        'There is nothing to type yet. You will install and use Git later in this workshop.',
+      ],
+      happening: 'Git is a free program that keeps a full history of your project: every saved version, who saved it, when, and a note on why. It runs on your own computer, so it works without internet. The next cards zoom out to where Git came from, then come back to the commands.',
+      links: [
+        { label: 'Git: the official website', url: 'https://git-scm.com/' },
+        { label: 'Pro Git book (free, official)', url: 'https://git-scm.com/book' },
       ],
     },
   },
@@ -85,17 +87,23 @@ export const cards: Card[] = [
     scene: peel('open-source', { enter: 'rise' }),
     steps: [],
     drawer: {
-      happening: 'Open source means the source code (the recipe behind the program) is public, and a license says you may use it, study it, change it and share it. Free software and open source are close cousins. Free software can be free of cost and still hide its code. Open source code can legally be sold. People often combine both ideas as FOSS (free and open source software).',
-      talking: [
-        'Git is a small piece of a much bigger picture.',
-        'Licenses come in two families. Permissive (for example MIT): do almost anything, just keep the notice. Copyleft: share your modified versions under the same terms, so the freedom travels with the code.',
-        'The idea goes beyond software: Wikipedia (Creative Commons), OpenStreetMap, Arduino, RISC-V. This is usually called open content, open data and open hardware.',
-        'Why it matters: many people can inspect, test and fix the same code. That CAN make it more secure and more reliable. It is not automatic, and serious bugs have sat in widely used code for years. Companies also share the cost of common infrastructure.',
-        'Almost nothing today is built from scratch. We stand on the shoulders of giants.',
-        'You can open GitHub right now and read real production code. It is the best free classroom in software.',
-        'You can contribute without writing code: documentation, translations, design, bug reports, testing, answering questions, organising events.',
-        'Android: the base (AOSP) is open source, but many Google apps are not. Do not say Android is fully open.',
-        'When you introduce Mukti, say "community", not "company".',
+      clicks: [
+        'Open github.com and search for a project you already use, such as Firefox or Python. Read some of its real source code.',
+        'Find the file called LICENSE in that project and read the first lines. It tells you what you may do.',
+        'Compare the two main licence families. A permissive licence such as the MIT licence (named after the Massachusetts Institute of Technology) lets you do almost anything if you keep the notice. A copyleft licence asks you to share your changed versions under the same terms, so the freedom travels with the code.',
+        'The idea goes beyond software: Wikipedia (Creative Commons), OpenStreetMap, Arduino and RISC-V (a free design for processors) share their work openly too.',
+        'You can help without writing code: documentation, translations, design, bug reports, testing, answering questions and organising events all count.',
+      ],
+      mistakes: [
+        { title: 'Thinking free means no cost', fix: 'In free software, free means freedom to use, study, change and share. Open source code can legally be sold.' },
+        { title: 'Thinking visible code is automatically open source', fix: 'Without a licence the author keeps all rights, even if you can read the code. Look for a LICENSE file.' },
+        { title: 'Assuming Android is fully open', fix: 'The base, the Android Open Source Project (AOSP), is open source, but many Google apps are not.' },
+      ],
+      happening: 'Open source means the source code (the recipe behind a program) is public, and a licence says you may use it, study it, change it and share it. "Free" here means freedom, not price: free software can cost nothing and still hide its code, while open source code can legally be sold, and people often combine both ideas as free and open source software (FOSS). Seeing the code is not enough, because with no licence the author keeps all rights. Many people can inspect, test and fix the same code, which can make it more secure and reliable, but that is not automatic.',
+      links: [
+        { label: 'The Open Source Definition', url: 'https://opensource.org/osd' },
+        { label: 'Choose a License', url: 'https://choosealicense.com/' },
+        { label: 'What is free software? (GNU Project)', url: 'https://www.gnu.org/philosophy/free-sw.html' },
       ],
     },
   },
@@ -124,13 +132,16 @@ export const cards: Card[] = [
     scene: peel('mukti'),
     steps: [],
     drawer: {
-      happening: 'Mukti is a community where students turn what they learn in class into real skills by building things together. We contribute to FOSS projects, run workshops and hackathons, and take part in national and international forums.',
-      talking: [
-        'Say "community", not "company".',
-        'Tie to today: this workshop is exactly that, learning by getting our hands dirty.',
-        'Invite people to join us on GitHub and Telegram before they leave.',
-        'Keep this card to about one minute, then move on to "Personal software".',
-        'TODO: add the Mukti GitHub org, Telegram and email links in src/cards.ts (the links list on this card).',
+      clicks: [
+        'Open the Mukti website to see the projects, events and blog posts.',
+        'Look at the Mukti organisation on GitHub to see the projects you could contribute to.',
+        'Join the Telegram group to meet the members and hear about the next event.',
+      ],
+      happening: 'Mukti is a student-run community where students turn what they learn in class into real skills by building things together. Members contribute to free and open source software (FOSS) projects, run workshops and hackathons, and take part in national and international forums. This workshop is exactly that idea: learning by getting your hands dirty.',
+      links: [
+        { label: 'Mukti community website', url: 'https://mukticommunity.github.io/' },
+        { label: 'Mukti on GitHub', url: 'https://github.com/MuktiCommunity' },
+        { label: 'Mukti on Telegram', url: 'https://t.me/+wFGdHiypdQhkZWU9' },
       ],
     },
   },
@@ -153,12 +164,17 @@ export const cards: Card[] = [
     scene: peel('personal-software'),
     steps: [],
     drawer: {
-      happening: 'AI-generated code still needs checking. Whether an app is generated or handwritten, it depends on open source libraries and frameworks, which are public because of open source culture. Most AI tools also learn from public code.',
-      talking: [
-        'Generated code is a first draft. Read it and test it before you trust it.',
-        'Both generated and handwritten apps stand on open source libraries and frameworks.',
-        'You could also publish what you build, for others to use.',
-        'Say: "Okay, let me move on to Linux."',
+      clicks: [
+        'Think of one small thing you wish existed, such as a timetable manager or an expense tracker.',
+        'Describe it in plain words to an AI assistant, then read the code it gives you before you run it.',
+        'Optional: publish what you build so that others can use it too.',
+      ],
+      mistakes: [
+        { title: 'Trusting generated code without checking it', fix: 'Read it and test it first. Generated code is a first draft and can contain mistakes.' },
+      ],
+      happening: 'Software is getting cheaper to create, so you can build it just for yourself. Code written by artificial intelligence (AI) is a first draft: read it and test it before you trust it. Whether an app is generated or handwritten, it depends on open source libraries and frameworks, which are public because of open source culture, and most AI tools also learn from public code.',
+      links: [
+        { label: 'Starting an open source project (Open Source Guides)', url: 'https://opensource.guide/starting-a-project/' },
       ],
     },
   },
@@ -181,10 +197,14 @@ export const cards: Card[] = [
     scene: peel('linux'),
     steps: [],
     drawer: {
-      happening: 'A kernel is the part of an operating system that talks to the hardware and manages memory. Linux began as a hobby project by one 21-year-old student in 1991. A distribution packages the kernel with the rest of the operating system.',
-      talking: [
-        'It started small, with one person.',
-        'Ubuntu, maybe you\u2019ve seen it in the college labs.',
+      clicks: [
+        'If you have used Ubuntu in a college lab, you have already used Linux.',
+        'Visit kernel.org to see the latest Linux release. It is updated regularly.',
+      ],
+      happening: 'A kernel is the part of an operating system that talks to the hardware and manages memory. Linux began as a hobby project by one 21-year-old student in 1991. A distribution (such as Ubuntu, Debian or Fedora) packages the kernel with the rest of the operating system, and Linux now runs most web servers, cloud computers and Android phones.',
+      links: [
+        { label: 'The Linux Kernel Archives', url: 'https://www.kernel.org/' },
+        { label: 'Linux kernel (Wikipedia)', url: 'https://en.wikipedia.org/wiki/Linux_kernel' },
       ],
     },
   },
@@ -208,12 +228,15 @@ export const cards: Card[] = [
     scene: peel('linus'),
     steps: [],
     drawer: {
-      happening: 'Linux is now written by a huge crowd. Thousands of contributors send patches (proposed changes). Maintainers (people who look after parts of the code) review them, and the patches flow up through the maintainers, with Linus at the top. That only works if every change can be tracked.',
-      talking: [
-        'Leave the question hanging for a second.',
-        'Three difficulties with many people in one large codebase: keeping track of changes, combining changes that touch the same file, and finding which change broke something.',
-        'This is the real reason version control exists.',
-        'Photo credit: Krd (photo) and Von Sprat (crop), CC BY-SA 4.0, via Wikimedia Commons.',
+      clicks: [
+        'Imagine thousands of people changing one large codebase. Write down three difficulties: keeping track of changes, combining changes that touch the same file, and finding which change broke something.',
+        'These three difficulties are the real reason version control exists. The next cards show the answer.',
+      ],
+      happening: 'Linux is now written by a huge crowd. Thousands of contributors send patches (proposed changes), and maintainers (people who look after parts of the code) review them. Good patches flow up through the maintainers, with Linus Torvalds at the top. That only works if every change can be tracked.',
+      links: [
+        { label: 'How to participate in Linux kernel development', url: 'https://docs.kernel.org/process/howto.html' },
+        { label: 'Linus Torvalds (Wikipedia)', url: 'https://en.wikipedia.org/wiki/Linus_Torvalds' },
+        { label: 'Photo credit: Krd (photo) and Von Sprat (crop), Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0), via Wikimedia Commons', url: 'https://commons.wikimedia.org/wiki/File:LinuxCon_Europe_Linus_Torvalds_03_(cropped).jpg' },
       ],
     },
   },
@@ -236,11 +259,13 @@ export const cards: Card[] = [
     scene: peel('vc-problem'),
     steps: [],
     drawer: {
-      happening: 'Without a system, two people edit the same file and one of them silently wins. Nobody can see the history, find who changed a line, or go back to yesterday.',
-      talking: [
-        'Connect it back to the messy folder on the first slide.',
-        'Each bullet is a real bad day.',
-        'Version control is the fix for all four.',
+      clicks: [
+        'Look back at the messy folder on the first card.',
+        'Match each problem on this card (lost work, no history, no blame, no undo) to something that could go wrong in that folder.',
+      ],
+      happening: 'Without a system, two people edit the same file and one of them silently wins. Nobody can see the history, find who changed a line, or go back to yesterday. Each of the four problems on the card is a real bad day, and version control is the fix for all four.',
+      links: [
+        { label: 'Pro Git: About version control', url: 'https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control' },
       ],
     },
   },
@@ -264,12 +289,14 @@ export const cards: Card[] = [
     scene: peel('vc-idea'),
     steps: [],
     drawer: {
-      happening: 'Version control saves your project as a chain of snapshots. Each one has an author, a time and a message, and points back at the one before. Older systems kept a single central copy on a server; Git gives every person a complete copy, which is what "distributed" means.',
-      talking: [
-        'A commit is a labelled snapshot, like a save point in a game.',
-        'Distributed means you can work without internet.',
-        'Many people can work in parallel because everyone has a full copy.',
-        'A branch is a side copy where you can try things without disturbing the main copy.',
+      clicks: [
+        'Look at the graph on the card. Each dot is a snapshot.',
+        'Find the side branch called feature and see where it joins main again.',
+      ],
+      happening: 'Version control saves your project as a chain of snapshots. Each snapshot (a commit) has an author, a time and a message, and points back at the one before it, like a save point in a game. Older systems kept a single central copy on a server, but Git gives every person a complete copy ("distributed"), so you can work without internet and many people can work in parallel. A branch is a side copy where you can try things without disturbing the main copy.',
+      links: [
+        { label: 'Pro Git: About version control', url: 'https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control' },
+        { label: 'Pro Git: Branches in a nutshell', url: 'https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell' },
       ],
     },
   },
@@ -292,10 +319,13 @@ export const cards: Card[] = [
     scene: peel('git-born'),
     steps: [],
     drawer: {
-      happening: 'The Linux kernel team had been using a proprietary tool called BitKeeper. The free arrangement ended after a dispute, in April 2005. Linus Torvalds then wrote Git. Within days it was tracking its own development, and the first usable version for the kernel took about two weeks. GitHub, a website for hosting Git projects, launched in 2008.',
-      talking: [
-        'Keep the wording careful: Git came out of a real problem.',
-        'GitHub is only a teaser here. The full Git versus GitHub card comes later.',
+      clicks: [
+        'Follow the timeline on the card: Linux (1991), Git (2005), GitHub (2008).',
+        'Remember that Git came out of a real, urgent problem. GitHub is only the website for sharing Git projects. The Git versus GitHub card explains the difference.',
+      ],
+      happening: 'The Linux kernel team had been using a proprietary (closed) tool called BitKeeper. The free arrangement ended after a dispute in April 2005, so Linus Torvalds wrote Git. Within days it was tracking its own development, and the first usable version for the kernel took about two weeks. GitHub, a website for hosting Git projects, launched in 2008.',
+      links: [
+        { label: 'Pro Git: A short history of Git', url: 'https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git' },
       ],
     },
   },
@@ -312,10 +342,13 @@ export const cards: Card[] = [
     scene: { layers: ['recap'], front: 'recap', zoomed: false, leave: 'fly' },
     steps: [],
     drawer: {
-      happening: 'We are back at the folder we began with. Git is the answer to it, and it grew out of open source work like Linux.',
-      talking: [
-        'Pause here. Let it sink in.',
-        'Next: how Git works on your own computer.',
+      clicks: [
+        'Compare this folder with the first card.',
+        'Think about which of its problems Git solves: lost work, no history, no blame and no undo.',
+      ],
+      happening: 'You are back at the folder you began with. Git is the answer to it, and Git grew out of open source work like Linux. Next you will see how Git works on your own computer.',
+      links: [
+        { label: 'Pro Git book (free, official)', url: 'https://git-scm.com/book' },
       ],
     },
   },
@@ -339,16 +372,20 @@ export const cards: Card[] = [
     into: 'drop',
     steps: [],
     drawer: {
+      clicks: [
+        'Open a terminal.',
+        'Run the command below. A version number means Git is installed on your computer, and you did not need a website for that.',
+      ],
       commands: ['git --version'],
       mistakes: [
         { title: 'Thinking Git and GitHub are the same', fix: 'Git is the tool. GitHub is one website that hosts Git projects. You can use Git without GitHub.' },
         { title: 'Expecting GitHub to save your work automatically', fix: 'Nothing reaches GitHub until you push it.' },
+        { title: 'Expecting Codespaces to be unlimited', fix: 'Codespaces needs a GitHub account and has a monthly free usage limit. Use it as a fallback if Git will not install, not for everything.' },
       ],
-      happening: 'Git runs on your computer and keeps your history. GitHub is a website that keeps a copy of that history online, so people can share it and work together.',
-      talking: [
-        'What GitHub adds: pull requests, a way of proposing changes for review.',
-        'What GitHub adds: Codespaces, a full coding environment in your browser. It is our fallback if Git will not install.',
-        'Codespaces needs a GitHub account and has a monthly free usage limit, so it is a fallback, not unlimited.',
+      happening: 'Git runs on your computer and keeps your history. GitHub is a website that keeps a copy of that history online, so people can share it and work together. GitHub adds extras such as pull requests (a way of proposing changes for review) and Codespaces (a full coding environment in your browser).',
+      links: [
+        { label: 'What is GitHub? (GitHub Docs)', url: 'https://docs.github.com/en/get-started/start-your-journey/what-is-github' },
+        { label: 'Git: the official website', url: 'https://git-scm.com/' },
       ],
     },
   },
@@ -373,13 +410,20 @@ export const cards: Card[] = [
       { cmd: '', output: [], op: none, file: 'repo', label: 'git commit saves it into history' },
     ],
     drawer: {
+      clicks: [
+        'Open a terminal in a practice folder.',
+        'echo "text" > file creates a file with that text. (>> adds a line to the end of the file instead.)',
+        'Run the commands below one at a time and watch the file move from the working folder to the staging shelf to the repository.',
+      ],
       commands: ['echo "hello git" > notes.txt', 'git status', 'git add notes.txt', 'git commit -m "add notes"'],
       mistakes: [
         { title: 'Forgetting git add', fix: 'A commit only contains what is staged. Run git status to see what is staged and what is not.' },
         { title: 'Thinking saving a file saves it in Git', fix: 'Saving in your editor only changes the working folder. Git needs add and commit.' },
       ],
       happening: 'You edit files in the working folder. git add copies your chosen changes onto the staging shelf. git commit packs everything on that shelf into one permanent snapshot in the repository.',
-      talking: ['echo "text" > file creates a file with that text (>> adds a line to the end).'],
+      links: [
+        { label: 'Pro Git: What is Git? (the three states)', url: 'https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F' },
+      ],
     },
   },
   {
@@ -399,16 +443,20 @@ export const cards: Card[] = [
       { cmd: 'ls -a', output: ['.  ..  .git'], op: none },
     ],
     drawer: {
+      clicks: [
+        'Open a terminal. On Windows, use Git Bash.',
+        'Make a new folder and move into it. mkdir name && cd name does both in one line.',
+        'Run git init, then ls -a, which lists files including hidden ones. You should see the hidden .git folder.',
+      ],
       commands: ['mkdir {{repo}} && cd {{repo}}', 'git init', 'ls -a'],
       mistakes: [
         { title: 'Running git init in the wrong folder', fix: 'Run pwd first to see where you are. Move with cd.' },
         { title: 'Running it inside another repository', fix: 'Do not nest repositories. If git status already works, the folder is already a repository.' },
       ],
       happening: 'git init creates a hidden folder called .git. That folder is the repository: it holds the whole history. The files you can see are just the working folder.',
-      talking: [
-        'mkdir name && cd name makes a folder and moves into it.',
-        'ls -a lists files including hidden ones like .git.',
-        'On Windows, run these commands in Git Bash.',
+      links: [
+        { label: 'Pro Git: Getting a Git repository', url: 'https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository' },
+        { label: 'git init (official manual)', url: 'https://git-scm.com/docs/git-init' },
       ],
     },
   },
@@ -434,13 +482,21 @@ export const cards: Card[] = [
       },
     ],
     drawer: {
+      clicks: [
+        'Open a terminal in your practice repository (the folder where you ran git init).',
+        'Create a file: echo "text" > file writes that text into a new file. (>> adds a line to the end instead.)',
+        'Run git status and read what it says. Git tells you the next command to try.',
+      ],
       commands: ['echo "hello git" > notes.txt', 'git status', 'git status -s'],
       mistakes: [
         { title: '"not a git repository"', fix: 'You are in the wrong folder, or you have not run git init yet.' },
         { title: 'Ignoring what status says', fix: 'Read it. Git tells you the next command to try.' },
       ],
       happening: 'git status compares three things: your working folder, the staging shelf and the last snapshot. It lists every difference. A file that Git has never seen is called untracked.',
-      talking: ['echo "text" > file creates a file with that text (>> adds a line to the end).'],
+      links: [
+        { label: 'Pro Git: Recording changes to the repository', url: 'https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository' },
+        { label: 'git status (official manual)', url: 'https://git-scm.com/docs/git-status' },
+      ],
     },
   },
   {
@@ -466,12 +522,21 @@ export const cards: Card[] = [
       },
     ],
     drawer: {
+      clicks: [
+        'Make sure you are in your practice repository and notes.txt exists.',
+        'Run git add notes.txt, then git status. The file moves to "Changes to be committed".',
+        'Try git add . later to stage everything at once, but check git status first.',
+      ],
       commands: ['git add notes.txt', 'git status', 'git add .', 'git status'],
       mistakes: [
         { title: 'Adding secrets or huge files with git add .', fix: 'Check git status before you commit. Unstage a file with git restore --staged <file>.' },
         { title: 'Editing after git add', fix: 'Git staged the file as it was. Run git add again to stage the newer edits.' },
       ],
       happening: 'The staging shelf lets you build a snapshot on purpose. You can change ten files but only stage three of them, and the commit will contain exactly those three.',
+      links: [
+        { label: 'Pro Git: Recording changes to the repository', url: 'https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository' },
+        { label: 'git add (official manual)', url: 'https://git-scm.com/docs/git-add' },
+      ],
     },
   },
   {
@@ -494,6 +559,11 @@ export const cards: Card[] = [
       { cmd: 'git commit -am "add second line"', output: ['[main 5d6e7f8] add second line'], op: { type: 'commit', branch: 'main', id: '5d6e7f8', msg: 'add second line' }, file: 'repo' },
     ],
     drawer: {
+      clicks: [
+        'Stage a file with git add notes.txt.',
+        'Run the first commit command below. Always add -m and a short message.',
+        'Add a second line with echo "text" >> file (a single > would replace the whole file), then commit again with git commit -am.',
+      ],
       commands: ['git commit -m "add notes"', 'echo "second line" >> notes.txt', 'git commit -am "add second line"', 'git status'],
       mistakes: [
         { title: '"nothing to commit"', fix: 'The file was not saved in your editor, or you forgot git add. Run git status to see what Git sees.' },
@@ -501,7 +571,10 @@ export const cards: Card[] = [
         { title: 'Vim opens when you forget -m', fix: 'Type :q! and press Enter to leave, then run the commit again with -m "message".' },
       ],
       happening: 'Git does not save every keystroke. You choose when to take a snapshot. git commit packs everything on the staging shelf into one permanent, labelled snapshot with a short id like 1a2b3c4. Each snapshot points back at the one before it, which is the chain you see in the graph.',
-      talking: ['echo "text" >> file adds a line to the end of the file (a single > would replace it).'],
+      links: [
+        { label: 'Pro Git: Recording changes to the repository', url: 'https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository' },
+        { label: 'git commit (official manual)', url: 'https://git-scm.com/docs/git-commit' },
+      ],
     },
   },
   {
@@ -520,12 +593,21 @@ export const cards: Card[] = [
 
     ],
     drawer: {
+      clicks: [
+        'Run git log --oneline in your practice repository to see a short list, newest first.',
+        'If the output fills the screen, press q to quit the viewer.',
+        'Try the --graph and --all options to see every branch drawn as a graph.',
+      ],
       commands: ['git log', 'git log --oneline', 'git log --oneline --graph --all'],
       mistakes: [
         { title: 'Stuck in the log view', fix: 'Press q to quit. Git shows long output in a pager.' },
         { title: 'Wondering where the history went', fix: 'git log only shows the branch you are on. Add --all to see every branch.' },
       ],
       happening: 'git log reads the chain of snapshots backwards from where you are. Each entry shows the author, the date and the message, so you can always answer: who changed this, when, and why?',
+      links: [
+        { label: 'Pro Git: Viewing the commit history', url: 'https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History' },
+        { label: 'git log (official manual)', url: 'https://git-scm.com/docs/git-log' },
+      ],
     },
   },
   {
@@ -544,11 +626,14 @@ export const cards: Card[] = [
     lane: 'main',
     steps: [],
     drawer: {
-      happening: 'This is the same kind of history you just read with git log, only with a very long past. Every line is a snapshot with an author, a date and a message.',
-      talking: [
-        'Connect back to git log: this is the same thing you just ran, with a very long history.',
-        'Linus is still committing.',
-        'Read the commit count off the screenshot yourself.',
+      clicks: [
+        'Look at the screenshot and find the latest commit and the total number of commits.',
+        'Open github.com/torvalds/linux in your browser and compare. The numbers keep growing.',
+      ],
+      happening: 'This is the same kind of history you just read with git log, only with a very long past. Every line is a snapshot with an author, a date and a message. The Linux repository still gets new commits decades later.',
+      links: [
+        { label: 'The Linux kernel repository on GitHub', url: 'https://github.com/torvalds/linux' },
+        { label: 'Pro Git: Viewing the commit history', url: 'https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History' },
       ],
     },
   },
@@ -569,17 +654,20 @@ export const cards: Card[] = [
     lane: 'main',
     steps: [],
     drawer: {
+      clicks: [
+        'Notice that nothing so far needed a website or an account. Git works offline.',
+        'Look at the grey arrow in the picture. The next card is the moment it lights up.',
+      ],
       mistakes: [
         { title: 'Confusing Git with GitHub', fix: 'Git is the tool on your computer. GitHub is one website that hosts Git projects. Other websites do the same job.' },
         { title: 'Thinking Git stops working without internet or without GitHub', fix: 'Init, add, commit and log all work offline. You only need internet when you push or pull.' },
         { title: 'Creating the online repository with a README and getting a rejected first push', fix: 'Create it empty: no README, no licence, no gitignore. See the push card for the full fix.' },
+        { title: 'Git will not install on your laptop', fix: 'Use GitHub Codespaces, a full coding environment in your browser. It needs a GitHub account and has a monthly free usage limit, so it is a fallback, not unlimited.' },
       ],
-      happening: 'A remote is another copy of your repository that lives somewhere else, usually on a website. Your laptop keeps its own full history. The remote is a second copy that you can share. Git connects the two when you give the remote a nickname (usually origin) and then push or pull.',
-      talking: [
-        'Local first: nothing so far needed a website or an account.',
-        'The grey arrow is the point: the next card is the moment it lights up.',
-        'This goes one level deeper than the Git versus GitHub card: what a remote is, not just what GitHub is.',
-        'Fallback: GitHub Codespaces is a full coding environment in your browser. It needs a GitHub account and has a monthly free usage limit, so it is a fallback, not unlimited.',
+      happening: 'A remote is another copy of your repository that lives somewhere else, usually on a website. Your laptop keeps its own full history, and the remote is a second copy that you can share. Git connects the two when you give the remote a nickname (usually origin) and then push or pull. This goes one level deeper than the Git versus GitHub card: what a remote is, not just what GitHub is.',
+      links: [
+        { label: 'About remote repositories (GitHub Docs)', url: 'https://docs.github.com/en/get-started/git-basics/about-remote-repositories' },
+        { label: 'Pro Git: Working with remotes', url: 'https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes' },
       ],
     },
   },
@@ -609,6 +697,11 @@ export const cards: Card[] = [
       },
     ],
     drawer: {
+      clicks: [
+        'On github.com click New repository, name it, and leave README, licence and gitignore switched OFF. Click Create repository.',
+        'In your practice repository, run the remote command below (it uses your details from U).',
+        'Run git push -u origin main. Sign in through the browser window if it asks.',
+      ],
       commands: [
         'git remote add origin https://github.com/{{ghuser}}/{{repo}}.git',
         'git remote -v',
@@ -620,6 +713,10 @@ export const cards: Card[] = [
         { title: '"src refspec main does not match any"', fix: 'You have not made a commit yet, or your branch has a different name. Run git branch to check.' },
       ],
       happening: 'Your computer and GitHub hold two separate copies of the same history. git remote add gives the online copy a nickname, origin. The first git push uploads your commits, sets up tracking, and triggers the login step: a browser sign-in, or a personal access token pasted in place of a password.',
+      links: [
+        { label: 'Pro Git: Working with remotes', url: 'https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes' },
+        { label: 'Quickstart for repositories (GitHub Docs)', url: 'https://docs.github.com/en/repositories/creating-and-managing-repositories/quickstart-for-repositories' },
+      ],
     },
   },
   /* ---------- E. Workshop: choose a system, set up the laptop, go back to the commands ---------- */
@@ -636,3 +733,4 @@ cards.forEach((c) => {
   if (s.layers[s.layers.length - 1] !== s.front || s.front !== c.id) throw new Error(`Bad scene on card ${c.id}`)
   s.layers.forEach((id) => { if (!cards.some((k) => k.id === id)) throw new Error(`Unknown layer ${id} on card ${c.id}`) })
 })
+

@@ -23,7 +23,7 @@ export function ChallengeHub() {
       <Section title="What is the MUKTI challenge?">
         <p>
           A small, real contribution to the MUKTI challenge repository: fork it, make the change assigned to you, and open a
-          pull request. It uses exactly the same workflow Vijay just demonstrated.
+          pull request. It uses exactly the same workflow as the live demonstration.
         </p>
       </Section>
 

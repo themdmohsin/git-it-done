@@ -8,7 +8,7 @@ export function Home() {
       <PageHeader
         eyebrow="Open Source Contribution Guide"
         title="Everything you need to make your first contribution"
-        lead="Vijay will demonstrate most of this live on GitHub and VS Code. Use this guide to follow along, re-read any step afterwards, and complete the MUKTI challenge in your own time."
+        lead="Most of this is demonstrated live on GitHub and Visual Studio Code (VS Code). Use this guide to follow along, re-read any step afterwards, and complete the MUKTI challenge in your own time."
       />
       {GROUPS.map((g) => (
         <Section title={g} key={g}>
