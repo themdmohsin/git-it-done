@@ -4,6 +4,7 @@ import { INSTALL, OPEN_TERMINAL, OS_LIST, useOS } from '../os'
 import { Cmd, CopyButton } from './Copy'
 import { missing, useUserDetails } from '../userDetails'
 import { resolveCard } from '../osCards'
+import { Linkify } from './Linkify'
 
 type Extra = NonNullable<Card['drawer']['sections']>[number]
 
@@ -16,8 +17,8 @@ function Extras({ list }: { list: Extra[] }) {
         <div key={s.title} className="drawer-sub">
           <h4>{s.title}</h4>
           {s.ordered
-            ? <ol className="clicks">{s.items.map((i) => <li key={i}>{i}</li>)}</ol>
-            : <ul className="drawer-list">{s.items.map((i) => <li key={i}>{i}</li>)}</ul>}
+            ? <ol className="clicks">{s.items.map((i) => <li key={i}><Linkify text={i} /></li>)}</ol>
+            : <ul className="drawer-list">{s.items.map((i) => <li key={i}><Linkify text={i} /></li>)}</ul>}
         </div>
       ))}
     </>
@@ -48,7 +49,7 @@ export function Drawer({ card, open, onClose }: { card: Card; open: boolean; onC
 
       <section>
         <h3>What&rsquo;s happening</h3>
-        <p>{d.happening}</p>
+        <p><Linkify text={d.happening} /></p>
         <Extras list={into('happening')} />
       </section>
 
@@ -60,11 +61,11 @@ export function Drawer({ card, open, onClose }: { card: Card; open: boolean; onC
           )}
           {d.install && INSTALL[os].map((i) => (
             <div key={i.cmd}>
-              <p className="muted">{i.text}</p>
+              <p className="muted"><Linkify text={i.text} /></p>
               <div className="cmd-row"><code><Cmd text={i.cmd} /></code><CopyButton text={i.cmd} /></div>
             </div>
           ))}
-          {!!d.clicks?.length && <ol className="clicks">{d.clicks.map((t) => <li key={t}>{t}</li>)}</ol>}
+          {!!d.clicks?.length && <ol className="clicks">{d.clicks.map((t) => <li key={t}><Linkify text={t} /></li>)}</ol>}
           {!!d.commands?.length && (
             <div className="drawer-sub">
               <h4>Copy and paste</h4>
@@ -78,7 +79,7 @@ export function Drawer({ card, open, onClose }: { card: Card; open: boolean; onC
           {!!d.tryNext?.length && (
             <div className="drawer-sub">
               <h4>Try this next</h4>
-              <ul className="drawer-list">{d.tryNext.map((t) => <li key={t}>{t}</li>)}</ul>
+              <ul className="drawer-list">{d.tryNext.map((t) => <li key={t}><Linkify text={t} /></li>)}</ul>
             </div>
           )}
           <Extras list={into('try')} />
@@ -90,8 +91,8 @@ export function Drawer({ card, open, onClose }: { card: Card; open: boolean; onC
           <h3>If something goes wrong</h3>
           {d.mistakes?.map((m) => (
             <div className="mistake" key={m.title}>
-              <strong>{m.title}</strong>
-              <p>{m.fix}</p>
+              <strong><Linkify text={m.title} /></strong>
+              <p><Linkify text={m.fix} /></p>
             </div>
           ))}
           <Extras list={into('wrong')} />

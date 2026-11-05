@@ -3,6 +3,7 @@ import { cards } from '../cards'
 import { fileStage, replay } from '../engine/reducer'
 import { Compare, Hero, ResourceList, ResourceTiles, OSTiles, LinusPanel, MessyShot, MuktiPanel, RemoteArt, SetupPanel, ShotFigure, StoryArt, StubPanel } from './Art'
 import { CommandChip } from './Copy'
+import { Linkify } from './Linkify'
 import { Graph } from './Graph'
 import { FileStrip } from './Panels'
 import { InstallCard } from './Install'
@@ -28,12 +29,12 @@ const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
 /** Turns the words listed in `linkify` into hyperlinks that open in a new tab. */
 function withLinks(text: string, linkify?: Record<string, string>) {
-  if (!linkify) return nb(text)
+  if (!linkify) return <Linkify text={nb(text)} />
   const keys = Object.keys(linkify)
   const parts = text.split(new RegExp(`(${keys.join('|')})`))
   return parts.map((p, i) => keys.includes(p)
     ? <a key={i} className="text-link" href={linkify[p]} target="_blank" rel="noopener noreferrer">{p}</a>
-    : nb(p))
+    : <Linkify key={i} text={nb(p)} />)
 }
 
 /** Renders `backtick` tokens inside note/final text as a small ref pill (e.g. `main`), and **double-asterisk** tokens as bold. */
@@ -161,7 +162,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
         {card.subheading && <p className="subheading">{nb(card.subheading)}</p>}
-        <p className="sentence">{nb(card.sentence)}</p>
+        <p className="sentence"><Linkify text={nb(card.sentence)} /></p>
         {card.bullets && (
           <ul className="bullets">
             {card.bullets.map((b) => <li key={b}>{withLinks(b, card.linkify)}</li>)}

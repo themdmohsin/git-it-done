@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import type { ArtId, Card, OS, Picture, Step } from '../engine/types'
 import { OS_LIST, useOS } from '../os'
 import { Graph } from './Graph'
+import { externalLink, Linkify } from './Linkify'
 import { AMBIENT_REPO } from './Panels'
 
 /* ---------- messy folder: the screenshot, with a drawn stand-in ---------- */
@@ -210,7 +211,7 @@ export function MuktiPanel({ tagline, links }: { tagline?: Card['tagline']; link
           <li key={l.label}>
             <b>{l.label}</b>
             {l.url
-              ? <a className="text-link" href={l.url} {...(l.url.startsWith('mailto:') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{l.url.replace(/^(https?:\/\/|mailto:)/, '')}</a>
+              ? <a className="text-link" href={l.url} rel="noopener noreferrer" {...(l.url.startsWith('mailto:') ? {} : { target: '_blank' })}>{l.url.replace(/^(https?:\/\/|mailto:)/, '')}</a>
               : <span className="todo">TODO: add the {l.label} link</span>}
           </li>
         ))}
@@ -255,7 +256,7 @@ export function ShotFigure({ picture }: { picture: Picture }) {
           <span>Add the file public/{picture.src}</span>
         </div>
       )}
-      {picture.caption && <figcaption>{picture.caption}</figcaption>}
+      {picture.caption && <figcaption><Linkify text={picture.caption} /></figcaption>}
     </figure>
   )
 }
@@ -517,7 +518,10 @@ function CodespacesArt() {
       <line x1="60" y1="150" x2="740" y2="150" stroke="var(--panel-line)" strokeWidth="3" />
       {[0, 1, 2].map((i) => <circle key={i} cx={105 + i * 36} cy="115" r="10" fill={DOT_COLORS[i]} />)}
       <rect x="250" y="98" width="440" height="34" rx="17" fill="var(--panel)" />
-      <text x="470" y="123" textAnchor="middle" className="art-mono" fontSize="30" fill="var(--term-dim)">github.com/codespaces</text>
+      <a className="svg-link" href="https://github.com/codespaces" {...externalLink} aria-label="github.com/codespaces (opens in a new tab)">
+        <rect x="250" y="98" width="440" height="34" rx="17" fill="transparent" />
+        <text x="470" y="123" textAnchor="middle" className="art-mono" fontSize="30" fill="var(--term-dim)" textDecoration="underline">github.com/codespaces</text>
+      </a>
       <rect x="90" y="180" width="270" height="230" rx="14" fill="var(--panel)" />
       {[0, 1, 2, 3].map((i) => <rect key={i} x="115" y={210 + i * 48} width={170 - i * 22} height="16" rx="8" fill="var(--lane-remote)" opacity="0.7" />)}
       <rect x="380" y="180" width="330" height="230" rx="14" fill="var(--panel)" />

@@ -2,7 +2,7 @@
 export const MUKTI = {
   website: 'https://mukticommunity.github.io/',
   github: 'https://github.com/MuktiCommunity',
-  telegram: 'https://t.me/+wFGdHiypdQhkZWU9',
+  telegram: 'https://t.me/MuktiCommunity',
   email: 'mailto:mukti.community@gmail.com',
 }
 
