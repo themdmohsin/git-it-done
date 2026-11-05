@@ -101,7 +101,11 @@ export function missing(text: string, d: Details = state): boolean {
   return /\{\{(name|email|ghuser|repo)\}\}/.test(fill(text, d))
 }
 
-/* Lets any copy button ask the app to open the "Your details" window, then continue after Save. */
-let opener: ((after?: () => void) => void) | null = null
-export const setDetailsOpener = (o: typeof opener) => { opener = o }
-export const askDetails = (after?: () => void) => opener?.(after)
+/* Lets any copy button ask the app to open the "Your details" window. `after` runs once after Save, `cancel` if it is closed without saving. */
+type Opener = (after?: () => void, cancel?: () => void) => void
+let opener: Opener | null = null
+export const setDetailsOpener = (o: Opener | null) => { opener = o }
+export const askDetails = (after?: () => void, cancel?: () => void) => {
+  if (opener) opener(after, cancel)
+  else cancel?.()
+}

@@ -304,8 +304,8 @@ export const INSTALL_STEPS: InstallStep[] = [
     all: {
       steps: [
         { text: 'Open the terminal in VS Code. ' + TERMINAL_KEYS },
-        { text: 'Tell Git your name. Replace `Your Name` with your own name, keeping the quotes:', cmds: ['git config --global user.name "Your Name"'] },
-        { text: 'Tell Git your email. Replace the example with the **same email address you used for your GitHub account**:', cmds: ['git config --global user.email "your-email@example.com"'], why: 'Using the same email lets GitHub link your commits to your profile.' },
+        { text: 'Tell Git your name. Copy puts the name from **Your details** into the command (press U to set it):', cmds: ['git config --global user.name "{{name}}"'] },
+        { text: 'Tell Git your email. Use the **same email address you used for your GitHub account** in **Your details**:', cmds: ['git config --global user.email "{{email}}"'], why: 'Using the same email lets GitHub link your commits to your profile.' },
         { text: 'Make main the default name for your first branch:', cmds: ['git config --global init.defaultBranch main'] },
         { text: 'Make Git open VS Code when it needs you to type a message:', cmds: ['git config --global core.editor "code --wait"'], why: 'This only works if the code command is available in PATH, which the VS Code step set up.' },
       ],

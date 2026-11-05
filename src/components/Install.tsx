@@ -1,11 +1,11 @@
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { cards } from '../cards'
 import type { OS } from '../engine/types'
 import { INSTALL_BY_ID, INSTALL_COUNT, INSTALL_STEPS, type Instruction, type OSGuide, type Section, type Verify } from '../install'
 import { INSTALL_VIDEOS, resolveVideo } from '../installVideos'
 import { OS_LIST, useOS } from '../os'
 import { askDetails, useUserDetails } from '../userDetails'
-import { copyText } from './Copy'
+import { Cmd, CopyButton } from './Copy'
 
 /* ---------- tiny inline markup: **bold**  `code`  [[Key]]  [label](url) and bare github.com ---------- */
 const TOKENS = /(\[\[.+?\]\]|\[[^\]]+\]\([^)]+\)|`[^`]+`|\*\*.+?\*\*)/
@@ -40,17 +40,13 @@ export function Rich({ text }: { text: string }) {
 
 /* ---------- copyable commands ---------- */
 function CmdLine({ cmd }: { cmd: string }) {
-  const [done, setDone] = useState(false)
   return (
     <div className="inst-cmd">
-      <code>{cmd}</code>
-      <button type="button" className="copy-btn" aria-label={'Copy ' + cmd} onClick={() => { copyText(cmd); setDone(true); setTimeout(() => setDone(false), 1200) }}>
-        {done ? 'Copied' : 'Copy'}
-      </button>
+      <code><Cmd text={cmd} /></code>
+      <CopyButton text={cmd} />
     </div>
   )
 }
-
 function Steps({ steps }: { steps: Instruction[] }) {
   return (
     <ol className="inst-steps">

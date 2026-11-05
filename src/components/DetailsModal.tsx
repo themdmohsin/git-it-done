@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { type Errors, type Field, TOKEN_LABEL, useUserDetails } from '../userDetails'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { type Errors, type Field, setDetailsOpener, TOKEN_LABEL, useUserDetails } from '../userDetails'
 import { usePresence } from './usePresence'
 
 const ROWS: { f: Field; label: string; hint: string; type?: string }[] = [
@@ -64,4 +64,29 @@ export function DetailsOverlay({ open, onClose, onSaved }: { open: boolean; onCl
       </div>
     </div>
   )
+}
+
+/** For pages outside the presentation (the guide and the hands-on tutorial): lets their copy buttons open "Your details". */
+export function DetailsHost() {
+  const [open, setOpen] = useState(false)
+  const after = useRef<(() => void) | undefined>(undefined)
+  const cancel = useRef<(() => void) | undefined>(undefined)
+  const close = useCallback(() => {
+    const c = after.current ? cancel.current : undefined
+    after.current = undefined
+    cancel.current = undefined
+    setOpen(false)
+    c?.()
+  }, [])
+  useEffect(() => {
+    setDetailsOpener((a, c) => { after.current = a; cancel.current = c; setOpen(true) })
+    return () => setDetailsOpener(null)
+  }, [])
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); close() } }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, close])
+  return <DetailsOverlay open={open} onClose={close} onSaved={() => { const f = after.current; after.current = undefined; cancel.current = undefined; f?.() }} />
 }

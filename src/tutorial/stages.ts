@@ -33,7 +33,7 @@ export const WHERE: Record<Where, { label: string; hint: string }> = {
 }
 
 const REPO = 'my-first-git-project'
-const URL_EXAMPLE = `https://github.com/USERNAME/${REPO}.git`
+const URL_EXAMPLE = `https://github.com/{{ghuser}}/${REPO}.git`
 const KEYS = '[[Ctrl]] + [[`]] (Windows and Linux) or [[Cmd]] + [[`]] (macOS)'
 
 export const STAGES: Stage[] = [
@@ -217,7 +217,7 @@ export const STAGES: Stage[] = [
     actions: [
       { where: 'github', text: `Go back to the repository you created in Stage 1 on [github.com](https://github.com/).` },
       { where: 'github', text: 'Make sure **HTTPS** is selected, then click the copy icon next to the address. It looks like this:', cmds: [URL_EXAMPLE] },
-      { where: 'terminal', text: 'In the VS Code terminal, connect your project. Paste your own address, so **USERNAME is replaced by your real GitHub username**:', cmds: [`git remote add origin ${URL_EXAMPLE}`] },
+      { where: 'terminal', text: 'In the VS Code terminal, connect your project. Copy fills in your GitHub username from **Your details**:', cmds: [`git remote add origin ${URL_EXAMPLE}`] },
       { where: 'terminal', text: 'Check the connection:', cmds: ['git remote -v'] },
     ],
     expect: '`git remote add` prints nothing, which is normal. `git remote -v` shows `origin` twice, once for **fetch** and once for **push**, both with your repository address.',
@@ -235,7 +235,7 @@ export const STAGES: Stage[] = [
     },
     mistakes: [
       { title: '“remote origin already exists”', fix: 'You already ran the command. To fix a wrong address run `git remote set-url origin <the correct address>`.' },
-      { title: 'I left USERNAME in the address', fix: 'Run `git remote set-url origin <your real address>` with the address copied from GitHub.' },
+      { title: 'I left a placeholder in the address', fix: 'Run `git remote set-url origin <your real address>` with the address copied from GitHub.' },
     ],
   },
   {

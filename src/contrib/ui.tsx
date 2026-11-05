@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react'
-import { copyText } from '../components/Copy'
+import { Cmd, CopyButton } from '../components/Copy'
+import { Linkify } from '../components/Linkify'
 import { guideHref, useGuideSlug } from './router'
 import { neighbours, sectionOf } from './sections'
 
@@ -38,18 +39,6 @@ export function Callout({ tone = 'note', title, children }: { tone?: CalloutTone
 
 /* ---------- copyable commands ---------- */
 
-function CopyBtn({ text, label = 'Copy' }: { text: string; label?: string }) {
-  const [done, setDone] = useState(false)
-  return (
-    <button
-      type="button"
-      className="doc-copy"
-      onClick={() => { copyText(text); setDone(true); setTimeout(() => setDone(false), 1200) }}
-    >
-      {done ? 'Copied' : label}
-    </button>
-  )
-}
 
 /** A block of one or more terminal commands. Every line and the whole block can be copied. */
 export function CodeBlock({ commands, title }: { commands: string[]; title?: string }) {
@@ -58,13 +47,13 @@ export function CodeBlock({ commands, title }: { commands: string[]; title?: str
     <div className="doc-code">
       <div className="doc-code-bar">
         <span>{title ?? 'Terminal'}</span>
-        {commands.length > 1 && <CopyBtn text={full} label="Copy all" />}
+        {commands.length > 1 && <CopyButton text={full} label="Copy all" className="doc-copy" />}
       </div>
       <div className="doc-code-body">
         {commands.map((c, i) => (
           <div className="doc-code-line" key={i}>
-            <code>{c}</code>
-            <CopyBtn text={c} />
+            <code><Cmd text={c} /></code>
+            <CopyButton text={c} className="doc-copy" />
           </div>
         ))}
       </div>
@@ -102,7 +91,7 @@ export function Mistakes({ items, title = 'Common mistakes' }: { items: { title:
         {items.map((m) => (
           <details key={m.title} className="doc-detail">
             <summary>{m.title}</summary>
-            <p>{m.fix}</p>
+            <p><Linkify text={m.fix} /></p>
           </details>
         ))}
       </div>

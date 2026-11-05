@@ -176,7 +176,7 @@ export const workshopContent: Record<string, Partial<Card>> = {
   identity: {
     drawer: {
       clicks: [
-        'Follow the numbered steps on the card. Replace Your Name and the example email with your own.',
+        'Follow the numbered steps on the card. Copy fills in the name and email from Your details.',
         'Optional: press U and save your name and email once. The commands below, and the later command cards, then fill themselves in.',
         'Check your work with git config --global --list.',
       ],
@@ -226,6 +226,7 @@ export const workshopContent: Record<string, Partial<Card>> = {
       ],
       happening: 'GitHub Codespaces is a computer in the cloud that you use through a browser tab. It already has Visual Studio Code, a terminal and Git, and it is signed in to your GitHub account, which makes it a good fallback when a laptop is locked down, is a Chromebook or tablet, or an install fails. It is a fallback, not unlimited: free accounts get a monthly allowance.',
       links: [
+        { label: 'GitHub Codespaces', url: 'https://github.com/codespaces' },
         { label: 'What are GitHub Codespaces? (GitHub Docs)', url: 'https://docs.github.com/en/codespaces/about-codespaces/what-are-codespaces' },
       ],
     },

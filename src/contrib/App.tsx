@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { DetailsHost } from '../components/DetailsModal'
 import './contrib.css'
 import { PAGES } from './pageRegistry'
 import { Sidebar } from './Sidebar'
@@ -33,6 +34,7 @@ export function ContribApp() {
           <Page />
         </main>
       </div>
+      <DetailsHost />
     </div>
   )
 }

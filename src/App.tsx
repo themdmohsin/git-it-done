@@ -68,9 +68,16 @@ export default function App() {
   const detailsRef = useRef(details)
   detailsRef.current = details
   const afterSave = useRef<(() => void) | undefined>(undefined)
+  const onCancel = useRef<(() => void) | undefined>(undefined)
   const { filled } = useUserDetails()
-  const openDetails = useCallback((after?: () => void) => { afterSave.current = after; setDetails(true) }, [])
-  const closeDetails = useCallback(() => { afterSave.current = undefined; setDetails(false) }, [])
+  const openDetails = useCallback((after?: () => void, cancel?: () => void) => { afterSave.current = after; onCancel.current = cancel; setDetails(true) }, [])
+  const closeDetails = useCallback(() => {
+    const cancel = afterSave.current ? onCancel.current : undefined
+    afterSave.current = undefined
+    onCancel.current = undefined
+    setDetails(false)
+    cancel?.()
+  }, [])
   useEffect(() => { setDetailsOpener(openDetails); return () => setDetailsOpener(null) }, [openDetails])
 
   const put = (n: S) => { ref.current = n; setS(n) }
@@ -234,7 +241,7 @@ export default function App() {
           </div>
         </footer>
         <PickerOverlay open={picker} onClose={() => setPicker(false)} />
-        <DetailsOverlay open={details} onClose={() => setDetails(false)} onSaved={() => { const f = afterSave.current; afterSave.current = undefined; f?.() }} />
+        <DetailsOverlay open={details} onClose={closeDetails} onSaved={() => { const f = afterSave.current; afterSave.current = undefined; onCancel.current = undefined; f?.() }} />
       </div>
     </OSContext.Provider>
   )

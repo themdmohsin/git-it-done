@@ -79,6 +79,8 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .chip-cmd code { font-size: calc(var(--u) * 1.5); font-weight: 700; overflow-wrap: anywhere; }
 .copy-btn, .x-btn { border: 0; background: var(--ink); color: var(--card); border-radius: calc(var(--u) * 0.8); padding: calc(var(--u) * 0.4) calc(var(--u) * 1); font-size: calc(var(--u) * 1.5); font-weight: 700; }
 .copy-btn:hover { background: var(--green); }
+.copy-wrap { position: relative; display: inline-flex; flex: none; }
+.copy-note { position: absolute; right: 0; bottom: calc(100% + 0.3em); z-index: 5; white-space: nowrap; background: var(--accent); color: var(--accent-ink); border-radius: 0.5em; padding: 0.2em 0.6em; font-size: max(0.8rem, calc(var(--u) * 1.3)); font-weight: 700; pointer-events: none; }
 .btn { border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; border-radius: calc(var(--u) * 1.2); padding: calc(var(--u) * 0.4) calc(var(--u) * 1.6); font-size: calc(var(--u) * 1.5); line-height: 1.2; transition: transform 0.15s; }
 .btn:hover:not(:disabled) { transform: translateY(-2px); }
 .btn:disabled { opacity: 0.45; }
@@ -216,6 +218,7 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 /* ---------- stack scene ---------- */
 .stage.stack { background: var(--page); }
 .slayer { position: absolute; inset: 0; pointer-events: none; will-change: transform, opacity; }
+.slayer:last-child { pointer-events: auto; }
 .card.framed {
   background: var(--card); border-color: var(--card-border);
   border-radius: calc(var(--u) * 2.4) calc(var(--u) * 2.4) 0 0;
@@ -235,11 +238,11 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .card:has(.numbered-points) .sentence { line-height: 1.2; }
 .card.dense .bullets { gap: calc(var(--u) * 0.4); }
 .stab {
-  position: absolute; top: calc(var(--u) * 0.3); left: calc(var(--u) * 3.4); z-index: 2;
+  position: absolute; top: calc(var(--u) * 0.3); left: calc(var(--u) * 3.4); z-index: 2; pointer-events: none;
   font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
   font-size: calc(var(--u) * 1.5 * var(--ts, 1)); line-height: 1;
 }
-.shade { position: absolute; inset: 0; background: var(--ink); border-radius: calc(var(--u) * 2.4) calc(var(--u) * 2.4) 0 0; opacity: 0; }
+.shade { position: absolute; inset: 0; pointer-events: none; background: var(--ink); border-radius: calc(var(--u) * 2.4) calc(var(--u) * 2.4) 0 0; opacity: 0; }
 
 /* ---------- story panels ---------- */
 .final-chip { background: var(--accent); color: var(--accent-ink); border-radius: calc(var(--u) * 1.2); padding: calc(var(--u) * 0.7) calc(var(--u) * 1.4); font-size: calc(var(--u) * 1.8); font-weight: 700; line-height: 1.2; }
@@ -265,6 +268,9 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .mk-links a.text-link { color: var(--lane-main); }
 .mk-links a.text-link:hover { color: var(--term-text); }
 .mk-links a.text-link:focus-visible { outline-color: var(--lane-remote); }
+.svg-link { cursor: pointer; }
+.svg-link:hover text { fill: var(--lane-main); }
+.svg-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .mk-links .todo { color: var(--lane-feature); font-weight: 700; }
 
 .card.fullshot { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: calc(var(--u) * 1.2); align-content: start; }

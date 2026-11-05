@@ -3,7 +3,8 @@ import '../contrib/contrib.css'
 import './tutorial.css'
 import { cards } from '../cards'
 import { Rich } from '../components/Install'
-import { copyText } from '../components/Copy'
+import { Cmd, CopyButton } from '../components/Copy'
+import { DetailsHost } from '../components/DetailsModal'
 import { Callout, Mistakes, PageHeader, Section } from '../contrib/ui'
 import { STAGES, STAGE_BY_SLUG, WHERE, type Action, type Shot, type Stage, type Where } from './stages'
 import { useWorkshopSlug, workshopHref } from './router'
@@ -19,18 +20,14 @@ const BACK_TO_SETUP = '#/ready'
 const isShellCommand = (s: string) => /^(git|gh|code)\b/.test(s)
 
 function Copyable({ text }: { text: string }) {
-  const [done, setDone] = useState(false)
   const cmd = isShellCommand(text)
   return (
     <div className={'tut-cmd' + (cmd ? ' is-cmd' : '')}>
-      <code>{text}</code>
-      <button type="button" className="doc-copy" aria-label={'Copy ' + text} onClick={() => { copyText(text); setDone(true); setTimeout(() => setDone(false), 1200) }}>
-        {done ? 'Copied' : 'Copy'}
-      </button>
+      <code><Cmd text={text} /></code>
+      <CopyButton text={text} className="doc-copy" />
     </div>
   )
 }
-
 function Tag({ where }: { where: Where }) {
   return <span className={'tut-tag ' + where} title={WHERE[where].hint}>{WHERE[where].label}</span>
 }
@@ -235,6 +232,7 @@ export function WorkshopApp() {
           {stage ? <StagePage stage={stage} /> : <Overview />}
         </main>
       </div>
+      <DetailsHost />
     </div>
   )
 }

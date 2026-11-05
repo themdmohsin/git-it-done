@@ -714,6 +714,314 @@ async function drawerAll(browser) {
 }
 
 
+/* ---------- Copy buttons: personal values (Your details), see src/components/Copy.tsx ---------- */
+const CLIPBOARD_STUB = () => {
+  window.__copied = []
+  Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: (t) => { window.__copied.push(t); return Promise.resolve() } } })
+}
+const FILL = { name: 'Ann Lee', email: 'ann@students.edu', ghuser: 'ann-lee', repo: 'my-first-repo' }
+const NOTE = 'Not copied. Add your details first.'
+const GUIDE_PAGES = ['', 'issues', 'pull-requests', 'first-contribution', 'fork', 'clone', 'commit-push', 'create-pr', 'workflow', 'challenge', 'challenge/start', 'challenge/task', 'challenge/complete', 'challenge/submit', 'challenge/verify', 'challenge/troubleshooting', 'resources']
+const COPY_SEL = '.copy-btn, .doc-copy'
+
+async function freshPage(page, url, os, details) {
+  await page.goto(url, { waitUntil: 'networkidle0' })
+  await page.evaluate((o, d) => {
+    localStorage.setItem('gid.os', o)
+    if (d) localStorage.setItem('gid.details', JSON.stringify(d)); else localStorage.removeItem('gid.details')
+  }, os, details)
+  await page.reload({ waitUntil: 'networkidle0' })
+  await settle(page, 700)
+  await closePicker(page)
+}
+
+const copyButtons = (page) => page.evaluate((sel) => [...document.querySelectorAll(sel)].map((b, i) => {
+  const row = b.closest('.cmd-row, .chip-cmd, .inst-cmd, .tut-cmd, .doc-code-line')
+  const label = b.getAttribute('aria-label') ?? ''
+  return { i, needs: label.includes('{{'), row: !!row, label }
+}), COPY_SEL)
+
+const clickCopy = (page, i) => page.evaluate((sel, n) => document.querySelectorAll(sel)[n].click(), COPY_SEL, i)
+const copied = (page) => page.evaluate(() => window.__copied.slice())
+const rowText = (page, i) => page.evaluate((sel, n) => document.querySelectorAll(sel)[n].closest('.cmd-row, .chip-cmd, .inst-cmd, .tut-cmd, .doc-code-line')?.querySelector('code')?.textContent ?? null, COPY_SEL, i)
+const noteOf = (page, i) => page.evaluate((sel, n) => document.querySelectorAll(sel)[n].parentElement.querySelector('.copy-note')?.textContent ?? null, COPY_SEL, i)
+
+async function copyChecks(browser) {
+  console.log('Copy buttons: a command with an empty personal value opens Your details first (all cards, drawers, install steps, tutorial and guide, three systems)')
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
+  await page.evaluateOnNewDocument(CLIPBOARD_STUB)
+  const targets = [
+    ...CARDS.map(([id]) => ({ label: id, url: URL + '#/' + id, deck: true })),
+    ...['', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map((n) => ({ label: 'workshop/' + n, url: URL + '#/workshop' + (n ? '/' + n : ''), deck: false })),
+    ...GUIDE_PAGES.map((p) => ({ label: 'learn/' + p, url: URL + '#/learn' + (p ? '/' + p : ''), deck: false })),
+  ]
+  let tokenButtons = 0, plainButtons = 0, withTokens = new Set()
+  for (const os of OSES) {
+    for (const t of targets) {
+      if (!t.deck && os !== 'windows') continue
+      const tag = `${t.label}/${os}`
+      await freshPage(page, t.url, os, null)
+      const btns = await copyButtons(page)
+      if (!btns.length) continue
+      // a command with no personal value copies immediately
+      const plain = btns.find((b) => !b.needs && b.row)
+      if (plain) {
+        plainButtons++
+        const visible = await rowText(page, plain.i)
+        await clickCopy(page, plain.i); await sleep(250)
+        const c = await copied(page)
+        if (await page.$('.details-box')) fail(`${tag}: a command without personal values opened Your details`)
+        if (c.length !== 1) fail(`${tag}: a command without personal values copied ${c.length} times`)
+        else if (c[0] !== visible) fail(`${tag}: copied "${c[0]}" but the screen shows "${visible}"`)
+      }
+      const needy = btns.filter((b) => b.needs)
+      for (let k = 0; k < needy.length; k++) {
+        const b = needy[k]
+        tokenButtons++; withTokens.add(t.label)
+        const where = `${tag} button ${b.i} (${b.label.slice(0, 50)})`
+        if (k > 0) await freshPage(page, t.url, os, null)
+        await page.evaluate(() => { window.__copied = [] })
+        // 1. empty details: modal opens, nothing copied
+        await clickCopy(page, b.i); await sleep(500)
+        if (!(await page.$('.details-box'))) { fail(`${where}: Your details did not open`); continue }
+        if ((await copied(page)).length) fail(`${where}: copied before the details were filled in`)
+        // 2. close without saving: nothing copied, note shown
+        await page.keyboard.press('Escape'); await sleep(700)
+        if (await page.$('.details-box')) fail(`${where}: Esc did not close Your details`)
+        if ((await copied(page)).length) fail(`${where}: copied after the window was closed without saving`)
+        if ((await noteOf(page, b.i)) !== NOTE) fail(`${where}: the "${NOTE}" note is not shown`)
+        // 3. fill in and save: the finished command is copied
+        await clickCopy(page, b.i); await sleep(500)
+        await page.keyboard.type(FILL.name); await page.keyboard.press('Tab')
+        await page.keyboard.type(FILL.email); await page.keyboard.press('Tab')
+        await page.keyboard.type(FILL.ghuser); await page.keyboard.press('Enter'); await sleep(700)
+        if (await page.$('.details-box')) fail(`${where}: Save did not close Your details`)
+        const c = await copied(page)
+        if (c.length !== 1) { fail(`${where}: after Save ${c.length} things were copied (want 1)`); continue }
+        if (/\{\{|\}\}/.test(c[0])) fail(`${where}: copied text still has a placeholder: ${c[0]}`)
+        if (/Your Name|example\.com|USERNAME|your-email/.test(c[0])) fail(`${where}: copied text has example wording: ${c[0]}`)
+        const visible = await rowText(page, b.i)
+        if (visible !== null && visible !== c[0]) fail(`${where}: copied "${c[0]}" but the screen shows "${visible}"`)
+      }
+    }
+    console.log(`  ${os}: checked`)
+  }
+  console.log(`  ${tokenButtons} copy buttons with personal values, ${plainButtons} plain ones; pages with values: ${[...withTokens].join(', ')}`)
+  if (tokenButtons < 8) fail(`only ${tokenButtons} copy buttons with personal values were found, expected at least 8`)
+
+  // only the values a command needs may block it
+  for (const os of OSES) {
+    await freshPage(page, URL + '#/identity', os, { name: FILL.name, email: '', ghuser: '', repo: 'my-first-repo' })
+    const btns = await copyButtons(page)
+    const nameBtn = btns.find((b) => b.label.includes('user.name')), emailBtn = btns.find((b) => b.label.includes('user.email'))
+    if (!nameBtn || !emailBtn) { fail(`identity/${os}: name or email copy button not found`); continue }
+    await clickCopy(page, nameBtn.i); await sleep(300)
+    if (await page.$('.details-box') || (await copied(page)).length !== 1 || !(await copied(page))[0].includes('user.name "Ann Lee"')) fail(`identity/${os}: the name command should copy at once when only the name is filled in`)
+    await clickCopy(page, emailBtn.i); await sleep(500)
+    if (!(await page.$('.details-box'))) fail(`identity/${os}: the email command should open Your details when the email is empty`)
+    await page.keyboard.press('Escape'); await sleep(600)
+  }
+  await freshPage(page, URL + '#/push', 'windows', { name: FILL.name, email: FILL.email, ghuser: '', repo: 'my-first-repo' })
+  const remote = (await copyButtons(page)).find((b) => b.label.includes('remote add origin'))
+  if (!remote) fail('push: the remote command copy button was not found')
+  else {
+    await clickCopy(page, remote.i); await sleep(500)
+    if (!(await page.$('.details-box'))) fail('push: the remote command should open Your details when the GitHub username is empty')
+    await page.keyboard.press('Escape'); await sleep(600)
+    if ((await copied(page)).length) fail('push: the remote command was copied with an empty username')
+  }
+  await freshPage(page, URL + '#/init', 'windows', { name: '', email: '', ghuser: '', repo: 'my-first-repo' })
+  const mk = (await copyButtons(page)).find((b) => b.label.includes('mkdir my-first-repo'))
+  if (!mk) fail('init: the mkdir command with the default repository name was not found')
+  else {
+    await clickCopy(page, mk.i); await sleep(300)
+    if (await page.$('.details-box') || (await copied(page)).length !== 1) fail('init: the repository name has a default, so mkdir must copy at once')
+  }
+
+  // opening and closing the window from a copy button leaves the card, terminal and graph alone
+  for (const id of ['push', 'identity']) {
+    await freshPage(page, URL + '#/' + id, 'windows', null)
+    const btns = await copyButtons(page)
+    const b = btns.find((x) => x.needs)
+    if (!b) { fail(`${id}: no copy button with personal values for the stability check`); continue }
+    await page.evaluate(() => {
+      const front = () => [...document.querySelectorAll('.stage .card')].pop()
+      window.__front = front
+      window.__marked = [front(), front().querySelector('.t-body'), front().querySelector('.graph'), document.querySelector('.rail svg')]
+      window.__mut = 0
+      const obs = (el) => new MutationObserver((ms) => { window.__mut += ms.length }).observe(el, { subtree: true, childList: true, attributes: true, characterData: true })
+      obs(document.querySelector('.stage')); obs(document.querySelector('.rail'))
+      window.__rect = JSON.stringify([front().getBoundingClientRect(), document.querySelector('.rail').getBoundingClientRect()])
+    })
+    const before = await readState(page)
+    await clickCopy(page, b.i); await sleep(900)
+    const open = await page.evaluate(() => window.__mut)
+    await page.keyboard.press('Escape'); await sleep(900)
+    const r = await page.evaluate(() => ({
+      same: window.__marked.every((e) => !e || document.contains(e)) && window.__front() === window.__marked[0],
+      rect: JSON.stringify([window.__front().getBoundingClientRect(), document.querySelector('.rail').getBoundingClientRect()]) === window.__rect,
+    }))
+    const after = await readState(page)
+    if (open > 0) fail(`${id}: ${open} DOM changes inside the card or rail while Your details opened from a copy button`)
+    if (!r.same) fail(`${id}: the card, terminal, graph or rail was re-created by a copy button`)
+    if (!r.rect) fail(`${id}: the layout moved when Your details opened and closed from a copy button`)
+    if (after.id !== before.id || after.lines !== before.lines) fail(`${id}: a copy button moved the presentation (${before.id}/${before.lines} -> ${after.id}/${after.lines})`)
+  }
+  await page.close()
+}
+
+/* ---------- Links: absolute addresses, safe attributes, nothing on top, clicks leave the presentation alone ---------- */
+const LINK_AUDIT = (strict, drawerOpen) => {
+  const u = Math.min(innerWidth / 100, (innerHeight * 1.7778) / 100)
+  const out = [], hrefs = []
+  const shown = (a) => { for (let e = a; e; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden') return false } return true }
+  document.querySelectorAll('.stage a, .drawer a').forEach((a) => {
+    const raw = a.getAttribute('href') ?? ''
+    if (raw.startsWith('#/')) return // moves inside the site
+    const label = (a.textContent.trim() || a.getAttribute('aria-label') || raw).slice(0, 40)
+    const inDrawer = !!a.closest('.drawer')
+    const layer = a.closest('.slayer')
+    if (layer && layer !== layer.parentElement.lastElementChild) return // cards behind the front one
+    if (a.closest('details:not([open])') && !a.closest('summary')) return // folded away
+    if (!/^(https:\/\/[^\s/]+\.[a-z]+|mailto:[^\s@]+@[^\s@]+\.[a-z]+)/i.test(raw)) out.push(`address is not an absolute https or mailto link: "${raw}" (${label})`)
+    const mail = raw.startsWith('mailto:')
+    if (!mail && a.getAttribute('target') !== '_blank') out.push(`no target="_blank": ${raw}`)
+    const rel = a.getAttribute('rel') ?? ''
+    if (!/noopener/.test(rel) || !/noreferrer/.test(rel)) out.push(`rel lacks noopener noreferrer: ${raw}`)
+    if (!mail) hrefs.push(raw)
+    if (!strict) return
+    if (drawerOpen && !inDrawer) return // the open drawer sits over the right side of the card
+    if (!inDrawer && !shown(a)) return
+    if (inDrawer) { if (!document.querySelector('.drawer[aria-hidden="false"]')) return; a.scrollIntoView({ block: 'center', behavior: 'instant' }) }
+    else if (a.closest('.inst-pane')) a.scrollIntoView({ block: 'center', behavior: 'instant' })
+    const r = a.getBoundingClientRect()
+    if (!r.width || !r.height) return
+    const cx = r.x + r.width / 2, cy = r.y + r.height / 2
+    const top = document.elementFromPoint(cx, cy)
+    if (!top || !(top === a || a.contains(top))) out.push(`something covers the link at its centre: ${raw} is under <${top?.tagName.toLowerCase()} class="${top?.className?.baseVal ?? top?.className}">`)
+    if (!a.closest('.inst-pane, .inst-side')) {
+      let fs = parseFloat(getComputedStyle(a).fontSize)
+      const svgText = a.querySelector('text')
+      if (svgText) fs = parseFloat(getComputedStyle(svgText).fontSize) * svgText.getScreenCTM().a
+      if (fs < 1.5 * u - 0.6) out.push(`link text ${fs.toFixed(1)}px is below 1.5 x --u (${(1.5 * u).toFixed(1)}px): ${label}`)
+    }
+  })
+  return { out, hrefs }
+}
+
+async function linkChecks(browser) {
+  console.log('Links: absolute https/mailto addresses, safe attributes, topmost at their centre, clicks open a new tab and leave the presentation alone')
+  const page = await browser.newPage()
+  await page.setViewport({ width: 1920, height: 1080 })
+  const all = new Set()
+  let count = 0
+  for (const os of OSES) {
+    for (const [id] of CARDS) {
+      if (os !== 'windows' && !WORKSHOP.includes(id)) continue
+      await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' })
+      await page.evaluate((o) => localStorage.setItem('gid.os', o), os)
+      await page.reload({ waitUntil: 'networkidle0' }); await settle(page, STACK.includes(id) ? 5500 : 900)
+      await closePicker(page)
+      for (const drawerOpen of [false, true]) {
+        if (drawerOpen) { await page.keyboard.press('d'); await sleep(900) }
+        const res = await page.evaluate(LINK_AUDIT, true, drawerOpen)
+        res.out.forEach((p) => fail(`links ${id}/${os}${drawerOpen ? ' drawer' : ''}: ${p}`))
+        res.hrefs.forEach((h) => all.add(h))
+        count += res.hrefs.length
+      }
+    }
+  }
+  console.log(`  ${count} external links checked, ${all.size} different addresses`)
+
+  // real clicks: the address that opens, nothing in the presentation changes, Space still works afterwards
+  const CLICKS = [
+    ['mukti', 5500], ['codespaces', 1200], ['keep-going', 1200], ['identity', 1200], ['vscode', 1200],
+  ]
+  for (const [id, ms] of CLICKS) {
+    await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, ms)
+    await closePicker(page)
+    const links = await page.evaluate(() => [...document.querySelectorAll('.stage a')].filter((a) => {
+      const layer = a.closest('.slayer'); if (layer && layer !== layer.parentElement.lastElementChild) return false
+      const r = a.getBoundingClientRect(); return r.width > 0 && !a.getAttribute('href').startsWith('#/')
+    }).map((a, i) => ({ i, href: a.getAttribute('href') })))
+    if (!links.length) { fail(`click test ${id}: no external links on the card`); continue }
+    for (const l of links) {
+      const hashBefore = await page.evaluate(() => location.hash)
+      const before = await readState(page)
+      const pos = await page.evaluate((href) => {
+        const a = [...document.querySelectorAll('.stage a')].filter((x) => { const ly = x.closest('.slayer'); return !ly || ly === ly.parentElement.lastElementChild }).find((x) => x.getAttribute('href') === href)
+        const r = a.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]
+      }, l.href)
+      const mail = l.href.startsWith('mailto:')
+      const wait = browser.waitForTarget((t) => t.opener() === page.target() && t.type() === 'page', { timeout: mail ? 1200 : 5000 }).catch(() => null)
+      await page.mouse.click(pos[0], pos[1])
+      const t = await wait
+      if (mail) { if (t) { fail(`click test ${id}: mailto opened a tab`); await (await t.page())?.close() } }
+      else if (!t) fail(`click test ${id}: clicking ${l.href} did not open a new tab`)
+      else {
+        const want = new globalThis.URL(l.href), got = decodeURIComponent(t.url())
+        const same = t.url().startsWith(l.href.replace(/\/$/, '')) || got.includes(l.href) || (want.host === 'youtu.be' && got.includes(want.pathname.slice(1)))
+        if (!same) fail(`click test ${id}: expected a new tab at ${l.href}, got ${t.url()}`)
+        await (await t.page())?.close()
+      }
+      await page.bringToFront(); await sleep(300)
+      const after = await readState(page)
+      if (after.id !== before.id || after.lines !== before.lines || (await page.evaluate(() => location.hash)) !== hashBefore) fail(`click test ${id}: clicking ${l.href} changed the presentation (${before.id}/${before.lines} -> ${after.id}/${after.lines})`)
+    }
+    // a link inside the Details drawer
+  await page.goto(URL + '#/mukti', { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 5500)
+  await page.keyboard.press('d'); await sleep(1000)
+  const dpos = await page.evaluate(() => { const a = document.querySelector('.drawer a'); a.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = a.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2, a.getAttribute('href')] })
+  const dwait = browser.waitForTarget((t) => t.opener() === page.target() && t.type() === 'page', { timeout: 5000 }).catch(() => null)
+  await page.mouse.click(dpos[0], dpos[1])
+  const dt = await dwait
+  if (!dt || !dt.url().startsWith(dpos[2])) fail('click test mukti drawer: expected a new tab at ' + dpos[2] + ', got ' + (dt ? dt.url() : 'nothing'))
+  await (await dt?.page())?.close(); await page.bringToFront(); await sleep(300)
+  if ((await readState(page)).id !== 'mukti') fail('click test mukti drawer: the presentation moved')
+  await page.keyboard.press('d'); await sleep(600)
+
+  // Space after a click, and after the keyboard focus is on a link
+    for (const how of ['click', 'focus']) {
+      await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, ms)
+      await closePicker(page)
+      const start = await readState(page)
+      if (how === 'click') {
+        const pos = await page.evaluate(() => { const a = [...document.querySelectorAll('.stage a')].filter((x) => { const ly = x.closest('.slayer'); return (!ly || ly === ly.parentElement.lastElementChild) && (x.getAttribute('href') ?? '').startsWith('https') })[0]; const r = a.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2] })
+        const wait = browser.waitForTarget((t) => t.opener() === page.target() && t.type() === 'page', { timeout: 5000 }).catch(() => null)
+        await page.mouse.click(pos[0], pos[1]); const t = await wait; await (await t?.page())?.close(); await page.bringToFront()
+      } else {
+        await page.evaluate(() => [...document.querySelectorAll('.stage a')].filter((x) => { const ly = x.closest('.slayer'); return !ly || ly === ly.parentElement.lastElementChild })[0].focus())
+      }
+      await sleep(300)
+      await page.keyboard.press('Space'); await settle(page, STACK.includes(id) ? 5500 : 1900)
+      const st = await readState(page)
+      const moved = st.id !== start.id || st.lines !== start.lines
+      if (!moved && CARDS[idx(id)][2] === 0 && id !== LAST) fail(`${id}: Space did nothing after a link was ${how === 'click' ? 'clicked' : 'focused'}`)
+      await page.keyboard.press('ArrowLeft'); await settle(page, STACK.includes(id) ? 5500 : 1900)
+      if ((await readState(page)).id !== start.id && id !== LAST) fail(`${id}: ArrowLeft did not return after a link was ${how === 'click' ? 'clicked' : 'focused'}`)
+    }
+  }
+
+  // keyboard focus ring on the Mukti and Codespaces links
+  for (const [id, ms] of [['mukti', 5500], ['codespaces', 1200]]) {
+    await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' }); await page.reload({ waitUntil: 'networkidle0' }); await settle(page, ms)
+    await closePicker(page)
+    const seen = new Set()
+    for (let i = 0; i < 40; i++) {
+      await page.keyboard.press('Tab')
+      const f = await page.evaluate(() => {
+        const a = document.activeElement
+        if (!a || a.tagName.toLowerCase() !== 'a' || !a.closest('.stage')) return null
+        const cs = getComputedStyle(a)
+        return { href: a.getAttribute('href'), ring: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2 }
+      })
+      if (f && !seen.has(f.href)) { seen.add(f.href); if (!f.ring) fail(`${id}: no visible keyboard focus ring on ${f.href}`) }
+    }
+    if (!seen.size) fail(`${id}: Tab never reached a link on the card`)
+  }
+  await page.close()
+}
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { shell: true, stdio: 'ignore' })
 let browser
 try {
@@ -726,6 +1034,8 @@ try {
   if (!only || only === 'drawer') await drawerAll(browser)
   if (!only || only === 'modal') await modalStability(browser)
   if (!only || only === 'fit' || only === 'modal') await detailsModal(browser)
+  if (!only || only === 'copy') await copyChecks(browser)
+  if (!only || only === 'links') await linkChecks(browser)
 } finally {
   if (browser) await browser.close()
   if (process.platform === 'win32') spawn('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' })
