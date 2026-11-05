@@ -26,6 +26,8 @@ export interface Step {
   detail?: string | Record<OS, string>
   /** Terminal cards: this step is a reset. The terminal clears and later entries start from an empty screen. */
   fresh?: boolean
+  /** Overrides the shell prompt for this entry (for example a PowerShell prompt on Windows). */
+  prompt?: string
 }
 
 export type CmdText = string | { label?: string; byOS: Record<OS, string> }
@@ -57,12 +59,12 @@ export type VijayVisualId =
   | 'why' | 'branches' | 'create' | 'commit' | 'merge'
   | 'why-branch' | 'problems' | 'branch-what' | 'branch-create' | 'switcher' | 'branch-work' | 'branch-merge'
 export type ArtId =
-  | 'ring' | 'kernel' | 'linus' | 'chaos' | 'snapshots' | 'born' | 'mukti' | 'audience'
+  | 'ring' | 'kernel' | 'linus' | 'snapshots' | 'born' | 'mukti' | 'audience'
   | 'issueLabels' | 'forkFlow' | 'prMock' | 'workflowSteps' | 'challengeSteps'
   | 'githubSignup' | 'codespaces' | 'ready'
 
 export type View =
-  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice' | 'resources'
+  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice' | 'resources' | 'install'
 
 /** A real picture with alt text. credit is shown under it when set. */
 export interface Picture { src: string; alt: string; credit?: string; caption?: string }

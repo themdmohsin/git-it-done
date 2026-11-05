@@ -5,6 +5,7 @@ import { Compare, Hero, ResourceList, ResourceTiles, OSTiles, LinusPanel, MessyS
 import { CommandChip } from './Copy'
 import { Graph } from './Graph'
 import { FileStrip } from './Panels'
+import { InstallCard } from './Install'
 import { Terminal } from './Terminal'
 import { VijayVisual } from '../vijay/VijayVisual'
 import { resolveCard } from '../osCards'
@@ -138,6 +139,8 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
       </div>
     )
   }
+
+  if (card.view === 'install') return <InstallCard id={card.id} framed={framed} />
 
   const weight = card.sentence.length + (card.bullets ?? []).join('').length + (card.note ?? '').length
     + (card.subheading ?? '').length

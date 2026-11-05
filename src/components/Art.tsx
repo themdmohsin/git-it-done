@@ -209,7 +209,9 @@ export function MuktiPanel({ tagline, links }: { tagline?: Card['tagline']; link
         {links?.map((l) => (
           <li key={l.label}>
             <b>{l.label}</b>
-            {l.url ? <a className="text-link" href={l.url} target="_blank" rel="noopener noreferrer">{l.url.replace(/^(https?:\/\/|mailto:)/, '')}</a> : <span className="todo">TODO: add the {l.label} link</span>}
+            {l.url
+              ? <a className="text-link" href={l.url} {...(l.url.startsWith('mailto:') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{l.url.replace(/^(https?:\/\/|mailto:)/, '')}</a>
+              : <span className="todo">TODO: add the {l.label} link</span>}
           </li>
         ))}
       </ul>
@@ -255,39 +257,6 @@ export function ShotFigure({ picture }: { picture: Picture }) {
       )}
       {picture.caption && <figcaption>{picture.caption}</figcaption>}
     </figure>
-  )
-}
-
-const DOCS: [number, number, number, string, boolean][] = [
-  [-190, -40, -14, 'old_v1', false],
-  [170, -50, 12, 'copy_of', false],
-  [-110, 40, -6, 'final_2', false],
-  [100, 50, 8, 'REAL', false],
-  [0, -10, 0, 'FINAL!!', true],
-]
-function ChaosArt() {
-  return (
-    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="A pile of conflicting copies of the same file">
-      <g transform="translate(400 270)">
-        {DOCS.map(([x, y, rot, label, top]) => (
-          <g key={label} transform={`translate(${x} ${y}) rotate(${rot})`}>
-            <rect x="-96" y="-124" width="192" height="248" rx="14" fill="var(--card)" stroke={top ? 'var(--accent)' : 'var(--card-border)'} strokeWidth="5" />
-            <text x="0" y="-78" textAnchor="middle" className="art-mono" fontSize="31" fill="var(--ink)">{label}</text>
-            {[-36, 0, 36, 72].map((ly) => <rect key={ly} x="-66" y={ly} width="132" height="12" rx="6" fill="var(--rail-future)" />)}
-          </g>
-        ))}
-        <g transform="translate(0 -10)" stroke="var(--accent)" strokeWidth="22" strokeLinecap="round">
-          <line x1="-70" y1="-70" x2="70" y2="70" />
-          <line x1="70" y1="-70" x2="-70" y2="70" />
-        </g>
-      </g>
-      {[['Lost work', 40, 190], ['Overwritten', 250, 230], ['No undo', 500, 170]].map(([t, x, w]) => (
-        <g key={t as string}>
-          <rect x={x as number} y="520" width={w as number} height="64" rx="32" fill="var(--accent)" />
-          <text x={(x as number) + (w as number) / 2} y="562" textAnchor="middle" className="art-text" fontSize="30" fill="var(--accent-ink)">{t}</text>
-        </g>
-      ))}
-    </svg>
   )
 }
 
@@ -482,7 +451,6 @@ export function StoryArt({ art }: { art: ArtId }) {
     case 'ring': return <RingArt />
     case 'kernel': return <KernelArt />
     case 'linus': return <LinusArt />
-    case 'chaos': return <ChaosArt />
     case 'snapshots': return <SnapshotsArt />
     case 'born': return <BornArt />
     case 'audience': return <AudienceArt />

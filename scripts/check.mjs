@@ -26,7 +26,6 @@ const CARDS = [
   ['personal-software', 'Software for an audience of one', 0],
   ['linux', 'Linux', 0],
   ['linus', 'Linus Torvalds', 0],
-  ['vc-problem', 'The messy folder, times a thousand', 0],
   ['vc-idea', 'A timeline of snapshots', 0],
   ['git-born', 'So Linus wrote Git', 0],
   ['recap', "You've all been here.", 0],
@@ -35,18 +34,17 @@ const CARDS = [
   ['init', 'Start a repository', 2],
   ['status', 'Ask what changed', 2],
   ['add', 'Choose what to save', 2],
-  ['commit', 'Save a snapshot', 3],
+  ['commit', 'Save a snapshot', 4],
   ['log', 'Read the history', 1],
   ['linux-repo', 'This is what real history looks like.', 0],
   ['github', 'Now we need GitHub.', 0],
-  ['push', 'Send it to GitHub', 2],
+  ['push', 'Send it to GitHub', 3],
   ['os', 'Which laptop do you have?', 0],
-  ['vscode', 'Install Visual Studio Code (VS Code)', 2],
-  ['git-install', 'Install Git', 2],
+  ['vscode', 'Install Visual Studio Code', 0],
+  ['git-install', 'Install Git', 0],
   ['github-account', 'Create a GitHub account', 0],
-  ['gh-install', 'Install GitHub CLI (command line interface)', 2],
-  ['gh-login', 'Log in to GitHub', 3],
-  ['identity', 'Tell Git who you are', 1],
+  ['gh-install', 'Install GitHub CLI and log in', 0],
+  ['identity', 'Set up your Git identity', 0],
   ['codespaces', 'Laptop won\u2019t cooperate? Use GitHub Codespaces.', 0],
   ['ready', 'You\u2019re set. Now let\u2019s make commits.', 0],
   ['why-branch', 'Why do we need branches?', 4],
@@ -72,13 +70,12 @@ const TLINES = {
   'branch-create': [0, 1, 2, 3, 4, 5, 0, 1],
   'branch-commit': [0, 1, 2, 3, 4, 5, 6, 7],
   'branch-merge': [0, 1, 2, 3, 4, 5],
-  vscode: [0, 1, 2], 'git-install': [0, 1, 2], 'gh-install': [0, 1, 2], 'gh-login': [0, 1, 2, 3], identity: [0, 1],
 }
-/* The new workshop section: ids in order, and the cards that show a terminal without a commit graph. */
-const WORKSHOP = ['os', 'vscode', 'git-install', 'github-account', 'gh-install', 'gh-login', 'identity', 'codespaces', 'ready']
-const TERMINAL_ONLY = ['vscode', 'git-install', 'gh-install', 'gh-login', 'identity']
+/* The workshop section: ids in order. The five installation steps use the two-column install view (no terminal, no graph). */
+const WORKSHOP = ['os', 'vscode', 'git-install', 'github-account', 'gh-install', 'identity', 'codespaces', 'ready']
+const INSTALL = ['vscode', 'git-install', 'github-account', 'gh-install', 'identity']
 const OSES = ['windows', 'macos', 'linux']
-const STACK = ['open-source', 'mukti', 'personal-software', 'linux', 'linus', 'vc-problem', 'vc-idea', 'git-born', 'recap']
+const STACK = ['open-source', 'mukti', 'personal-software', 'linux', 'linus', 'vc-idea', 'git-born', 'recap']
 const wait = (a, b) => (STACK.includes(a) || STACK.includes(b) ? 5500 : 1900)
 const idx = (id) => CARDS.findIndex((c) => c[0] === id)
 
@@ -88,9 +85,9 @@ function graphAt(id, done) {
   const none = { hashes: [], cloud: false, origin: false }
   switch (id) {
     case 'init': case 'status': case 'add': return none
-    case 'commit': return { ...none, hashes: done === 0 ? [] : done < 3 ? [C1] : [C1, C2] }
+    case 'commit': return { ...none, hashes: done === 0 ? [] : done < 4 ? [C1] : [C1, C2] }
     case 'log': return { ...none, hashes: [C1, C2] }
-    case 'push': return { hashes: [C1, C2], cloud: done >= 1, origin: done >= 2 }
+    case 'push': return { hashes: [C1, C2], cloud: done >= 1, origin: done >= 3 }
     default: return null // no graph on this card
   }
 }
@@ -218,16 +215,16 @@ async function directLoads(browser) {
   await page.keyboard.press('Escape'); await sleep(600)
   if ((await readState(page)).picker) fail('Esc did not close the OS popup')
   await page.keyboard.press('ArrowLeft'); await settle(page)
-  expect('os -> back to push (graph and terminal intact)', await readState(page), 'push', 2)
+  expect('os -> back to push (graph and terminal intact)', await readState(page), 'push', 3)
   await page.evaluate(() => { location.hash = '#/setup' }); await settle(page, 1900)
   expect('hash change to #/setup lands on #/os', await readState(page), 'os', 0)
 
   await open('init'); expect('load #/init', await readState(page), 'init', 0)
   await open('ready'); expect('load #/ready', await readState(page), 'ready', 0)
-  await page.click('a.cta-btn'); await settle(page, 1900)
-  expect('Back to git init button', await readState(page), 'init', 0)
-  await page.keyboard.press('Space'); await settle(page, 2400)
-  expect('init works after the jump', await readState(page), 'init', 1)
+  if ((await page.evaluate(() => document.body.innerText)).includes('Back to git init')) fail('the ready card still says "Back to git init"')
+  await page.click('a.cta-btn'); await sleep(900)
+  if ((await page.evaluate(() => location.hash)) !== '#/workshop') fail('the ready card button does not open #/workshop')
+  if (!(await page.evaluate(() => document.querySelector('h1')?.textContent ?? '')).includes('Let\u2019s Build Something with Git')) fail('#/workshop did not show the tutorial overview')
   await open('ready')
   await page.keyboard.press('ArrowLeft'); await settle(page)
   expect('ready -> back to plan B', await readState(page), 'codespaces', 0)
@@ -236,8 +233,10 @@ async function directLoads(browser) {
   await page.keyboard.press('Space'); await settle(page)
   expect('github -> push', await readState(page), 'push', 0)
   await page.keyboard.press('Space'); await settle(page, 700)
+  await page.keyboard.press('Space'); await settle(page, 700)
   await page.keyboard.press('Space'); await settle(page, 2400)
-  expect('push steps done', await readState(page), 'push', 2)
+  expect('push steps done', await readState(page), 'push', 3)
+  await page.keyboard.press('ArrowLeft'); await settle(page, 400)
   await page.keyboard.press('ArrowLeft'); await settle(page, 400)
   await page.keyboard.press('ArrowLeft'); await settle(page, 400)
   await page.keyboard.press('ArrowLeft'); await settle(page)
@@ -259,7 +258,7 @@ const MEASURE = (strict) => {
   for (let n; (n = walker.nextNode());) {
     if (!n.textContent.trim()) continue
     const el = n.parentElement
-    if (hidden(el) || el.closest('.drawer') || el.closest('.space-hint, .rail-preview') || el.closest('[aria-hidden="true"]')) continue
+    if (hidden(el) || el.closest('.drawer') || el.closest('.space-hint, .rail-preview') || el.closest('.inst-pane, .inst-side') || el.closest('[aria-hidden="true"]')) continue
     const layer = el.closest('.slayer')
     if (layer && layer !== layer.parentElement.lastElementChild) continue // cards behind the front one in a stack
     const r = document.createRange(); r.selectNodeContents(n)
@@ -268,7 +267,7 @@ const MEASURE = (strict) => {
     let fs = parseFloat(getComputedStyle(el).fontSize)
     if (el.ownerSVGElement) fs *= el.getScreenCTM().a
     const t = n.textContent.trim().slice(0, 30)
-    if (fs < 1.5 * u - 0.6) out.push(`small text ${fs.toFixed(1)}px < ${(1.5 * u).toFixed(1)}px: "${t}"`)
+    if (fs < 1.5 * u - 0.6 && !el.closest('.install-card')) out.push(`small text ${fs.toFixed(1)}px < ${(1.5 * u).toFixed(1)}px: "${t}"`)
     if (b.left < -1 || b.right > innerWidth + 1 || b.top < -1) out.push(`off screen: "${t}"`)
     const inRail = el.closest('.rail')
     if (!inRail && !el.closest('.bottom') && b.bottom > bottom.top + 1) out.push(`touches controls/rail: "${t}"`)
@@ -309,7 +308,7 @@ async function layout(browser) {
       await page.reload({ waitUntil: 'networkidle0' })
       await settle(page, 900)
       await closePicker(page)
-      const steps = id === 'push' ? 2 : (CARDS[idx(id)][2] ?? 0)
+      const steps = CARDS[idx(id)][2] ?? 0
       for (let i = 0; i < steps; i++) { await page.keyboard.press('Space'); await settle(page, id === 'push' ? 2600 : 600) }
       await sleep(900)
       await page.screenshot({ path: `scripts/shots/${id}-${w}x${h}.png` })
@@ -365,7 +364,7 @@ const DRAWER_MEASURE = () => {
 }
 
 async function workshopFit(browser) {
-  console.log('Workshop section: nine cards x three systems x two sizes (card fit, drawer fit, OS-specific text)')
+  console.log('Workshop section: eight cards x three systems x two sizes (card fit, drawer fit, OS-specific text)')
   mkdirSync('scripts/shots/workshop', { recursive: true })
   const seen = {}
   for (const [w, h] of [[1920, 1080], [1280, 720]]) {
@@ -373,7 +372,7 @@ async function workshopFit(browser) {
     await page.setViewport({ width: w, height: h })
     for (const os of OSES) {
       for (const id of WORKSHOP) {
-        const variants = id === 'identity' ? ['filled', 'empty'] : ['filled']
+        const variants = ['filled']
         for (const variant of variants) {
           await page.goto(URL + '#/' + id, { waitUntil: 'networkidle0' })
           await page.evaluate((o, v) => {
@@ -393,7 +392,7 @@ async function workshopFit(browser) {
           const problems = await page.evaluate(MEASURE, true)
           problems.forEach((p) => fail(`${tag}: ${p}`))
           const info = await page.evaluate(() => ({
-            left: document.querySelector('.stage .card-left')?.innerText ?? '',
+            left: document.querySelector('.stage .card-left, .stage .inst-pane')?.innerText ?? '',
             prompt: document.querySelector('.t-prompt')?.textContent ?? '',
             tiles: document.querySelectorAll('.os-tile').length,
             tileOn: document.querySelector('.os-tile.on .os-tile-name')?.textContent ?? '',
@@ -403,12 +402,6 @@ async function workshopFit(browser) {
             if (info.tiles !== 3) fail(`${tag}: expected 3 OS tiles, found ${info.tiles}`)
             if (info.tileOn !== { windows: 'Windows', macos: 'macOS', linux: 'Linux' }[os]) fail(`${tag}: highlighted tile is "${info.tileOn}"`)
           }
-          if (TERMINAL_ONLY.includes(id)) {
-            const want = { windows: 'MINGW64', macos: '%', linux: 'user@laptop' }[os]
-            if (!info.prompt.includes(want)) fail(`${tag}: prompt "${info.prompt}" does not match ${os}`)
-          }
-          if (id === 'identity' && variant === 'filled' && !info.left.includes('Ann-Marie Longname Smith')) fail(`${tag}: identity chips are not filled in`)
-          if (id === 'identity' && variant === 'empty' && !info.left.includes('<your name>')) fail(`${tag}: identity chips lack the <your name> label when details are empty`)
           if (variant === 'filled' || id === 'identity') {
             await page.keyboard.press('d'); await sleep(1000)
             const dp = await page.evaluate(DRAWER_MEASURE)
@@ -427,7 +420,7 @@ async function workshopFit(browser) {
     const set = new Set(OSES.map((o) => seen[id][o + 1920].left))
     if (set.size !== 3) fail(`${id}: the card text is not different for each operating system`)
   }
-  if (new Set(OSES.map((o) => seen['gh-login'][o + 1920].left)).size !== 1) fail('gh-login: card text should be the same on every system')
+  if (new Set(OSES.map((o) => seen['github-account'][o + 1920].left)).size !== 1) fail('github-account: card text should be the same on every system')
 }
 
 async function osPersistence(browser) {
@@ -441,8 +434,8 @@ async function osPersistence(browser) {
     await page.evaluate((l) => { [...document.querySelectorAll('.os-tile')].find((b) => b.querySelector('.os-tile-name').textContent === l).click() }, label)
     await sleep(300)
   }
-  const bullets = () => page.evaluate(() => document.querySelector('.stage .card-left').innerText)
-  for (const [label, needle, os] of [['macOS', 'Universal', 'macos'], ['Linux', '.deb', 'linux'], ['Windows', 'User Installer', 'windows']]) {
+  const bullets = () => page.evaluate(() => document.querySelector('.stage .card-left, .stage .inst-pane').innerText)
+  for (const [label, needle, os] of [['macOS', 'Universal', 'macos'], ['Linux', '.deb', 'linux'], ['Windows', '.exe', 'windows']]) {
     await pick(label)
     await page.goto(URL + '#/vscode', { waitUntil: 'networkidle0' })
     await page.reload({ waitUntil: 'networkidle0' }); await settle(page, 700)

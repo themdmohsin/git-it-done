@@ -10,7 +10,7 @@ const labelOf = (c: Card) => (c.section === 'part2' && c.id !== 'challenge' ? `P
 const PREVIEW_DELAY = 150
 
 /** Small card above a rail node: kicker, heading and one sentence, all taken from the card data. */
-function Preview({ card, cx, top }: { card: Card; cx: number; top: number }) {
+function Preview({ card, cx, top, touch }: { card: Card; cx: number; top: number; touch: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   useLayoutEffect(() => {
     const el = ref.current
@@ -25,6 +25,7 @@ function Preview({ card, cx, top }: { card: Card; cx: number; top: number }) {
       <div className="rp-kicker">{card.kicker}</div>
       <div className="rp-title">{card.title}</div>
       <div className="rp-text">{card.preview ?? card.sentence}</div>
+      {touch && <div className="rp-hint">Tap the dot again to go here</div>}
     </div>
   )
 }
@@ -35,6 +36,8 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
   const [size, setSize] = useState({ w: 1000, h: 120, fs: 14 })
   const [tip, setTip] = useState<{ i: number; cx: number; top: number } | null>(null)
   const timer = useRef<number>(0)
+  const lastPointer = useRef<string>('mouse')
+  const [touch, setTouch] = useState(false)
   const showTip = (i: number, el: Element) => {
     window.clearTimeout(timer.current)
     const b = el.getBoundingClientRect()
@@ -42,6 +45,13 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
   }
   const hideTip = () => { window.clearTimeout(timer.current); setTip(null) }
   useEffect(() => () => window.clearTimeout(timer.current), [])
+  // Touch: a tap elsewhere closes the preview.
+  useEffect(() => {
+    if (!tip || !touch) return
+    const onDown = (e: PointerEvent) => { if (!(e.target as Element).closest?.('.rail [role="button"]')) setTip(null) }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [tip, touch])
 
   useEffect(() => {
     const el = ref.current
@@ -133,10 +143,20 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
             <g
               key={c.id} transform={`translate(${x} ${y})`} role="button" tabIndex={0}
               aria-label={`Go to ${c.title}`} aria-current={i === cur ? 'step' : undefined}
-              onClick={() => { hideTip(); onJump(i) }}
-              onPointerEnter={(e) => { if (e.pointerType === 'mouse') showTip(i, e.currentTarget) }}
+              onPointerDown={(e) => { lastPointer.current = e.pointerType }}
+              onClick={(e) => {
+                if (lastPointer.current !== 'mouse' && lastPointer.current !== '' && tip?.i !== i) {
+                  const b = e.currentTarget.getBoundingClientRect()
+                  window.clearTimeout(timer.current)
+                  setTouch(true)
+                  setTip({ i, cx: b.left + b.width / 2, top: b.top })
+                  return
+                }
+                hideTip(); onJump(i)
+              }}
+              onPointerEnter={(e) => { if (e.pointerType === 'mouse') { setTouch(false); showTip(i, e.currentTarget) } }}
               onPointerLeave={hideTip}
-              onFocus={(e) => showTip(i, e.currentTarget)}
+              onFocus={(e) => { if (lastPointer.current === 'mouse') { setTouch(false); showTip(i, e.currentTarget) } }}
               onBlur={hideTip}
               onKeyDown={(e) => { if (e.key === 'Enter') onJump(i) }}
               style={{ cursor: 'pointer', outline: 'none' }}
@@ -162,7 +182,7 @@ export function Rail({ cards, cur, onJump, delay }: { cards: Card[]; cur: number
           <text x={lx} y={ly + fs} textAnchor="middle" fontSize={fs} className="rail-label">{label}</text>
         </motion.g>
       </svg>
-      {tip && <Preview card={cards[tip.i]} cx={tip.cx} top={tip.top} />}
+      {tip && <Preview card={cards[tip.i]} cx={tip.cx} top={tip.top} touch={touch} />}
     </div>
   )
 }

@@ -6,10 +6,10 @@ import { MUKTI, RESOURCES } from './links'
 const none = { type: 'none' } as const
 
 /* Old links keep working: the single setup card was replaced by the workshop section (#/os is its first card). */
-export const ROUTE_ALIASES: Record<string, string> = { setup: 'os' }
+export const ROUTE_ALIASES: Record<string, string> = { setup: 'os', 'gh-login': 'gh-install' }
 
 /* The stack, BACK to FRONT. Every scene in the zoom-out and peel-back is a slice of this list. */
-const STACK = ['recap', 'git-answer', 'git-born', 'vc-idea', 'vc-problem', 'linus', 'linux', 'personal-software', 'mukti', 'open-source']
+const STACK = ['recap', 'git-answer', 'git-born', 'vc-idea', 'linus', 'linux', 'personal-software', 'mukti', 'open-source']
 const peel = (front: string, extra: Partial<StackScene> = {}): StackScene => ({
   layers: STACK.slice(0, STACK.indexOf(front) + 1),
   front,
@@ -243,35 +243,6 @@ export const cards: Card[] = [
     },
   },
   {
-    id: 'vc-problem',
-    rail: 'Version control: the problem',
-    section: 'story',
-    kicker: 'Version control \u00b7 the problem',
-    title: 'The messy folder, times a thousand',
-    sentence: 'Your report folder, but with thousands of people in it.',
-    bullets: [
-      'Lost work and overwritten changes.',
-      'No history of what changed.',
-      'No blame: who changed this, and why?',
-      'No undo.',
-    ],
-    view: 'story',
-    art: 'chaos',
-    lane: 'detour',
-    scene: peel('vc-problem'),
-    steps: [],
-    drawer: {
-      clicks: [
-        'Look back at the messy folder on the first card.',
-        'Match each problem on this card (lost work, no history, no blame, no undo) to something that could go wrong in that folder.',
-      ],
-      happening: 'Without a system, two people edit the same file and one of them silently wins. Nobody can see the history, find who changed a line, or go back to yesterday. Each of the four problems on the card is a real bad day, and version control is the fix for all four.',
-      links: [
-        { label: 'Pro Git: About version control', url: 'https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control' },
-      ],
-    },
-  },
-  {
     id: 'vc-idea',
     rail: 'Version control: the idea',
     section: 'story',
@@ -444,13 +415,33 @@ export const cards: Card[] = [
       { cmd: 'git init', output: ['Initialized empty Git repository in ~/your-first-repo/.git/'], op: { type: 'init' } },
       { cmd: 'ls -a', output: ['.  ..  .git'], op: none },
     ],
+    os: {
+      windows: {
+        steps: [
+          { cmd: 'git init', output: ['Initialized empty Git repository in ~/your-first-repo/.git/'], op: { type: 'init' } },
+          {
+            cmd: 'ls -Hidden',
+            output: ['', '    Directory: C:\\Users\\you\\your-first-repo', '', 'Mode          LastWriteTime  Length Name', '----          -------------  ------ ----', 'd--h--   4/11/2026  10:00 AM         .git'],
+            op: none,
+            prompt: 'PS ~\\your-first-repo>',
+          },
+        ],
+        note: 'Hidden files: ls -Hidden in Windows PowerShell. ls -a works in macOS, Linux and Git Bash.',
+      },
+      macos: { note: 'Hidden files: ls -a in macOS and Linux (and Git Bash on Windows). Windows PowerShell uses ls -Hidden.' },
+      linux: { note: 'Hidden files: ls -a in macOS and Linux (and Git Bash on Windows). Windows PowerShell uses ls -Hidden.' },
+    },
     drawer: {
       clicks: [
-        'Open a terminal. On Windows, use Git Bash.',
+        'Open a terminal. On Windows this can be PowerShell (for example the terminal inside Visual Studio Code) or Git Bash.',
         'Make a new folder and move into it. mkdir name && cd name does both in one line.',
-        'Run git init, then ls -a, which lists files including hidden ones. You should see the hidden .git folder.',
+        'Run git init, then list the files including hidden ones. Windows PowerShell: ls -Hidden (or Get-ChildItem -Hidden). macOS, Linux and Git Bash: ls -a. You should see the hidden .git folder.',
       ],
-      commands: ['mkdir {{repo}} && cd {{repo}}', 'git init', 'ls -a'],
+      commands: [
+        'mkdir {{repo}} && cd {{repo}}',
+        'git init',
+        { label: 'List hidden files', byOS: { windows: 'ls -Hidden', macos: 'ls -a', linux: 'ls -a' } },
+      ],
       mistakes: [
         { title: 'Running git init in the wrong folder', fix: 'Run pwd first to see where you are. Move with cd.' },
         { title: 'Running it inside another repository', fix: 'Do not nest repositories. If git status already works, the folder is already a repository.' },
@@ -558,15 +549,16 @@ export const cards: Card[] = [
     steps: [
       { cmd: 'git commit -m "add notes"', output: ['[main 1a2b3c4] add notes'], op: { type: 'commit', branch: 'main', id: '1a2b3c4', msg: 'add notes' }, file: 'repo' },
       { cmd: 'echo "second line" >> notes.txt', output: [], op: none, file: 'working' },
-      { cmd: 'git commit -am "add second line"', output: ['[main 5d6e7f8] add second line'], op: { type: 'commit', branch: 'main', id: '5d6e7f8', msg: 'add second line' }, file: 'repo' },
+      { cmd: 'git add notes.txt', output: [], op: none, file: 'staging' },
+      { cmd: 'git commit -m "add second line"', output: ['[main 5d6e7f8] add second line'], op: { type: 'commit', branch: 'main', id: '5d6e7f8', msg: 'add second line' }, file: 'repo' },
     ],
     drawer: {
       clicks: [
         'Stage a file with git add notes.txt.',
         'Run the first commit command below. Always add -m and a short message.',
-        'Add a second line with echo "text" >> file (a single > would replace the whole file), then commit again with git commit -am.',
+        'Add a second line with echo "text" >> file (a single > would replace the whole file), stage it with git add notes.txt, then commit again with git commit -m "add second line".',
       ],
-      commands: ['git commit -m "add notes"', 'echo "second line" >> notes.txt', 'git commit -am "add second line"', 'git status'],
+      commands: ['git commit -m "add notes"', 'echo "second line" >> notes.txt', 'git add notes.txt', 'git commit -m "add second line"', 'git status'],
       mistakes: [
         { title: '"nothing to commit"', fix: 'The file was not saved in your editor, or you forgot git add. Run git status to see what Git sees.' },
         { title: 'Empty or vague messages', fix: 'Write what changed, in a few words: "add login page", not "stuff".' },
@@ -680,7 +672,7 @@ export const cards: Card[] = [
     kicker: 'COMMAND \u00b7 PUSH',
     title: 'Send it to GitHub',
     sentence: 'Pushing uploads your commits to a copy that lives online.',
-    bullets: ['origin is the usual name for that copy.', 'First push: GitHub asks you to sign in.', 'Passwords no longer work for pushes.'],
+    bullets: ['origin is the usual name for that copy.', 'git branch -M main names your branch main, so the push sends the right branch.', 'First push: GitHub signs you in (done in setup). Passwords no longer work.'],
     note: 'Create the GitHub repository EMPTY: no README, no licence, no gitignore. Otherwise the first push is rejected.',
     tryIt: 'git push -u origin main',
     view: 'terminal',
@@ -688,6 +680,7 @@ export const cards: Card[] = [
     into: 'launch',
     steps: [
       { cmd: 'git remote add origin https://github.com/you/your-first-repo.git', output: [], op: { type: 'addRemote' } },
+      { cmd: 'git branch -M main', output: [], op: none },
       {
         cmd: 'git push -u origin main',
         output: [
@@ -701,12 +694,14 @@ export const cards: Card[] = [
     drawer: {
       clicks: [
         'On github.com click New repository, name it, and leave README, licence and gitignore switched OFF. Click Create repository.',
-        'In your practice repository, run the remote command below (it uses your details from U).',
+        'In your practice repository, run the remote command below (it uses your details from U). This connects your folder to GitHub.',
+        'Run git branch -M main. This names your current branch main, so the next command pushes the right branch.',
         'Run git push -u origin main. Sign in through the browser window if it asks.',
       ],
       commands: [
         'git remote add origin https://github.com/{{ghuser}}/{{repo}}.git',
         'git remote -v',
+        'git branch -M main',
         'git push -u origin main',
       ],
       mistakes: [

@@ -49,7 +49,7 @@ function Entry({ step, animate, onDone }: { step: Step; animate: boolean; onDone
   return (
     <div className="t-entry">
       <div className="t-line">
-        <span className="t-prompt">{prompt(os)} </span>
+        <span className="t-prompt">{step.prompt ?? prompt(os)} </span>
         <span>{cmd.slice(0, shownN)}</span>
         {typing && <span className="t-cursor" />}
       </div>
@@ -90,7 +90,7 @@ export function Terminal({ steps, playing, onDone, repo }: { steps: Step[]; play
           ))}
           {idle && (
             <div className="t-line">
-              <span className="t-prompt">{prompt(os)} </span>
+              <span className="t-prompt">{steps[last]?.prompt ?? prompt(os)} </span>
               <span className="t-cursor" />
             </div>
           )}

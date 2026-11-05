@@ -11,6 +11,8 @@ import { OSContext, detectOS, loadOS, saveOS } from './os'
 import { DetailsOverlay } from './components/DetailsModal'
 import { SpaceHint, type HintMode } from './components/SpaceHint'
 import { setDetailsOpener, useUserDetails } from './userDetails'
+import { isInGuide } from './contrib/router'
+import { isWorkshopHash } from './tutorial/router'
 
 interface S {
   card: number
@@ -172,6 +174,7 @@ export default function App() {
   }, [s.card])
   useEffect(() => {
     const onHash = () => {
+      if (isInGuide() || isWorkshopHash()) return // another site owns the address now
       const alias = ROUTE_ALIASES[window.location.hash.replace(/^#\/?/, '')]
       if (alias) window.location.hash = '#/' + alias
       const i = fromHash()

@@ -1,0 +1,70 @@
+/* Hands-on tutorial page (#/workshop). Built on the guide's scrolling-document styles (contrib.css). */
+.tut .doc-body { max-width: 1240px; }
+.tut .doc-side a { font-size: 0.9rem; }
+.tut-content { max-width: 920px; }
+.tut a { color: inherit; text-decoration: none; }
+.tut .doc-content a.inline, .tut .doc-content .inst-link { text-decoration: underline; text-underline-offset: 0.18em; }
+.tut .doc-expect div strong, .tut .doc-callout div strong { display: inline; color: inherit; font-size: inherit; text-transform: none; letter-spacing: 0; margin: 0; }
+.tut .btn { display: inline-block; font-size: 1rem; padding: 0.55rem 1.4rem; color: var(--accent-ink); }
+.tut .btn.ghost { color: var(--ink); }
+.tut .tut-tiles a, .tut .doc-nextup-link { color: var(--ink); }
+.tut .doc-top { gap: 0.8rem; }
+.tut-pills { display: flex; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.tut-pills a { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; font-size: 0.82rem; font-weight: 700; color: var(--ink); background: var(--card); border: 1px solid var(--card-border); }
+.tut-pills a:hover { border-color: var(--accent); }
+.tut-pills a.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* where-tags: always say where the action happens */
+.tut-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 0.4rem; padding: 0.12rem 0.55rem; color: #fff; width: max-content; }
+.tut-tag.github { background: var(--ink); }
+.tut-tag.desktop { background: var(--green); }
+.tut-tag.vscode { background: #1f7a86; }
+.tut-tag.terminal { background: var(--accent); }
+.tut-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; margin: 0.4rem 0 1rem; }
+.tut-legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+.tut-legend small { color: var(--muted); font-size: 0.82rem; }
+
+.tut-steps { list-style: none; padding: 0; margin: 0 0 0.4rem; display: grid; gap: 0.9rem; }
+.tut-steps > li { position: relative; padding-left: 2.6rem; display: grid; gap: 0.4rem; justify-items: start; min-width: 0; }
+.tut-steps > li::marker { content: none; }
+.tut-steps > li::before { content: attr(data-n); position: absolute; left: 0; top: -0.1rem; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--ink); color: var(--card); display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; }
+.tut-text { font-size: 1.02rem; line-height: 1.55; overflow-wrap: anywhere; }
+.tut-text .inst-inline, .tut-content .inst-inline { background: var(--card); border: 1px solid var(--card-border); border-radius: 0.35em; padding: 0.05em 0.35em; font-size: 0.9em; font-weight: 700; }
+.tut-text kbd, .tut-content kbd { font: 700 0.85em var(--font-code); background: var(--card); border: 1px solid var(--card-border); border-bottom-width: 3px; border-radius: 0.4em; padding: 0.05em 0.45em; }
+.tut-content .inst-link { color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 0.18em; }
+.tut-content .inst-link:hover { color: var(--ink); }
+
+.tut-cmd { display: flex; align-items: center; gap: 0.7rem; max-width: 100%; width: 100%; background: var(--panel); color: var(--term-text); border-radius: 0.7rem; padding: 0.35rem 0.45rem 0.35rem 0.9rem; }
+.tut-cmd code { flex: 1 1 0; min-width: 0; font-size: 0.95rem; font-weight: 700; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tut-cmd.is-cmd code::before { content: '$ '; color: var(--lane-main); }
+.tut-cmd .doc-copy { background: var(--lane-main); }
+
+.tut-shot { margin: 0.4rem 0 1.4rem; }
+.tut-shot a { display: block; border-radius: 0.8rem; }
+.tut-shot img { height: auto; aspect-ratio: 16 / 9; background: var(--card); }
+.tut-shot a:hover img { border-color: var(--accent); }
+.tut-shot figcaption { font-family: var(--font-head); font-size: 0.9rem; }
+
+.tut-tiles { list-style: none; padding: 0; margin: 1rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.7rem; }
+.tut-tiles a { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; border-radius: 0.8rem; background: var(--card); border: 1px solid var(--card-border); color: var(--ink); font-weight: 700; line-height: 1.25; }
+.tut-tiles a:hover { border-color: var(--accent); }
+.tut-tiles .tn { flex: none; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
+
+/* success state */
+.tut-success { position: relative; overflow: hidden; margin: 2.4rem 0 1rem; padding: 2.4rem 1.6rem 2rem; text-align: center; border-radius: 1.2rem; background: var(--panel); color: var(--term-text); box-shadow: var(--card-shadow); }
+.tut-success h2 { margin: 0.4rem auto 0.8rem; max-width: 22em; font-size: clamp(1.5rem, 3.4vw, 2.1rem); letter-spacing: -0.02em; line-height: 1.15; color: var(--lane-main); position: relative; }
+.tut-success p { color: var(--term-text); max-width: 34em; margin: 0 auto 1.4rem; position: relative; }
+.tut-trophy { font-size: 3.2rem; line-height: 1; position: relative; animation: tut-pop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+.tut-success-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; position: relative; }
+.tut-success .btn { text-decoration: none; font-size: 1rem; padding: 0.55rem 1.4rem; }
+.tut-success .btn.ghost { color: var(--term-text); box-shadow: inset 0 0 0 2px var(--panel-line); }
+.tut-confetti { position: absolute; inset: 0; pointer-events: none; }
+.tut-confetti i { position: absolute; top: -12px; left: calc(var(--i) * 4.2%); width: 8px; height: 14px; border-radius: 2px; background: var(--lane-main); animation: tut-fall 3.2s linear calc(var(--i) * 0.11s) infinite; }
+.tut-confetti i:nth-child(3n) { background: var(--accent); }
+.tut-confetti i:nth-child(3n + 1) { background: var(--lane-remote); }
+@keyframes tut-fall { to { transform: translateY(380px) rotate(540deg); opacity: 0.1; } }
+@keyframes tut-pop { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .tut-confetti i, .tut-trophy { animation: none; } .tut-confetti { display: none; } }
+
+@media (max-width: 920px) { .tut-pills { display: none; } .tut .doc-back { display: none; } }
+@media (max-width: 560px) { .tut-steps > li { padding-left: 2.3rem; } .tut-success { padding: 2rem 1rem 1.6rem; } }

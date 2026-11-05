@@ -1,0 +1,99 @@
+/* ---------- Installation steps: instructions on the left, video on the right ---------- */
+.card.install-card {
+  --f: clamp(14px, calc(var(--u) * 1.18), 22px);
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-content: stretch;
+  gap: calc(var(--u) * 1.2); font-size: var(--f);
+  padding-top: calc(var(--u) * 3.6);
+}
+.inst-head { display: flex; align-items: flex-end; justify-content: space-between; gap: calc(var(--u) * 2); flex-wrap: wrap; }
+.inst-titles { display: grid; gap: calc(var(--u) * 0.4); min-width: 0; }
+.inst-titles h1 { font-size: clamp(26px, calc(var(--u) * 3.2), 90px); }
+
+.inst-progress { display: flex; gap: calc(var(--u) * 0.5); margin: 0; padding: 0; list-style: none; flex-wrap: wrap; }
+.inst-progress a {
+  display: flex; align-items: center; gap: 0.5em; text-decoration: none; color: var(--muted); font-weight: 700;
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 999px; padding: 0.2em 0.8em 0.2em 0.25em; font-size: var(--f);
+}
+.inst-progress .num { display: grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--rail-future); color: var(--ink); font-size: 0.9em; }
+.inst-progress .done .num { background: var(--green); color: var(--accent-ink); }
+.inst-progress .on a { background: var(--ink); color: var(--card); border-color: var(--ink); }
+.inst-progress .on .num { background: var(--accent); color: var(--accent-ink); }
+.inst-progress a:hover { border-color: var(--accent); }
+
+.inst-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: calc(var(--u) * 2.4); min-height: 0; }
+.inst-pane {
+  min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: 0.9em; padding: 0 0.6em 1.4em 0;
+  scrollbar-width: thin; scrollbar-color: var(--rail-future) transparent; line-height: 1.4;
+}
+.inst-pane:focus-visible { outline-offset: -3px; }
+.inst-why-top { margin: 0; color: var(--ink); font-size: 1.08em; line-height: 1.35; max-width: 42em; }
+.inst-official { justify-self: start; text-decoration: none; font-size: 1em; }
+.inst-link { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 0.14em; text-underline-offset: 0.18em; border-radius: 0.2em; overflow-wrap: anywhere; }
+.inst-link:hover { color: var(--accent); }
+.inst-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.inst-inline { background: var(--card); border: 1px solid var(--card-border); border-radius: 0.35em; padding: 0.05em 0.35em; font-size: 0.92em; font-weight: 700; overflow-wrap: anywhere; }
+.inst-pane kbd { font: 700 0.88em var(--font-code); background: var(--card); border: 1px solid var(--card-border); border-bottom-width: 3px; border-radius: 0.4em; padding: 0.05em 0.45em; }
+
+.inst-tabs { display: flex; gap: 0.4em; position: sticky; top: 0; z-index: 2; background: var(--page); padding: 0.3em 0; }
+.inst-tab { border: 2px solid var(--card-border); background: var(--card); border-radius: 0.9em; padding: 0.35em 1.1em; font-weight: 700; font-size: 1em; color: var(--ink); }
+.inst-tab:hover { border-color: var(--accent); }
+.inst-tab.on { background: var(--ink); color: var(--card); border-color: var(--accent); }
+
+.inst-h { margin: 0.2em 0 0; font-size: 1.25em; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.6em; flex-wrap: wrap; }
+.inst-os-tag { font-size: 0.65em; color: var(--accent-ink); background: var(--accent); border-radius: 999px; padding: 0.05em 0.7em; letter-spacing: 0.04em; text-transform: uppercase; }
+.inst-os { display: grid; gap: 0.7em; animation: fadein 0.25s ease-out both; }
+.inst-intro { margin: 0; color: var(--muted); font-weight: 500; }
+
+.inst-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.75em; counter-reset: inst; }
+.inst-steps > li { counter-increment: inst; position: relative; padding-left: 2.5em; display: grid; gap: 0.4em; min-width: 0; }
+.inst-steps > li::before {
+  content: counter(inst); position: absolute; left: 0; top: 0; width: 1.9em; height: 1.9em; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; font-size: 0.9em;
+}
+.inst-text { font-weight: 500; overflow-wrap: anywhere; }
+.inst-sub { margin: 0; padding-left: 1.1em; display: grid; gap: 0.2em; color: var(--muted); font-weight: 500; list-style: square; }
+.inst-why { color: var(--muted); font-size: 0.93em; border-left: 3px solid var(--card-border); padding-left: 0.7em; }
+.inst-why b { color: var(--green); }
+
+.inst-cmd { display: flex; align-items: center; gap: 0.7em; background: var(--panel); color: var(--term-text); border-radius: 0.8em; padding: 0.4em 0.5em 0.4em 0.9em; max-width: 100%; }
+.inst-cmd code { flex: 1 1 0; min-width: 0; font-size: 0.95em; font-weight: 700; white-space: pre-wrap; overflow-wrap: anywhere; }
+.inst-cmd code::before { content: '$ '; color: var(--lane-main); }
+.inst-cmd .copy-btn { flex: none; background: var(--panel-line); color: var(--term-text); font-size: 0.85em; padding: 0.3em 0.9em; }
+.inst-cmd .copy-btn:hover { background: var(--lane-main); color: var(--panel); }
+
+.inst-verify { background: var(--card); border: 1px solid var(--card-border); border-left: 0.4em solid var(--green); border-radius: 0.9em; padding: 0.7em 1em; display: grid; gap: 0.5em; }
+.inst-verify.before { border-left-color: var(--lane-remote); }
+.inst-expect { color: var(--muted); font-weight: 500; }
+.inst-expect span { color: var(--accent-ink); background: var(--green); border-radius: 999px; padding: 0.05em 0.6em; font-size: 0.8em; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-right: 0.3em; }
+.inst-warn { background: color-mix(in srgb, var(--accent) 12%, var(--card)); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-left: 0.4em solid var(--accent); border-radius: 0.9em; padding: 0.7em 1em; display: grid; gap: 0.4em; }
+.inst-warn b { color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85em; }
+.inst-warn ul { margin: 0; padding-left: 1.1em; display: grid; gap: 0.3em; font-weight: 500; }
+
+.inst-fallback { background: var(--card); border: 1px dashed var(--card-border); border-radius: 0.9em; padding: 0.6em 1em; display: grid; gap: 0.7em; }
+.inst-fallback summary { cursor: pointer; font-weight: 700; }
+.inst-fallback[open] summary { margin-bottom: 0.5em; }
+.inst-details { justify-self: start; }
+.inst-stuck { color: var(--muted); font-weight: 500; margin: 0; }
+.inst-nav { display: flex; gap: 0.7em; padding-top: 0.4em; }
+.inst-nav .btn { text-decoration: none; }
+
+.inst-side { min-height: 0; display: grid; align-content: start; gap: 0.7em; }
+.inst-video { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--panel); border-radius: calc(var(--u) * 1.6); overflow: hidden; box-shadow: var(--card-shadow); }
+.inst-video iframe, .inst-video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+.inst-video-empty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.5em; text-align: center; color: var(--term-dim); padding: 1em; }
+.inst-video-empty svg { color: var(--lane-main); opacity: 0.85; }
+.inst-video-empty strong { color: var(--term-text); font-size: 1.3em; }
+.inst-video-empty code { color: var(--lane-remote); font-size: 0.8em; }
+.inst-video-cap { margin: 0; color: var(--muted); font-weight: 500; font-size: 0.95em; }
+
+@media (max-width: 899px) {
+  .card.install-card { grid-template-rows: auto auto; font-size: clamp(15px, 4vw, 19px); padding-top: calc(var(--u) * 6); }
+  .inst-grid { grid-template-columns: minmax(0, 1fr); gap: 1.2em; }
+  .inst-side { order: -1; }
+  .inst-pane { overflow: visible; padding-right: 0; }
+  .inst-progress .lbl { display: none; }
+  .inst-progress .on .lbl { display: inline; }
+  .inst-tabs { top: -1px; }
+  .card.install-card .card-right { height: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .inst-os { animation: none; } }

@@ -1,56 +1,10 @@
-import type { Card, OS, OSPart, Step } from './engine/types'
+import type { Card, OS, OSPart } from './engine/types'
 import { workshopContent } from './workshopContent'
 
 /*
- * The hands-on workshop section: choose a system, then set up the laptop, then go back to the command cards.
- * Structure, routes and terminal steps live here. Wording from the volunteer handbook lives in workshopContent.ts.
- * None of these cards change the repository state, so every step uses op: none and the commit graph is hidden.
+ * The hands-on workshop section: choose a system, then set up the laptop (five steps, written in install.ts),
+ * then continue to the separate hands-on tutorial page (#/workshop). Drawer wording lives in workshopContent.ts.
  */
-const none = { type: 'none' } as const
-const step = (cmd: string, output: string[] = []): Step => ({ cmd, output, op: none })
-const everyOS = (steps: Step[]): Record<OS, Step[]> => ({ windows: steps, macos: steps, linux: steps })
-
-const ANY_VERSION = '(any version number is fine)'
-
-const STEPS: Record<string, Record<OS, Step[]>> = {
-  vscode: everyOS([
-    step('code --version', ['1.x.y ' + ANY_VERSION]),
-    step('code .'),
-  ]),
-  'git-install': {
-    windows: [step('git --version', ['git version 2.x.y ' + ANY_VERSION]), step('which git', ['/mingw64/bin/git'])],
-    macos: [step('brew --version', ['Homebrew 4.x.y ' + ANY_VERSION]), step('git --version', ['git version 2.x.y ' + ANY_VERSION])],
-    linux: [step('git --version', ['git version 2.x.y ' + ANY_VERSION]), step('which git', ['/usr/bin/git'])],
-  },
-  'gh-install': {
-    windows: [step('winget install --id GitHub.cli', ['Found GitHub CLI [GitHub.cli]', 'Successfully installed']), step('gh --version', ['gh version 2.x.y ' + ANY_VERSION])],
-    macos: [step('brew install gh', ['==> Installing gh', '==> Summary: gh is installed']), step('gh --version', ['gh version 2.x.y ' + ANY_VERSION])],
-    linux: [step('sudo apt install gh', ['Reading package lists... Done', 'Setting up gh ...']), step('gh --version', ['gh version 2.x.y ' + ANY_VERSION])],
-  },
-  'gh-login': everyOS([
-    step('gh auth login', [
-      '? Where do you use GitHub? GitHub.com',
-      '? Preferred protocol for Git? HTTPS',
-      '? Authenticate Git with GitHub? Yes',
-      '? How to log in? A web browser',
-      '! Code: ABCD-1234 (example only)',
-      '\u2713 Authentication complete.',
-    ]),
-    step('gh auth setup-git'),
-    step('gh auth status', ['github.com', '  \u2713 Logged in to github.com']),
-  ]),
-  identity: everyOS([
-    step('git config --global --list', ['user.name={{name}}', 'user.email={{email}}', 'init.defaultbranch=main', 'core.editor=code --wait']),
-  ]),
-}
-
-const osSteps = (id: string): Pick<Card, 'steps' | 'os'> => {
-  const s = STEPS[id]
-  const lengths = new Set([s.windows.length, s.macos.length, s.linux.length])
-  if (lengths.size !== 1) throw new Error(`Workshop card ${id} has a different number of steps per system`)
-  return { steps: s.windows, os: { windows: { steps: s.windows }, macos: { steps: s.macos }, linux: { steps: s.linux } } }
-}
-
 const base: Card[] = [
   {
     id: 'os',
@@ -68,78 +22,60 @@ const base: Card[] = [
     id: 'vscode',
     rail: 'Visual Studio Code',
     section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 1 of 6',
-    title: 'Install Visual Studio Code (VS Code)',
+    kicker: 'Workshop \u00b7 Step 1 of 5',
+    title: 'Install Visual Studio Code',
     sentence: 'One window with your files and a terminal.',
-    view: 'terminal',
-    hideGraph: true,
+    view: 'install',
     lane: 'main',
-    ...osSteps('vscode'),
+    steps: [],
     drawer: { happening: 'Visual Studio Code (VS Code) is the editor used all day in this workshop.' },
   },
   {
     id: 'git-install',
     rail: 'Git',
     section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 2 of 6',
+    kicker: 'Workshop \u00b7 Step 2 of 5',
     title: 'Install Git',
     sentence: 'Git is the program that keeps your history. First, check if you already have it.',
-    view: 'terminal',
-    hideGraph: true,
+    view: 'install',
     lane: 'main',
-    ...osSteps('git-install'),
+    steps: [],
     drawer: { happening: 'Git is the program that keeps your history.' },
   },
   {
     id: 'github-account',
     rail: 'GitHub account',
     section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 3 of 6',
+    kicker: 'Workshop \u00b7 Step 3 of 5',
     title: 'Create a GitHub account',
     sentence: 'A free online home for your projects. It is the same on every operating system.',
-    view: 'story',
-    art: 'githubSignup',
+    view: 'install',
     lane: 'main',
     steps: [],
     drawer: { happening: 'GitHub is the website that stores your projects online.' },
   },
   {
     id: 'gh-install',
-    rail: 'GitHub command line',
+    rail: 'GitHub CLI and log in',
     section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 4 of 6 \u00b7 Part 1',
-    title: 'Install GitHub CLI (command line interface)',
-    sentence: 'It logs Git in to GitHub for you, so the first push just works. Do this before any git commands.',
-    view: 'terminal',
-    hideGraph: true,
+    kicker: 'Workshop \u00b7 Step 4 of 5',
+    title: 'Install GitHub CLI and log in',
+    sentence: 'It logs Git in to GitHub for you, so the first push just works.',
+    view: 'install',
     lane: 'main',
-    ...osSteps('gh-install'),
-    drawer: { happening: 'GitHub CLI (command line interface) logs Git in to GitHub.' },
-  },
-  {
-    id: 'gh-login',
-    rail: 'Log in',
-    section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 4 of 6 \u00b7 Part 2',
-    title: 'Log in to GitHub',
-    sentence: 'Sign in once through your browser.',
-    view: 'terminal',
-    hideGraph: true,
-    lane: 'main',
-    ...osSteps('gh-login'),
-    drawer: { happening: 'You sign in once, in the browser, and Git remembers it.' },
+    steps: [],
+    drawer: { happening: 'GitHub CLI (command line interface) logs Git in to GitHub. You sign in once, in the browser, and Git remembers it.' },
   },
   {
     id: 'identity',
     rail: 'Your identity',
     section: 'workshop',
-    kicker: 'Workshop \u00b7 Step 5 of 6',
-    title: 'Tell Git who you are',
+    kicker: 'Workshop \u00b7 Step 5 of 5',
+    title: 'Set up your Git identity',
     sentence: 'A label stamped on every commit. It is not a login.',
-    view: 'terminal',
-    hideGraph: true,
+    view: 'install',
     lane: 'main',
-    ...osSteps('identity'),
+    steps: [],
     drawer: { happening: 'Your name and email are written into every commit you make.' },
   },
   {
