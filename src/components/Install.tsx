@@ -153,7 +153,7 @@ export function InstallCard({ id, framed }: { id: string; framed: boolean }) {
         </ol>
       </header>
 
-      <div className="inst-grid">
+      <div className={`inst-grid${!INSTALL_VIDEOS[id] ? ' inst-grid--full' : ''}`}>
         <section className="inst-pane" aria-label="Instructions" tabIndex={0}>
           <p className="inst-why-top"><Rich text={step.why} /></p>
           <a className="btn inst-official" href={step.official.url} {...ext}>Official site: {step.official.label} &#8599;</a>
@@ -212,10 +212,12 @@ export function InstallCard({ id, framed }: { id: string; framed: boolean }) {
           </nav>
         </section>
 
-        <aside className="inst-side" aria-label="Video">
-          <InstallVideo id={id} os={os} />
-          <p className="inst-video-cap">Step {n} of {INSTALL_COUNT}: {step.title}{step.os ? ` (${osName})` : ''}</p>
-        </aside>
+        {INSTALL_VIDEOS[id] && (
+          <aside className="inst-side" aria-label="Video">
+            <InstallVideo id={id} os={os} />
+            <p className="inst-video-cap">Step {n} of {INSTALL_COUNT}: {step.title}{step.os ? ` (${osName})` : ''}</p>
+          </aside>
+        )}
       </div>
     </div>
   )
