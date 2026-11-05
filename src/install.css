@@ -21,6 +21,7 @@
 .inst-progress a:hover { border-color: var(--accent); }
 
 .inst-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: calc(var(--u) * 2.4); min-height: 0; }
+.inst-grid--full { grid-template-columns: minmax(0, 1fr); }
 .inst-pane {
   min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: 0.9em; padding: 0 0.6em 1.4em 0;
   scrollbar-width: thin; scrollbar-color: var(--rail-future) transparent; line-height: 1.4;

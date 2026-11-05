@@ -40,7 +40,10 @@ export const INSTALL_VIDEOS: Record<string, InstallVideo> = {
     },
     title: 'How to install Git',
   },
-  'github-account': { title: 'How to create a GitHub account' },
+  'github-account': {
+    src: 'https://www.youtube.com/watch?v=c-NikCpec7U',
+    title: 'How to create a GitHub account',
+  },
   'gh-install': {
     src: {
       windows: 'https://www.youtube.com/watch?v=up1e-SMX3wI',
@@ -49,7 +52,6 @@ export const INSTALL_VIDEOS: Record<string, InstallVideo> = {
     },
     title: 'How to install GitHub CLI and log in',
   },
-  identity: { title: 'How to set up your Git identity' },
 }
 
 export type VideoKind = { kind: 'iframe'; url: string } | { kind: 'file'; url: string } | { kind: 'none' }
