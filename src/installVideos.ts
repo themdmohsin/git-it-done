@@ -24,10 +24,31 @@ export interface InstallVideo {
 }
 
 export const INSTALL_VIDEOS: Record<string, InstallVideo> = {
-  vscode: { title: 'How to install Visual Studio Code' },
-  'git-install': { title: 'How to install Git' },
+  vscode: {
+    src: {
+      windows: 'https://www.youtube.com/watch?v=wU7IQLIOwoo',
+      macos: 'https://www.youtube.com/watch?v=DA03DODTP5w',
+      linux: 'https://www.youtube.com/watch?v=3BFax_SmK7c',
+    },
+    title: 'How to install Visual Studio Code',
+  },
+  'git-install': {
+    src: {
+      windows: 'https://www.youtube.com/watch?v=TT8ktVp5j-k',
+      macos: 'https://www.youtube.com/watch?v=9GZmaxaQV0c',
+      linux: 'https://www.youtube.com/watch?v=L1R-kmv1m_U',
+    },
+    title: 'How to install Git',
+  },
   'github-account': { title: 'How to create a GitHub account' },
-  'gh-install': { title: 'How to install GitHub CLI and log in' },
+  'gh-install': {
+    src: {
+      windows: 'https://www.youtube.com/watch?v=up1e-SMX3wI',
+      macos: 'https://www.youtube.com/watch?v=PPOL_hgMMLk',
+      linux: 'https://www.youtube.com/watch?v=bc3_FL9zWWs',
+    },
+    title: 'How to install GitHub CLI and log in',
+  },
   identity: { title: 'How to set up your Git identity' },
 }
 
