@@ -64,7 +64,7 @@ export type ArtId =
   | 'githubSignup' | 'codespaces' | 'ready'
 
 export type View =
-  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice' | 'resources' | 'install'
+  | 'messy' | 'hero' | 'story' | 'compare' | 'areas' | 'remote' | 'setup' | 'terminal' | 'stub' | 'challenge' | 'fullshot' | 'vijay' | 'oschoice' | 'resources' | 'install' | 'text'
 
 /** A real picture with alt text. credit is shown under it when set. */
 export interface Picture { src: string; alt: string; credit?: string; caption?: string }

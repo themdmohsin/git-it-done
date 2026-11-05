@@ -403,26 +403,59 @@ function PrMockPanel() {
 
 /* ---------- Complete workflow: eight steps, two rows ---------- */
 const WF_STEPS = ['Find issue', 'Fork it', 'Clone it', 'Edit files', 'Commit', 'Push', 'Open PR', 'Merge']
+/* Hover/tap content for each step: code = show in monospace, else a short plain-text explanation. */
+const WF_HOVER: { code: boolean; lines: string[] }[] = [
+  { code: false, lines: ["Browse the repository's Issues tab on GitHub."] },
+  { code: false, lines: ["Fork the repository using GitHub's Fork button."] },
+  { code: true, lines: ['git clone <your-fork-url>'] },
+  { code: true, lines: ['code .'] },
+  { code: true, lines: ['git add .', 'git commit -m "Describe your change"'] },
+  { code: true, lines: ['git push -u origin <branch-name>'] },
+  { code: false, lines: ['Open a Pull Request on GitHub from your branch to the original repository.'] },
+  { code: false, lines: ['Maintainer reviews and merges the Pull Request on GitHub.'] },
+]
 function WorkflowArt() {
+  const [active, setActive] = useState<number | null>(null)
   return (
-    <svg className="art" viewBox="0 0 800 640" role="img" aria-label="Eight workflow steps: find an issue, fork, clone, make changes, commit, push, open a pull request, review and merge">
-      {[0, 1].map((row) => (
-        <line key={row} x1="90" y1={230 + row * 220} x2="710" y2={230 + row * 220} stroke="var(--panel-line)" strokeWidth="6" strokeLinecap="round" />
-      ))}
-      {WF_STEPS.map((label, i) => {
-        const row = i < 4 ? 0 : 1
-        const col = i % 4
-        const x = 90 + col * (620 / 3)
-        const y = 230 + row * 220
-        return (
-          <g key={label}>
-            <circle cx={x} cy={y} r="34" fill={DOT_COLORS[i % 3]} stroke="var(--panel)" strokeWidth="7" />
-            <text x={x} y={y + 10} textAnchor="middle" className="art-text" fontSize="28" fill="var(--panel)">{i + 1}</text>
-            <text x={x} y={y + 64} textAnchor="middle" className="art-text" fontSize="30" fill="var(--term-text)">{label}</text>
-          </g>
-        )
-      })}
-    </svg>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <svg className="art" viewBox="0 0 800 640" role="img" aria-label="Eight workflow steps: find an issue, fork, clone, make changes, commit, push, open a pull request, review and merge">
+        {[0, 1].map((row) => (
+          <line key={row} x1="90" y1={230 + row * 220} x2="710" y2={230 + row * 220} stroke="var(--panel-line)" strokeWidth="6" strokeLinecap="round" />
+        ))}
+        {WF_STEPS.map((label, i) => {
+          const row = i < 4 ? 0 : 1
+          const col = i % 4
+          const x = 90 + col * (620 / 3)
+          const y = 230 + row * 220
+          return (
+            <g
+              key={label}
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={() => setActive(i)}
+              onMouseLeave={() => setActive(null)}
+              onClick={() => setActive((cur) => (cur === i ? null : i))}
+            >
+              <circle cx={x} cy={y} r="34" fill={DOT_COLORS[i % 3]} stroke="var(--panel)" strokeWidth="7" />
+              <text x={x} y={y + 10} textAnchor="middle" className="art-text" fontSize="28" fill="var(--panel)">{i + 1}</text>
+              <text x={x} y={y + 64} textAnchor="middle" className="art-text" fontSize="30" fill="var(--term-text)">{label}</text>
+            </g>
+          )
+        })}
+      </svg>
+      {active !== null && (
+        <div style={{
+          position: 'absolute', left: '50%', bottom: '4%', transform: 'translateX(-50%)',
+          maxWidth: '88%', background: 'var(--panel-2)', border: `2px solid ${DOT_COLORS[active % 3]}`,
+          borderRadius: 14, padding: '10px 18px', textAlign: 'center', pointerEvents: 'none',
+        }}>
+          {WF_HOVER[active].lines.map((line, j) => (
+            WF_HOVER[active].code
+              ? <code key={j} style={{ display: 'block', fontFamily: 'var(--font-code)', fontWeight: 700, color: 'var(--term-text)', fontSize: 15, lineHeight: 1.5 }}>{line}</code>
+              : <span key={j} style={{ display: 'block', color: 'var(--term-text)', fontSize: 15, lineHeight: 1.4 }}>{line}</span>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

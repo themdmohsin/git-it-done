@@ -5,7 +5,7 @@ import type { Card } from '../engine/types'
 type SegKind = 'main' | 'detour' | 'branch'
 interface Seg { key: string; d: string; kind: SegKind; to: number }
 
-const labelOf = (c: Card) => (c.section === 'part2' && c.id !== 'challenge' ? `Part 2: ${c.rail}` : c.rail)
+const labelOf = (c: Card) => c.rail
 
 const PREVIEW_DELAY = 150
 

@@ -52,7 +52,7 @@ const CARDS = [
   ['branch-create', 'Create a branch. Switch to it. Start working.', 7],
   ['branch-commit', 'Make changes on your branch.', 4],
   ['branch-merge', 'Bring your work into main.', 2],
-  ['oss-intro', 'Great software is built by people working together.', 3],
+  ['oss-intro', 'Let\u2019s get started with Open Source Contribution!', 0],
   ['oss-issues', 'Find something to fix', 0],
   ['oss-pull-requests', 'You can\u2019t push directly. So you propose instead.', 2],
   ['oss-first-contrib', 'Let\u2019s contribute to MUKTI!', 0],

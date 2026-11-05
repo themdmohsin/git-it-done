@@ -248,36 +248,22 @@ export const vijayCards: Card[] = [
   /* ---------- Bridge into Open Source Contribution. Mohsin and the branching cards already covered
      open source and Git/GitHub basics, so this stays short: one slide, then a handoff to the written
      guide at #/learn (src/contrib/), where most of the live GitHub/VS Code demo and the MUKTI
-     challenge instructions live. ---------- */
+     challenge instructions live. Text-only slide: no terminal or art, just the handoff. ---------- */
   {
     id: 'oss-intro',
     rail: 'Open source contribution',
     section: 'part2',
-    kicker: 'OPEN SOURCE \u00b7 A QUICK INTRODUCTION',
-    title: 'Great software is built by people working together.',
-    sentence: 'Open-source projects publish their source code under a licence that lets anyone inspect it, use it, modify it, and contribute back \u2014 all subject to that licence.',
+    kicker: 'OPEN SOURCE \u00b7 A CONTRIBUTION SESSION',
+    title: 'Let\u2019s get started with Open Source Contribution!',
+    sentence: 'Now that we\u2019ve covered the basics, let\u2019s put it into practice and make a real contribution to an open-source project.',
     bullets: [
-      'You already use it every day: Linux, Firefox, VS Code.',
-      'Its source code is public \u2014 you can open it and read it right now.',
-      'But have you ever thought about contributing to one?',
+      'A quick introduction to the project and what it\u2019s about.',
+      'We\u2019ll walk through the contribution process step by step.',
+      'Then, you\u2019ll make your own contribution during the session.',
     ],
-    view: 'terminal',
-    hideGraph: true,
-    termRepo: '~/vscode',
+    view: 'text',
     lane: 'main',
-    steps: [
-      { cmd: 'ls', output: ['LICENSE.txt', 'README.md', 'package.json', 'src/'], op: none, label: 'A real, public repository' },
-      {
-        cmd: 'cat LICENSE.txt',
-        output: ['MIT License', '', 'Permission is hereby granted, free of charge, to any', 'person obtaining a copy of this software, to use, copy,', 'modify, merge, publish and distribute it.'],
-        op: none, label: 'The licence spells out exactly what you may do',
-      },
-      {
-        cmd: 'git log --oneline -3',
-        output: ['f3a9c21 Fix: debounce file-watcher restarts', 'b7e01de docs: clarify extension API guide', '19dd5aa Merge pull request #142 from octocat/patch-1'],
-        op: none, label: 'Full history, public \u2014 every change, every author',
-      },
-    ],
+    steps: [],
     drawer: {
       clicks: [
         'Open a real project on GitHub, for example github.com/microsoft/vscode, and read some of its source code.',
@@ -386,7 +372,7 @@ export const vijayCards: Card[] = [
     kicker: 'YOUR FIRST CONTRIBUTION',
     title: 'Let\u2019s make our first open-source contribution!',
     sentence: 'One small, real contribution. We\u2019ll fork a repository, make a change, commit it, push it, and open a Pull Request.',
-    view: 'story',
+    view: 'text',
     lane: 'main',
     steps: [],
     drawer: {

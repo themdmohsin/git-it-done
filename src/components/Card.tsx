@@ -97,6 +97,10 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     case 'stub':
       panel = <div className="panel center"><StubPanel /></div>
       break
+    case 'text':
+      // No visual panel: the card is laid out as a single, centred text column (see '.card.text-only').
+      panel = null
+      break
     case 'resources':
       panel = <div className="panel"><ResourceList items={card.resources ?? []} /></div>
       break
@@ -155,9 +159,10 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
     + (card.remember ? card.remember.heading + card.remember.lines.map((l) => l.label + l.text).join('') : '').length
   const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual || !!card.resources
   const vjWide = card.view === 'vijay' || !!card.visual
+  const textOnly = card.view === 'text'
 
   return (
-    <div data-card-id={card.id} className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips || card.resources ? ' wider-left' : '')}>
+    <div data-card-id={card.id} className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips || card.resources ? ' wider-left' : '') + (textOnly ? ' text-only' : '')}>
       <div className="card-left">
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
@@ -225,7 +230,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
         {card.aside && <a className="aside-link" href={card.aside.href}>{card.aside.text} &rarr;</a>}
         {card.cta && <a className={'btn cta-btn' + (card.id === 'ready' ? ' big' : '')} href={card.cta.href}>{card.cta.label} &rarr;</a>}
       </div>
-      <div className="card-right">{panel}</div>
+      {!textOnly && <div className="card-right">{panel}</div>}
     </div>
   )
 })
