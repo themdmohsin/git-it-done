@@ -25,8 +25,11 @@ export interface CardProps {
 /** Keeps a command option such as --version in one piece when a line wraps. */
 const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
-/** Renders `backtick` tokens inside note/final text as a small ref pill (e.g. `main`). */
-const richText = (s: string) => nb(s).split(/`([^`]+)`/g).map((p, i) => (i % 2 ? <code key={i} className="ref-pill">{p}</code> : p))
+/** Renders `backtick` tokens inside note/final text as a small ref pill (e.g. `main`), and **double-asterisk** tokens as bold. */
+const richText = (s: string) => nb(s).split(/`([^`]+)`/g).map((p, i) =>
+  i % 2
+    ? <code key={i} className="ref-pill">{p}</code>
+    : p.split(/\*\*([^*]+)\*\*/g).map((q, j) => (j % 2 ? <strong key={j}>{q}</strong> : q)))
 
 export function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const { os } = useOS()

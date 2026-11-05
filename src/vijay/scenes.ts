@@ -159,14 +159,3 @@ export const COMMIT_SCENES: GScene[] = [
   },
 ]
 
-/* ---------- Card 5: merging. Continues the exact two commits from card 4, fast-forward merge. ---------- */
-export const MERGE_LAYOUT: GLayout = { viewBox: '0 80 800 190', lanes: [195], x0: 170, dx: 460, fs: 28 }
-const A = c('c3d4e5f', 0, 0, 'main')
-const B = c('b7e4f91', 0, 1, 'login', 'c3d4e5f')
-const feature: GPill = { name: 'feature-login', at: B.id, tone: 'login' }
-
-export const MERGE_SCENES: GScene[] = [
-  { commits: [A, B], pills: [feature, { name: 'main', at: A.id, tone: 'main' }], head: 'feature-login', caption: 'On feature-login. main is one commit behind.' },
-  { commits: [A, B], pills: [feature, { name: 'main', at: A.id, tone: 'main' }], head: 'main', caption: 'git checkout main \u2014 it does not have the feature yet.' },
-  { commits: [A, B], pills: [feature, { name: 'main', at: B.id, tone: 'main' }], head: 'main', pulse: B.id, caption: 'git merge feature-login \u2014 fast-forward. main moved forward.' },
-]

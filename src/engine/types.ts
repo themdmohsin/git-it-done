@@ -54,8 +54,8 @@ export interface StackScene {
 export type Section = 'hook' | 'stepback' | 'story' | 'git' | 'workshop' | 'part2'
 export type Lane = 'main' | 'branch' | 'detour'
 export type VijayVisualId =
-  | 'why' | 'branches' | 'create' | 'commit' | 'merge'
-  | 'why-branch' | 'problems' | 'branch-what' | 'branch-create' | 'switcher' | 'branch-work' | 'branch-merge'
+  | 'why' | 'branches' | 'create' | 'commit' | 'merge-triptych'
+  | 'why-branch' | 'problems' | 'branch-what' | 'branch-create' | 'switcher' | 'branch-work'
 export type ArtId =
   | 'ring' | 'kernel' | 'linus' | 'chaos' | 'snapshots' | 'born' | 'mukti' | 'audience'
   | 'issueLabels' | 'forkFlow' | 'prMock' | 'workflowSteps' | 'challengeSteps'

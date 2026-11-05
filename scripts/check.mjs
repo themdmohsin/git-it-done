@@ -53,7 +53,7 @@ const CARDS = [
   ['branch-idea', 'Separate your work. Keep main stable.', 4],
   ['branch-create', 'Create a branch. Switch to it. Start working.', 7],
   ['branch-commit', 'Make changes on your branch.', 4],
-  ['branch-merge', 'Feature complete? Bring it back into main.', 5],
+  ['branch-merge', 'Bring your work into main.', 2],
   ['oss-intro', 'Great software is built by people working together.', 3],
   ['oss-issues', 'Find something to fix', 0],
   ['oss-pull-requests', 'You can\u2019t push directly. So you propose instead.', 2],
@@ -70,7 +70,7 @@ const LAST = 'oss-challenge'
 const TLINES = {
   'branch-create': [0, 1, 2, 3, 4, 5, 0, 1],
   'branch-commit': [0, 1, 2, 3, 4],
-  'branch-merge': [0, 1, 2, 3, 4, 5],
+  'branch-merge': [0, 1, 2],
   vscode: [0, 1, 2], 'git-install': [0, 1, 2], 'gh-install': [0, 1, 2], 'gh-login': [0, 1, 2, 3], identity: [0, 1],
 }
 /* The new workshop section: ids in order, and the cards that show a terminal without a commit graph. */

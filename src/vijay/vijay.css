@@ -16,12 +16,22 @@
 .panel.split.vj-split { display: grid; grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr); grid-template-rows: none; gap: calc(var(--u) * 1.2); align-items: stretch; }
 /* Card 4 only: the graph is the main teaching point here, so give it more room than the terminal. */
 .card[data-card-id="branch-commit"] .panel.split.vj-split { grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr); }
+/* Card 5 only: the fast-forward merge is the whole point, so the graph should dominate even more. */
+.card[data-card-id="branch-merge"] .panel.split.vj-split { grid-template-columns: minmax(0, 0.52fr) minmax(0, 1fr); }
 .panel.split.vj-split .graph-area { border-top: none; padding-top: 0; justify-content: center; }
 .panel.split.vj-split .graph-wrap { min-height: calc(var(--u) * 20); }
 
 .g-owner { font-family: var(--font-code); font-weight: 600; fill: rgba(20, 24, 16, 0.6); letter-spacing: 0.01em; }
 .g-head-tag { font-family: var(--font-code); font-weight: 700; fill: var(--head); letter-spacing: 0.04em; }
 .g-hash.ghost { font-family: var(--font-code); }
+
+/* Card 5 only: the three static merge stages (Before / Merging / After), dominant over the terminal. */
+.mt-wrap { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: calc(var(--u) * 0.4); }
+.mt-graph { width: 100%; height: auto; display: block; overflow: visible; }
+.mt-hash { font-family: var(--font-code); font-size: 19px; font-weight: 500; fill: var(--term-text); }
+.mt-pill-text { font-family: var(--font-code); font-size: 19px; font-weight: 700; fill: var(--panel); }
+.mt-badge-text { font-family: var(--font-code); font-size: 19px; font-weight: 700; fill: var(--ink); }
+.mt-head-text { font-family: var(--font-code); font-size: 17px; font-weight: 700; fill: var(--page); }
 
 @media (prefers-reduced-motion: reduce) {
   .vj-caption { animation: none; }

@@ -173,29 +173,25 @@ export const vijayCards: Card[] = [
     id: 'branch-merge',
     rail: 'Merge',
     section: 'part2',
-    kicker: 'COMMAND \u00b7 MERGE',
-    title: 'Feature complete? Bring it back into main.',
-    sentence: 'Switch to the branch that should receive the work, then merge.',
-    bullets: [
-      'git checkout main: switch to the branch that receives the work.',
-      'git merge feature-login: merges feature-login INTO the branch you are on.',
-      'feature-login still exists afterwards \u2014 merging never deletes it.',
+    kicker: 'MERGING BRANCHES',
+    title: 'Bring your work into main.',
+    sentence: 'Merge combines the changes from one branch into another.',
+    numberedPoints: [
+      { number: '1', title: 'git checkout main', text: 'Switch to the branch that will receive the work.', code: true, badgeTone: 'main' },
+      { number: '2', title: 'git merge feature-login', text: 'Merge the changes from feature-login into main.', code: true, badgeTone: 'main' },
     ],
-    note: 'main had not moved since feature-login branched off, so Git could fast-forward. If both had moved, Git would make a merge commit instead.',
+    note: '**Fast-forward merge:** main had not advanced, so it simply moves forward to the feature branch\u2019s commit.',
     view: 'terminal',
-    visual: 'merge',
+    visual: 'merge-triptych',
     lane: 'main',
     into: 'converge',
     steps: [
       { cmd: 'git checkout main', output: ["Switched to branch 'main'"], op: none, label: 'Switch to main' },
       {
         cmd: 'git merge feature-login',
-        output: ['Updating c3d4e5f..b7e4f91', 'Fast-forward', ' notes.txt | 1 +', ' 1 file changed, 1 insertion(+)'],
+        output: ['Updating c3d4e5f..b7e4f91', 'Fast-forward', ' notes.txt | 1 +', ' 1 file changed, 1 insertion(+)', ' create mode 100644 notes.txt'],
         op: none, label: 'Merge feature-login into main',
       },
-      { cmd: 'ls', output: ['README.md', 'notes.txt'], op: none, label: 'Verify: the file is here' },
-      { cmd: 'cat notes.txt', output: ['Hello from feature branch!'], op: none, label: 'Verify: the content is here' },
-      { cmd: 'git log --oneline', output: ['b7e4f91 (HEAD -> main, feature-login) Add notes file', 'c3d4e5f Initial commit'], op: none, label: 'Verify: both branches, same commit' },
     ],
     drawer: {
       commands: [
