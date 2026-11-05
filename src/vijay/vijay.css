@@ -40,4 +40,16 @@
 @media (max-width: 899px) {
   .card.vj-wide { grid-template-columns: 1fr; }
   .panel.split.vj-split { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1.2fr); }
+  .card[data-card-id="oss-commit-push"] { grid-template-columns: 1fr; }
 }
+
+/* oss-commit-push (Step 3: create a branch, commit & push): four instruction steps, one with two
+   stacked commands, need a little more width than the default 42/58 split so the left column doesn't
+   wrap onto extra lines. The terminal still gets the larger, equal half on the right. Desktop only;
+   the shared small-screen rule above (.card { grid-template-columns: 1fr }) stacks it like every other card. */
+@media (min-width: 900px) {
+  .card[data-card-id="oss-commit-push"] { grid-template-columns: 50fr 50fr; }
+}
+.card[data-card-id="oss-commit-push"].dense .card-left { gap: calc(var(--u) * 0.3); }
+.card[data-card-id="oss-commit-push"].dense h1 { font-size: clamp(26px, calc(var(--u) * 2.7), 150px); }
+.card[data-card-id="oss-commit-push"] .numbered-points { gap: calc(var(--u) * 0.35); }

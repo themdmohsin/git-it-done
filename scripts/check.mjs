@@ -58,7 +58,7 @@ const CARDS = [
   ['oss-first-contrib', 'Let\u2019s contribute to MUKTI!', 0],
   ['oss-fork', 'Make your own copy', 0],
   ['oss-clone', 'Bring it onto your computer', 3],
-  ['oss-commit-push', 'Make the change. Save it. Send it up.', 3],
+  ['oss-commit-push', 'Work on your own branch. Save it. Push it up.', 4],
   ['oss-create-pr', 'Propose your change to the original repository', 0],
   ['oss-workflow', 'The whole process, in eight steps', 0],
   ['oss-challenge', 'MUKTI Challenge: make it yours', 0],

@@ -155,9 +155,11 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
 
   const weight = card.sentence.length + (card.bullets ?? []).join('').length + (card.note ?? '').length
     + (card.subheading ?? '').length
-    + (card.numberedPoints ?? []).map((p) => p.title + p.text).join('').length
+    + (card.numberedPoints ?? []).map((p) => p.title + p.text + (p.commands ?? []).join('')).join('').length
     + (card.remember ? card.remember.heading + card.remember.lines.map((l) => l.label + l.text).join('') : '').length
-  const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual || !!card.resources
+  // oss-commit-push: four instruction steps (one with two stacked commands) plus a note and a Try it chip
+  // need the same compact sizing as the branching terminal cards, even though its view is 'terminal' not 'story'.
+  const dense = (card.view === 'story' && weight > 260) || card.view === 'vijay' || card.section === 'workshop' || !!card.visual || !!card.resources || card.id === 'oss-commit-push'
   const vjWide = card.view === 'vijay' || !!card.visual
   const textOnly = card.view === 'text'
 
@@ -181,7 +183,12 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
                 <span className={'numbered-badge' + (p.badgeTone === 'main' ? ' tone-main' : '')}>{p.number}</span>
                 <div className="numbered-point-body">
                   {p.code ? <code className="numbered-point-cmd">{p.title}</code> : <div className="numbered-point-title">{p.title}</div>}
-                  <div className="numbered-point-text">{nb(p.text)}</div>
+                  {p.text && <div className="numbered-point-text">{nb(p.text)}</div>}
+                  {p.commands && (
+                    <div className="numbered-point-cmds">
+                      {p.commands.map((c) => <code key={c} className="numbered-point-cmd">{c}</code>)}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
