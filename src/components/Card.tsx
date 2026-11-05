@@ -26,7 +26,6 @@ export interface CardProps {
 /** Keeps a command option such as --version in one piece when a line wraps. */
 const nb = (s: string) => s.replace(/--(?=\w)/g, '--\u2060')
 
-/** Memoised: opening a modal re-renders App, but the card on screen must not be touched at all. */
 /** Turns the words listed in `linkify` into hyperlinks that open in a new tab. */
 function withLinks(text: string, linkify?: Record<string, string>) {
   if (!linkify) return nb(text)
@@ -37,6 +36,13 @@ function withLinks(text: string, linkify?: Record<string, string>) {
     : nb(p))
 }
 
+/** Renders `backtick` tokens inside note/final text as a small ref pill (e.g. `main`), and **double-asterisk** tokens as bold. */
+const richText = (s: string) => nb(s).split(/`([^`]+)`/g).map((p, i) =>
+  i % 2
+    ? <code key={i} className="ref-pill">{p}</code>
+    : p.split(/\*\*([^*]+)\*\*/g).map((q, j) => (j % 2 ? <strong key={j}>{q}</strong> : q)))
+
+/** Memoised: opening a modal re-renders App, but the card on screen must not be touched at all. */
 export const Card = memo(function Card({ cardIdx, done, applied, playing, instant, onStepDone, framed = false }: CardProps) {
   const { os } = useOS()
   const { filled } = useUserDetails()
@@ -150,7 +156,7 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
   const vjWide = card.view === 'vijay' || !!card.visual
 
   return (
-    <div className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips || card.resources ? ' wider-left' : '')}>
+    <div data-card-id={card.id} className={'card' + (framed ? ' framed' : '') + (card.view === 'messy' ? ' wide' : '') + (dense ? ' dense' : '') + (vjWide ? ' vj-wide' : '') + (card.section === 'workshop' && card.view === 'terminal' ? ' wide-left' : '') + (card.chips || card.resources ? ' wider-left' : '')}>
       <div className="card-left">
         <div className={'kicker' + (card.bigKicker ? ' big' : '')}>{card.kicker}</div>
         <h1>{card.title}</h1>
@@ -166,16 +172,16 @@ export const Card = memo(function Card({ cardIdx, done, applied, playing, instan
           <div className="numbered-points">
             {card.numberedPoints.map((p) => (
               <div className="numbered-point" key={p.number}>
-                <span className="numbered-badge">{p.number}</span>
+                <span className={'numbered-badge' + (p.badgeTone === 'main' ? ' tone-main' : '')}>{p.number}</span>
                 <div className="numbered-point-body">
-                  <div className="numbered-point-title">{p.title}</div>
+                  {p.code ? <code className="numbered-point-cmd">{p.title}</code> : <div className="numbered-point-title">{p.title}</div>}
                   <div className="numbered-point-text">{nb(p.text)}</div>
                 </div>
               </div>
             ))}
           </div>
         )}
-        {card.note && <div className="note-chip">{nb(card.note)}</div>}
+        {card.note && <div className="note-chip">{richText(card.note)}</div>}
         {card.remember && (
           <div className="remember-box">
             <div className="remember-heading">{card.remember.heading}</div>

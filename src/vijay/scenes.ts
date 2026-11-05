@@ -125,59 +125,37 @@ export const CREATE_SCENES: GScene[] = [
   { commits: [S0], pills: [mainOnly, loginHere], head: 'feature-login', caption: 'git checkout -b feature-login \u2014 created AND switched, in one step.' },
 ]
 
-/* ---------- Card 4: making changes on a branch. echo -> add -> commit, staged as a ghost first. ---------- */
-export const COMMIT_LAYOUT: GLayout = { viewBox: '0 20 800 300', lanes: [210, 90], x0: 190, dx: 380, fs: 27 }
-const K0 = c('c3d4e5f', 0, 0, 'main')
-const K1 = c('b7e4f91', 1, 1, 'login', 'c3d4e5f')
-const kGhost: GCommit = { id: 'g-staged', lane: 1, col: 1, tone: 'login', parent: 'c3d4e5f', ghost: true }
+/* ---------- Card 4: making changes on a branch. Same three-commit main history as cards 1-2;
+   feature-login branches off the last commit. echo -> add (ghost, no hash) -> commit (real node). ---------- */
+export const COMMIT_LAYOUT: GLayout = { viewBox: '0 0 800 440', lanes: [360, 190], x0: 70, dx: 150, fs: 27 }
+const commitTip = c('b7e4f91', 1, 3, 'login', 'c3d4e5f')
+const commitGhost: GCommit = { id: 'g-staged', lane: 1, col: 3, tone: 'login', parent: 'c3d4e5f', ghost: true }
+const commitMainPill: GPill = { name: 'main', at: 'c3d4e5f', tone: 'main' }
+const commitLoginAtMain: GPill = { name: 'feature-login', at: 'c3d4e5f', tone: 'login' }
+const commitLoginAtTip: GPill = { name: 'feature-login', at: commitTip.id, tone: 'login' }
 
 export const COMMIT_SCENES: GScene[] = [
   {
-    commits: [K0], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'main', caption: 'main and feature-login share the same commit.',
+    commits: MAIN, pills: [commitMainPill, commitLoginAtMain],
+    head: 'main', caption: 'main and feature-login both point at c3d4e5f.',
   },
   {
-    commits: [K0], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', caption: 'git checkout feature-login \u2014 new commits now land here.',
+    commits: MAIN, pills: [commitMainPill, commitLoginAtMain],
+    head: 'feature-login', caption: 'git checkout feature-login \u2014 HEAD moves onto the branch.',
   },
   {
-    commits: [K0], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', fileTag: { lane: 1, col: 1, label: 'notes.txt' },
-    caption: 'echo ... > notes.txt \u2014 exists in the working directory, not yet tracked.',
+    commits: MAIN, pills: [commitMainPill, commitLoginAtMain],
+    head: 'feature-login', fileTag: { lane: 1, col: 3, label: 'notes.txt' },
+    caption: 'echo ... > notes.txt \u2014 a new file in the working directory.',
   },
   {
-    commits: [K0], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', fileTag: { lane: 1, col: 1, label: 'notes.txt' },
-    caption: 'git status \u2014 Git sees notes.txt, but it is still untracked.',
+    commits: [...MAIN, commitGhost], pills: [commitMainPill, commitLoginAtMain],
+    head: 'feature-login', caption: 'git add notes.txt \u2014 staged, not a commit yet.',
   },
   {
-    commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', caption: 'git add notes.txt \u2014 staged, ready to be committed.',
+    commits: [...MAIN, commitTip], pills: [commitMainPill, commitLoginAtTip],
+    head: 'feature-login', pulse: commitTip.id,
+    caption: 'git commit \u2014 feature-login moved forward. main stays at c3d4e5f.',
   },
-  {
-    commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', caption: 'git status \u2014 "Changes to be committed" means it is staged.',
-  },
-  {
-    commits: [K0, kGhost], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K0.id, tone: 'login' }],
-    head: 'feature-login', caption: 'git diff --staged \u2014 the + line is exactly what you are about to save.',
-  },
-  {
-    commits: [K0, K1], pills: [{ name: 'main', at: K0.id, tone: 'main' }, { name: 'feature-login', at: K1.id, tone: 'login' }],
-    head: 'feature-login', pulse: K1.id,
-    caption: 'git commit \u2014 feature-login moved forward. main has not.',
-  },
-]
-
-/* ---------- Card 5: merging. Continues the exact two commits from card 4, fast-forward merge. ---------- */
-export const MERGE_LAYOUT: GLayout = { viewBox: '0 80 800 190', lanes: [195], x0: 170, dx: 460, fs: 28 }
-const A = c('c3d4e5f', 0, 0, 'main')
-const B = c('b7e4f91', 0, 1, 'login', 'c3d4e5f')
-const feature: GPill = { name: 'feature-login', at: B.id, tone: 'login' }
-
-export const MERGE_SCENES: GScene[] = [
-  { commits: [A, B], pills: [feature, { name: 'main', at: A.id, tone: 'main' }], head: 'feature-login', caption: 'On feature-login. main is one commit behind.' },
-  { commits: [A, B], pills: [feature, { name: 'main', at: A.id, tone: 'main' }], head: 'main', caption: 'git checkout main \u2014 it does not have the feature yet.' },
-  { commits: [A, B], pills: [feature, { name: 'main', at: B.id, tone: 'main' }], head: 'main', pulse: B.id, caption: 'git merge feature-login \u2014 fast-forward. main moved forward.' },
 ]
 

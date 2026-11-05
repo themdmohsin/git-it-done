@@ -56,8 +56,8 @@ export interface StackScene {
 export type Section = 'hook' | 'stepback' | 'story' | 'git' | 'workshop' | 'part2' | 'next'
 export type Lane = 'main' | 'branch' | 'detour'
 export type VijayVisualId =
-  | 'why' | 'branches' | 'create' | 'commit' | 'merge'
-  | 'why-branch' | 'problems' | 'branch-what' | 'branch-create' | 'switcher' | 'branch-work' | 'branch-merge'
+  | 'why' | 'branches' | 'create' | 'commit' | 'merge-triptych'
+  | 'why-branch' | 'problems' | 'branch-what' | 'branch-create' | 'switcher' | 'branch-work'
 export type ArtId =
   | 'ring' | 'kernel' | 'linus' | 'snapshots' | 'born' | 'mukti' | 'audience'
   | 'issueLabels' | 'forkFlow' | 'prMock' | 'workflowSteps' | 'challengeSteps'
@@ -93,7 +93,7 @@ export interface Card {
   preview?: string
   bullets?: string[]
   /** Numbered explanation points (01, 02, 03...) shown instead of plain bullets (pull-requests card). */
-  numberedPoints?: { number: string; title: string; text: string }[]
+  numberedPoints?: { number: string; title: string; text: string; code?: boolean; badgeTone?: 'accent' | 'main' }[]
   note?: string
   /** Bottom callout box with a heading and a few label/text lines (pull-requests card: "Remember"). */
   remember?: { heading: string; lines: { label: string; text: string }[] }

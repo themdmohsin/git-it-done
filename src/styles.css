@@ -49,7 +49,11 @@ h1 { margin: 0; text-wrap: balance; font-weight: 700; letter-spacing: -0.04em; l
 .numbered-points { display: grid; gap: calc(var(--u) * 0.7); width: 100%; }
 .numbered-point { display: flex; align-items: flex-start; gap: calc(var(--u) * 0.9); }
 .numbered-badge { flex: 0 0 auto; display: grid; place-items: center; width: calc(var(--u) * 2.2); height: calc(var(--u) * 2.2); border-radius: calc(var(--u) * 0.6); background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: calc(var(--u) * 1.2); }
+.numbered-badge.tone-main { background: var(--lane-main); color: var(--panel); border-radius: 50%; }
 .numbered-point-title { font-weight: 700; font-size: calc(var(--u) * 1.5); color: var(--ink); line-height: 1.15; }
+.numbered-point-cmd { display: inline-block; font-family: var(--font-code); font-weight: 700; font-size: calc(var(--u) * 1.3); color: var(--card); background: var(--panel); border-radius: calc(var(--u) * 0.6); padding: calc(var(--u) * 0.35) calc(var(--u) * 0.8); line-height: 1.3; overflow-wrap: anywhere; }
+.card.dense .numbered-point-cmd { font-size: calc(var(--u) * 1.15); padding: calc(var(--u) * 0.3) calc(var(--u) * 0.7); }
+.ref-pill { font-family: var(--font-code); font-weight: 700; background: var(--lane-main); color: var(--panel); border-radius: calc(var(--u) * 0.5); padding: 0 calc(var(--u) * 0.5); }
 .numbered-point-text { font-size: calc(var(--u) * 1.25); line-height: 1.2; color: var(--muted); font-weight: 500; }
 .card.dense .numbered-points { gap: calc(var(--u) * 0.45); }
 .card.dense .numbered-badge { width: calc(var(--u) * 1.9); height: calc(var(--u) * 1.9); font-size: calc(var(--u) * 1.1); }

@@ -1,5 +1,6 @@
 import type { VijayVisualId } from '../engine/types'
 import { GraphView } from './BranchGraph'
+import { MergeTriptych } from './MergeTriptych'
 import {
   BRANCH_LAYOUT,
   BRANCH_SCENES,
@@ -7,8 +8,6 @@ import {
   COMMIT_SCENES,
   CREATE_LAYOUT,
   CREATE_SCENES,
-  MERGE_LAYOUT,
-  MERGE_SCENES,
   WHY_LAYOUT,
   WHY_SCENES,
 } from './scenes'
@@ -43,9 +42,8 @@ export function VijayVisual({
     case 'commit':
     case 'branch-work':
       return <GraphView scene={COMMIT_SCENES[Math.min(applied, COMMIT_SCENES.length - 1)]} layout={COMMIT_LAYOUT} instant={instant} />
-    case 'merge':
-    case 'branch-merge':
-      return <GraphView scene={MERGE_SCENES[Math.min(applied, MERGE_SCENES.length - 1)]} layout={MERGE_LAYOUT} instant={instant} />
+    case 'merge-triptych':
+      return <MergeTriptych />
     default:
       return <GraphView scene={WHY_SCENES[Math.min(applied, WHY_SCENES.length - 1)]} layout={WHY_LAYOUT} instant={instant} />
   }

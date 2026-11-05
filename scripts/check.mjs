@@ -50,8 +50,8 @@ const CARDS = [
   ['why-branch', 'Why do we need branches?', 4],
   ['branch-idea', 'Separate your work. Keep main stable.', 4],
   ['branch-create', 'Create a branch. Switch to it. Start working.', 7],
-  ['branch-commit', 'Make a change. Check it. Save it as a commit.', 7],
-  ['branch-merge', 'Feature complete? Bring it back into main.', 5],
+  ['branch-commit', 'Make changes on your branch.', 4],
+  ['branch-merge', 'Bring your work into main.', 2],
   ['oss-intro', 'Great software is built by people working together.', 3],
   ['oss-issues', 'Find something to fix', 0],
   ['oss-pull-requests', 'You can\u2019t push directly. So you propose instead.', 2],
@@ -68,8 +68,8 @@ const LAST = 'keep-going'
 /* Terminal entries expected after each press on the branching terminal cards (press 3 on branch-create is a reset). */
 const TLINES = {
   'branch-create': [0, 1, 2, 3, 4, 5, 0, 1],
-  'branch-commit': [0, 1, 2, 3, 4, 5, 6, 7],
-  'branch-merge': [0, 1, 2, 3, 4, 5],
+  'branch-commit': [0, 1, 2, 3, 4],
+  'branch-merge': [0, 1, 2],
 }
 /* The workshop section: ids in order. The five installation steps use the two-column install view (no terminal, no graph). */
 const WORKSHOP = ['os', 'vscode', 'git-install', 'github-account', 'gh-install', 'identity', 'codespaces', 'ready']
